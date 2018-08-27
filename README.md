@@ -20,9 +20,27 @@ import
 struct Foo
   bar string
 
+myFunc (a string) -> string
+  return a
+
 main ->
-  test = "lol"
-  fmt.Println(test)
+  test = "foo"
+  toto = []string
+    "toto"
+    "tata"
+
+  if test is "foo"
+    fmt.Println(test)
+  else
+    fmt.Println("Not foo")
+
+  for _, v in toto
+    fmt.Println(v)
+
+  fmt.Println(toto[1])
+
+  fmt.Println(myFunc("a"))
+
 ```
 
 ## Objective

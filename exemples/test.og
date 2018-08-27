@@ -6,6 +6,25 @@ import
 struct Toto
   num string
 
+haha (a string) -> string
+  return a
+
 main ->
   test = "lol"
-  fmt.Println(test)
+  toto = []string
+    "toto"
+    "tata"
+
+  if test is "lol"
+    fmt.Println(test)
+  else
+    fmt.Println("Pas lol")
+
+  for _, v in toto
+    fmt.Println(v)
+
+  fmt.Println(toto[1].a)
+
+  fmt.Println(haha("a"))
+
+
