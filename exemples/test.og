@@ -1,0 +1,11 @@
+package main
+
+import
+  "fmt"
+
+struct Toto
+  num string
+
+main ->
+  test = "lol"
+  fmt.Println(test)
