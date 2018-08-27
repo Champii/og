@@ -1,0 +1,10 @@
+package main
+
+testBody ->
+  fmt.Println("a")
+
+testArg (str string) ->
+  fmt.Println(str)
+
+testRet (str string) -> string
+  return str

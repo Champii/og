@@ -6,8 +6,8 @@ import (
 	"os/exec"
 )
 
-func Compile() {
-	res, err := ioutil.ReadFile("./exemples/test.og")
+func Compile(path string) string {
+	res, err := ioutil.ReadFile(path)
 
 	if err != nil {
 		fmt.Println("error", err)
@@ -31,7 +31,7 @@ func Compile() {
 
 	final := format(goSrc)
 
-	fmt.Println(final)
+	return final
 }
 
 func format(str string) string {

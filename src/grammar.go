@@ -5,15 +5,19 @@ import (
 )
 
 type INI struct {
-	Pack     string      `"package" @Ident`
-	Imports  []string    `"import" "{" { @String } "}"`
-	TopLevel []*TopLevel `{ @@ }`
+	Pack     string    `"package" @Ident`
+	ProgBody *ProgBody `[ @@ ]`
 	// Comms    []*string   `{ "//" }`
 }
 
+type ProgBody struct {
+	Imports  []string    `[ "import"  "{" { @String } "}" ]`
+	TopLevel []*TopLevel `{ @@ }`
+}
+
 type TopLevel struct {
-	Structs []*Struct `@@`
-	Funcs   []*Func   `| @@`
+	Struct *Struct `@@`
+	Func   *Func   `| @@`
 }
 
 type Struct struct {
@@ -39,12 +43,12 @@ type Arg struct {
 }
 
 type Stmt struct {
-	FuncCallOrVarDecl *FuncCallOrVarDecl `@@`
-	If                *If                `| @@`
-	For               *For               `| @@`
+	If             *If             `@@`
+	For            *For            `| @@`
+	Return         *Value          `| ("return" @@)`
+	GoRoutine      *GoRoutine      `| @@`
+	IdentOrVarDecl *IdentOrVarDecl `| @@`
 	// Value             *Value             `| @@`
-	Return    *Value     `| ("return" @@)`
-	GoRoutine *GoRoutine `| @@`
 }
 
 type GoRoutine struct {
@@ -90,28 +94,34 @@ type Operator struct {
 	Lte string `| @("<" "=")`
 }
 
-type FuncCallOrVarDecl struct {
-	Ident    *NestedProperty `@@`
-	FuncCall *FuncCall       `( @@`
-	VarDecl  *VarDecl        `| @@ )`
+type IdentOrVarDecl struct {
+	Ident   *NestedProperty `@@`
+	VarDecl *VarDecl        `[ @@ ]`
+	// FuncCall *FuncCall       `( @@`
 }
 
 type ArrAccess struct {
 	Value *Value `"[" @@ "]"`
 }
-type FuncCallOrVar struct {
-	Ident    *NestedProperty `@@`
-	FuncCall *FuncCall       `[ @@ ]`
-}
+
+// type FuncCallOrVar struct {
+// 	Ident    *NestedProperty `@@`
+// 	FuncCall *FuncCall       `[ @@ ]`
+// }
 
 type VarDecl struct {
 	Value *Value `"=" @@`
 }
 
 type NestedProperty struct {
-	Ident     string          `( @Ident`
-	ArrAccess []*ArrAccess    `{ @@ } )`
-	Nested    *NestedProperty `[ "." @@ ]`
+	Ident               string                 `@Ident`
+	ArrAccessOrFuncCall []*ArrAccessOrFuncCall `[ [ { @@ } ]`
+	Nested              *NestedProperty        `[ "." @@ ] ]`
+}
+
+type ArrAccessOrFuncCall struct {
+	ArrAccess *ArrAccess `( @@`
+	FuncCall  *FuncCall  `| @@ )`
 }
 
 type FuncCall struct {
@@ -119,12 +129,12 @@ type FuncCall struct {
 }
 
 type Value struct {
-	Bool          *bool          `(@"true" | "false")`
-	String        *string        `| @String`
-	Int           *int64         `| @Int`
-	Float         *float64       `| @Float`
-	FuncCallOrVar *FuncCallOrVar `| @@`
-	ArrDecl       *ArrDecl       `| @@`
+	Bool           *bool           `(@"true" | "false")`
+	String         *string         `| @String`
+	Int            *int64          `| @Int`
+	Float          *float64        `| @Float`
+	NestedProperty *NestedProperty `| @@`
+	ArrDecl        *ArrDecl        `| @@`
 }
 
 type ArrDecl struct {

@@ -73,18 +73,48 @@ main ->
 
 ## Todo
 
-- Multiple return values in assign
-- Generics
-- Auto return for last statement in a block
-- Returnable and assignable statements (if, for, ...)
-- For with a range (for i in [0..10])
-- For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)
-- Increment/Decrement
-- Existance test (if toto?) for non-nil value test
-- Error bubbling
-- External classic Method declaration
-- Class-like method declaration (nested into the struct)
-- Interfaces
-- One liner functions
-- Variable shadowing ? Or error ?
-- Tests
+- [x] Package declaration
+- [x] Import
+- [x] Structure
+- [x] Top level Function
+- [x] Function arguments and type
+- [x] Function return type
+- [x] Return keyword
+- [x] Assignation
+- [x] Bool
+- [x] Int
+- [x] Float
+- [x] String
+- [x] Array
+- [x] Nested property (a.b.c)
+- [x] Function call
+- [x] Array access (a[0])
+- [x] If
+- [x] Else If
+- [x] Else
+- [x] Predicate operator
+- [x] Is / Isnt alias of `==` / `!=`
+- [x] For In
+- [x] Goroutine
+- [x] `gofmt` to format the output
+- [ ] Array type
+- [ ] Empty Function body
+- [ ] Struct compostion ("Inheritance")
+- [ ] Increment/Decrement
+- [ ] Multiple return values in assign
+- [ ] One liner functions
+- [ ] Auto return for last statement in a block
+- [ ] For with a range (for i in [0..10])
+- [ ] For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)
+- [ ] Interfaces
+- [ ] External classic Method declaration
+- [ ] Existance test (if toto?) for non-nil value test
+- [ ] Returnable and assignable statements (if, for, ...)
+- [ ] Generics
+- [ ] Error bubbling
+- [ ] Class-like method declaration (nested into the struct)
+- [ ] Variable shadowing ? Or error ?
+- [ ] Variable shadowing ? Or error ?
+- [ ] Pattern matching
+- [ ] Import renaming and pattern matching
+- [ ] Tests

@@ -8,8 +8,18 @@ import (
 func parseAst(ast *INI) string {
 	return fmt.Sprint(
 		Pack(ast.Pack),
-		Imports(ast.Imports),
-		TopLevels(ast.TopLevel),
+		ProgBody_(ast.ProgBody),
+	)
+}
+
+func ProgBody_(pbody *ProgBody) string {
+	if pbody == nil {
+		return ""
+	}
+
+	return fmt.Sprint(
+		Imports(pbody.Imports),
+		TopLevels(pbody.TopLevel),
 	)
 }
 
@@ -18,6 +28,10 @@ func Pack(pack string) string {
 }
 
 func Imports(imports []string) string {
+	if len(imports) == 0 {
+		return "\n"
+	}
+
 	res := []string{fmt.Sprintln("import (")}
 
 	for _, imp := range imports {
@@ -30,14 +44,18 @@ func Imports(imports []string) string {
 }
 
 func TopLevels(top []*TopLevel) string {
+	if len(top) == 0 {
+		return ""
+	}
+
 	res := []string{}
 
 	for _, t := range top {
-		for _, s := range t.Structs {
-			res = append(res, Struct_(s))
+		if t.Struct != nil {
+			res = append(res, Struct_(t.Struct))
 		}
-		for _, f := range t.Funcs {
-			res = append(res, Func_(f))
+		if t.Func != nil {
+			res = append(res, Func_(t.Func))
 		}
 		res = append(res, "\n")
 	}
@@ -91,24 +109,24 @@ func Arg_(a *Arg) string {
 }
 
 func Stmt_(s *Stmt) string {
-	if s.FuncCallOrVarDecl != nil {
-		return FuncCallOrVarDecl_(s.FuncCallOrVarDecl)
+	if s.IdentOrVarDecl != nil {
+		return fmt.Sprintln(IdentOrVarDecl_(s.IdentOrVarDecl))
 	}
 
 	if s.If != nil {
-		return If_(s.If)
+		return fmt.Sprintln(If_(s.If))
 	}
 
 	if s.For != nil {
-		return For_(s.For)
+		return fmt.Sprintln(For_(s.For))
 	}
 
 	if s.GoRoutine != nil {
-		return GoRoutine_(s.GoRoutine)
+		return fmt.Sprintln(GoRoutine_(s.GoRoutine))
 	}
 
 	if s.Return != nil {
-		return fmt.Sprint("return ", Value_(s.Return))
+		return fmt.Sprintln("return ", Value_(s.Return))
 	}
 
 	return ""
@@ -223,29 +241,29 @@ func Operator_(o *Operator) string {
 	return ""
 }
 
-func FuncCallOrVarDecl_(s *FuncCallOrVarDecl) string {
+func IdentOrVarDecl_(s *IdentOrVarDecl) string {
 	res := []string{NestedProperty_(s.Ident)}
 
 	if s.VarDecl != nil {
 		res = append(res, fmt.Sprintln(":=", Value_(s.VarDecl.Value)))
 	}
 
-	if s.FuncCall != nil {
-		res = append(res, fmt.Sprintln(FuncCall_(s.FuncCall)))
-	}
+	// if s.FuncCall != nil {
+	// 	res = append(res, fmt.Sprintln(FuncCall_(s.FuncCall)))
+	// }
 
 	return strings.Join(res, "")
 }
 
-func FuncCallOrVar_(s *FuncCallOrVar) string {
-	res := []string{NestedProperty_(s.Ident)}
+// func FuncCallOrVar_(s *FuncCallOrVar) string {
+// 	res := []string{NestedProperty_(s.Ident)}
 
-	if s.FuncCall != nil {
-		res = append(res, fmt.Sprint(FuncCall_(s.FuncCall)))
-	}
+// 	if s.FuncCall != nil {
+// 		res = append(res, fmt.Sprint(FuncCall_(s.FuncCall)))
+// 	}
 
-	return strings.Join(res, "")
-}
+// 	return strings.Join(res, "")
+// }
 
 func Value_(v *Value) string {
 	if v.Bool != nil {
@@ -264,8 +282,8 @@ func Value_(v *Value) string {
 		return fmt.Sprint(*v.Float)
 	}
 
-	if v.FuncCallOrVar != nil {
-		return FuncCallOrVar_(v.FuncCallOrVar)
+	if v.NestedProperty != nil {
+		return NestedProperty_(v.NestedProperty)
 	}
 
 	if v.ArrDecl != nil {
@@ -278,8 +296,8 @@ func Value_(v *Value) string {
 func NestedProperty_(n *NestedProperty) string {
 	res := []string{n.Ident}
 
-	for _, a := range n.ArrAccess {
-		res = append(res, ArrAccess_(a))
+	for _, a := range n.ArrAccessOrFuncCall {
+		res = append(res, ArrAccessOrFuncCall_(a))
 	}
 
 	if n.Nested != nil {
@@ -288,6 +306,18 @@ func NestedProperty_(n *NestedProperty) string {
 	}
 
 	return strings.Join(res, "")
+}
+
+func ArrAccessOrFuncCall_(a *ArrAccessOrFuncCall) string {
+	if a.ArrAccess != nil {
+		return ArrAccess_(a.ArrAccess)
+	}
+
+	if a.FuncCall != nil {
+		return FuncCall_(a.FuncCall)
+	}
+
+	return ""
 }
 
 func ArrAccess_(a *ArrAccess) string {

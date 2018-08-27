@@ -1,0 +1,5 @@
+package main
+
+struct Foo
+  bar string
+  foobar int
