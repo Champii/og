@@ -43,7 +43,7 @@ main ->
 
 ```
 
-## Objective
+## Long term goal
 
 ```go
 package main
@@ -65,11 +65,26 @@ main ->
   foo = Foo
     bar: "bar"
 
-  if foo.bar is "bar"
-    fmt.Println("Yeah")
-
   t := Generic
     test: "str"
 
   fmt.Println(t.fn())
 ```
+
+## Todo
+
+- Multiple return values in assign
+- Generics
+- Auto return for last statement in a block
+- Returnable and assignable statements (if, for, ...)
+- For with a range (for i in [0..10])
+- For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)
+- Increment/Decrement
+- Existance test (if toto?) for non-nil value test
+- Error bubbling
+- External classic Method declaration
+- Class-like method declaration (nested into the struct)
+- Interfaces
+- One liner functions
+- Variable shadowing ? Or error ?
+- Tests

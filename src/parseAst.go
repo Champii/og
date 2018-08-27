@@ -1,4 +1,4 @@
-package main
+package og
 
 import (
 	"fmt"
@@ -39,6 +39,7 @@ func TopLevels(top []*TopLevel) string {
 		for _, f := range t.Funcs {
 			res = append(res, Func_(f))
 		}
+		res = append(res, "\n")
 	}
 
 	return strings.Join(res, "")
@@ -80,7 +81,7 @@ func Func_(s *Func) string {
 		res = append(res, Stmt_(stmt))
 	}
 
-	res = append(res, "}\n")
+	res = append(res, "}")
 
 	return strings.Join(res, "")
 }
@@ -102,9 +103,9 @@ func Stmt_(s *Stmt) string {
 		return For_(s.For)
 	}
 
-	// if s.Value != nil {
-	// 	return Value_(s.Value)
-	// }
+	if s.GoRoutine != nil {
+		return GoRoutine_(s.GoRoutine)
+	}
 
 	if s.Return != nil {
 		return fmt.Sprint("return ", Value_(s.Return))
@@ -325,6 +326,23 @@ func ArrDecl_(a *ArrDecl) string {
 	}
 
 	res = append(res, "}")
+
+	return strings.Join(res, "")
+}
+
+func GoRoutine_(g *GoRoutine) string {
+	res := []string{"go "}
+
+	if g.Func != nil {
+		res = append(res, Func_(g.Func))
+		res = append(res, "()")
+	}
+
+	if g.Value != nil {
+		res = append(res, Value_(g.Value))
+	}
+
+	res = append(res, "\n")
 
 	return strings.Join(res, "")
 }

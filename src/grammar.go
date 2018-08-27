@@ -1,4 +1,4 @@
-package main
+package og
 
 import (
 	"github.com/alecthomas/participle"
@@ -27,7 +27,7 @@ type StructField struct {
 }
 
 type Func struct {
-	Name       string  `@Ident`
+	Name       string  `[ @Ident ]`
 	Args       []*Arg  `[ "(" { @@ } ")" ] "-" ">"`
 	ReturnType string  `[ @Ident ]`
 	Body       []*Stmt `[ "{" { @@ } "}" ]`
@@ -43,7 +43,13 @@ type Stmt struct {
 	If                *If                `| @@`
 	For               *For               `| @@`
 	// Value             *Value             `| @@`
-	Return *Value `| ("return" @@)`
+	Return    *Value     `| ("return" @@)`
+	GoRoutine *GoRoutine `| @@`
+}
+
+type GoRoutine struct {
+	Func  *Func  `( "go" @@ )`
+	Value *Value `| ( "go" @@ )`
 }
 
 type For struct {

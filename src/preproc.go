@@ -1,4 +1,4 @@
-package main
+package og
 
 import "strings"
 
