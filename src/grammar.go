@@ -25,8 +25,9 @@ type Struct struct {
 }
 
 type StructField struct {
-	Name string `@Ident`
-	Type string `@Ident`
+	Name string  `@Ident`
+	Type string  `@Ident`
+	Tag  *string `[ @String ]`
 }
 
 type Func struct {
@@ -37,12 +38,13 @@ type Func struct {
 }
 
 type Type struct {
-	Type string `@Ident`
+	Array []string `{ @("[" "]") | @"*" }`
+	Type  string   `@Ident`
 }
 
 type Arg struct {
 	Name string `@Ident`
-	Type string `@Ident [","]`
+	Type *Type  `@@ [","]`
 }
 
 type Stmt struct {
@@ -82,12 +84,12 @@ type Else struct {
 }
 
 type Predicat struct {
-	First    *Value    `@@`
-	Operator *Operator `@@`
-	Second   *Value    `@@`
+	First    *Value            `@@`
+	Operator *PredicatOperator `@@`
+	Second   *Value            `@@`
 }
 
-type Operator struct {
+type PredicatOperator struct {
 	Eq  string `@(("=" "=") | "is")`
 	Neq string `| @(("!" "=") | "isnt")`
 	Gt  string `| @">"`
@@ -99,7 +101,6 @@ type Operator struct {
 type IdentOrVarDecl struct {
 	Ident   *NestedProperty `@@`
 	VarDecl *VarDecl        `[ @@ ]`
-	// FuncCall *FuncCall       `( @@`
 }
 
 type ArrAccess struct {
@@ -111,9 +112,12 @@ type VarDecl struct {
 }
 
 type NestedProperty struct {
+	// Ref                 *string                `[ @"*" | @"&" ]`
 	Ident               string                 `@Ident`
 	ArrAccessOrFuncCall []*ArrAccessOrFuncCall `[ [ { @@ } ]`
 	Nested              *NestedProperty        `[ "." @@ ] ]`
+	// StructInst          *StructInst            `[ @@ ]`
+	// Increment           *Increment             `[ @@ ]`
 }
 
 type ArrAccessOrFuncCall struct {
@@ -125,13 +129,49 @@ type FuncCall struct {
 	Args []*Value `"(" { @@ [","] } ")"`
 }
 
+type Number struct {
+	Float *float64 `( @Float`
+	Int   *int64   `| @Int )`
+}
+
+type ParenthesisValue struct {
+	Open  string     `@"("`
+	Value *Operation `@@`
+	Close string     `@")"`
+}
 type Value struct {
-	Bool           *bool           `(@"true" | "false")`
+	Bool           *bool           `( @"true" | "false")`
+	Operation      *Operation      `| @@`
 	String         *string         `| @String`
-	Int            *int64          `| @Int`
-	Float          *float64        `| @Float`
 	NestedProperty *NestedProperty `| @@`
 	ArrDecl        *ArrDecl        `| @@`
+}
+
+type StructInst struct {
+	Open  string `@"{"`
+	Ident string `@Ident ":"`
+	Value *Value `@@`
+	Close string `@"}"`
+}
+
+type Operation struct {
+	// ParenthesisValue *ParenthesisValue `@@ |`
+	First  *Number    `( @@`
+	Op     *Operator  `[ @@`
+	Nested *Operation `@@ ] )`
+}
+
+type Operator struct {
+	Plus  *string `( @"+"`
+	Less  *string `| @"-"`
+	Times *string `| @"*"`
+	Div   *string `| @"/"`
+	Mod   *string `| @"%" )`
+}
+
+type Increment struct {
+	Inc *string `( @("+" "+")`
+	Dec *string `| @("-" "-") )`
 }
 
 type ArrDecl struct {

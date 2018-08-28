@@ -3,3 +3,7 @@ package main
 struct Foo
   bar string
   foobar int
+
+struct FooTag
+  bar string `json: "test"`
+  foobar int `sql: "-"`

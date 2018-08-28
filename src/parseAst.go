@@ -67,7 +67,13 @@ func Struct_(s *Struct) string {
 	res := []string{fmt.Sprintln("type", s.Name, "struct {")}
 
 	for _, field := range s.Fields {
-		res = append(res, fmt.Sprintln(field.Name, field.Type))
+		res = append(res, fmt.Sprint(field.Name, " ", field.Type))
+
+		if field.Tag != nil {
+			res = append(res, fmt.Sprint("`", *field.Tag, "`"))
+		}
+
+		res = append(res, "\n")
 	}
 
 	res = append(res, "}\n")
@@ -90,7 +96,7 @@ func Func_(s *Func) string {
 	res = append(res, ") ")
 
 	if s.ReturnType != nil {
-		res = append(res, s.ReturnType.Type)
+		res = append(res, Type_(s.ReturnType))
 	}
 
 	res = append(res, "{\n")
@@ -104,8 +110,24 @@ func Func_(s *Func) string {
 	return strings.Join(res, "")
 }
 
+func Type_(t *Type) string {
+	res := []string{}
+
+	for _, a := range t.Array {
+		res = append(res, a)
+	}
+
+	res = append(res, t.Type)
+
+	return strings.Join(res, "")
+}
+
 func Arg_(a *Arg) string {
-	return fmt.Sprint(a.Name, " ", a.Type)
+	res := []string{fmt.Sprint(a.Name, " ")}
+
+	res = append(res, Type_(a.Type))
+
+	return strings.Join(res, "")
 }
 
 func Stmt_(s *Stmt) string {
@@ -197,12 +219,12 @@ func Predicat_(p *Predicat) string {
 	res := []string{}
 
 	res = append(res, Value_(p.First))
-	res = append(res, Operator_(p.Operator))
+	res = append(res, PredicatOperator_(p.Operator))
 	res = append(res, Value_(p.Second))
 
 	return strings.Join(res, "")
 }
-func Operator_(o *Operator) string {
+func PredicatOperator_(o *PredicatOperator) string {
 	if len(o.Eq) > 0 {
 		return "=="
 	}
@@ -249,12 +271,8 @@ func Value_(v *Value) string {
 		return fmt.Sprint("\"", *v.String, "\"")
 	}
 
-	if v.Int != nil {
-		return fmt.Sprint(*v.Int)
-	}
-
-	if v.Float != nil {
-		return fmt.Sprint(*v.Float)
+	if v.Operation != nil {
+		return Operation_(v.Operation)
 	}
 
 	if v.NestedProperty != nil {
@@ -263,6 +281,56 @@ func Value_(v *Value) string {
 
 	if v.ArrDecl != nil {
 		return ArrDecl_(v.ArrDecl)
+	}
+
+	return ""
+}
+
+func Number_(n *Number) string {
+	if n.Int != nil {
+		return fmt.Sprint(*n.Int)
+	}
+
+	if n.Float != nil {
+		return fmt.Sprint(*n.Float)
+	}
+
+	return ""
+}
+
+func Operation_(o *Operation) string {
+	res := []string{Number_(o.First)}
+
+	if o.Op != nil {
+		res = append(res, Operator_(o.Op))
+	}
+
+	if o.Nested != nil {
+		res = append(res, Operation_(o.Nested))
+	}
+
+	return strings.Join(res, "")
+}
+
+func Operator_(o *Operator) string {
+	if o.Plus != nil {
+		return *o.Plus
+	}
+
+	if o.Less != nil {
+		return *o.Less
+	}
+
+	if o.Times != nil {
+		return *o.Times
+	}
+
+	if o.Div != nil {
+		return *o.Div
+	}
+
+	if o.Mod != nil {
+		return *o.Mod
 	}
 
 	return ""

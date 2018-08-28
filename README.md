@@ -1,6 +1,8 @@
 # Og
 Language that compiles to a subset of GoLang
 
+To be pronouned `O-Gee`
+
 ## Goal
 
 To provide a usable language that compiles to Golang
@@ -71,7 +73,7 @@ main ->
   fmt.Println(t.fn())
 ```
 
-## Todo
+## Done
 
 - [x] Package declaration
 - [x] Import
@@ -98,17 +100,38 @@ main ->
 - [x] Goroutine
 - [x] `gofmt` to format the output
 - [x] One liner functions
-- [ ] Array type
+- [x] Math Operators
+- [x] Array type
+- [x] Pointer type
+- [x] Struct tags
+- Tests
+  - [x] Package
+  - [x] Import
+  - [x] Struct
+  - [x] Top Level Function
+  - [x] If/ElseIf/Else
+  - [x] For
+  - [x] NestedProperty
+  - [x] GoRoutine
+  - [x] Math Operation
+
+## Todo for rewriting Og in Og
+
+- [ ] Reference and Dereference
 - [ ] Slice manipulation (`a[0:x]`)
-- [ ] Empty Function body
-- [ ] Math Operators
-- [ ] Struct compostion ("Inheritance")
-- [ ] Increment/Decrement
+- [ ] Multiple return values type
 - [ ] Multiple return values in assign
 - [ ] Struct instantiation
-- [ ] Struct tags
-- [ ] Auto return for last statement in a block
+
+## Todo
+
+- [ ] Parenthesis
+- [ ] Rewrite Og in Og
 - [ ] Interfaces
+- [ ] Empty Function body
+- [ ] Struct compostion ("Inheritance")
+- [ ] Increment/Decrement
+- [ ] Auto return for last statement in a block
 - [ ] For with a range (for i in [0..10])
 - [ ] For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)
 - [ ] `pub` visibility instead of capitalizing
@@ -121,13 +144,3 @@ main ->
 - [ ] Variable shadowing ? Or error ?
 - [ ] Pattern matching
 - [ ] Import renaming and pattern matching
-- [ ] Rewrite Og in Og
-- Tests
-  - [x] Package
-  - [x] Import
-  - [x] Struct
-  - [x] Top Level Function
-  - [x] If/ElseIf/Else
-  - [x] For
-  - [x] NestedProperty
-  - [x] GoRoutine

@@ -8,5 +8,15 @@ testBody ->
 testArg (str string) ->
   fmt.Println(str)
 
+arrArg (str []string) ->
+  fmt.Println(str)
+
+doubleArrArg (str [][]string) ->
+  fmt.Println(str)
+
+doubleArrPointerArg (str **[]*[]*string) ->
+  fmt.Println(str)
+
 testRet (str string): string ->
   return str
+

@@ -26,6 +26,11 @@ type Foo struct {
 	bar    string
 	foobar int
 }
+
+type FooTag struct {
+	bar    string ` + "`json: \"test\"`" + `
+	foobar int    ` + "`sql: \"-\"`" + `
+}
 `,
 		// top_fn.og
 		`package main
@@ -37,6 +42,15 @@ func testBody() {
 	fmt.Println("a")
 }
 func testArg(str string) {
+	fmt.Println(str)
+}
+func arrArg(str []string) {
+	fmt.Println(str)
+}
+func doubleArrArg(str [][]string) {
+	fmt.Println(str)
+}
+func doubleArrPointerArg(str **[]*[]*string) {
 	fmt.Println(str)
 }
 func testRet(str string) string {
@@ -115,6 +129,16 @@ func main() {
 
 }
 `,
+		// operation.og
+		`package main
+
+func main() {
+	a := 1 + 1
+
+	b := 1 + 2/4 - 21%42*84
+
+}
+`,
 	}
 
 	paths := []string{
@@ -126,6 +150,7 @@ func main() {
 		`for`,
 		`nested_property`,
 		`goroutine`,
+		`operation`,
 	}
 
 	for i, p := range paths {
