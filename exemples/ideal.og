@@ -1,26 +1,22 @@
 package main
 
-import (
+import
 	"fmt"
-)
 
-struct Toto
-  num string
+pub struct Toto
+  pub num string
 
 struct Generic<T>
   test: T
-  fn: func()
+  fn: ->
     fmt.Println("Ouaou", test)
 
-func genericFunc<T>(g: Generic<T>) T
+genericFunc<T>(g: Generic<T>) T ->
   g.test
 
-func main()
+main ->
   toto := Toto
     num: "Lol",
-
-  if toto.num == "Lol"
-    fmt.Println("Ouat Bitch")
 
   t := Generic
     test: "haha"

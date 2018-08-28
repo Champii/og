@@ -1,0 +1,12 @@
+package main
+
+import
+  "fmt"
+
+main ->
+  a = []string
+    "foo"
+    "bar"
+
+  for _, i in a
+    fmt.Println(i)

@@ -99,6 +99,7 @@ main ->
 - [x] `gofmt` to format the output
 - [ ] Array type
 - [ ] Empty Function body
+- [ ] Math Operators
 - [ ] Struct compostion ("Inheritance")
 - [ ] Increment/Decrement
 - [ ] Multiple return values in assign
@@ -107,6 +108,7 @@ main ->
 - [ ] For with a range (for i in [0..10])
 - [ ] For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)
 - [ ] Interfaces
+- [ ] `pub` visibility instead of capitalizing
 - [ ] External classic Method declaration
 - [ ] Existance test (if toto?) for non-nil value test
 - [ ] Returnable and assignable statements (if, for, ...)
@@ -114,7 +116,15 @@ main ->
 - [ ] Error bubbling
 - [ ] Class-like method declaration (nested into the struct)
 - [ ] Variable shadowing ? Or error ?
-- [ ] Variable shadowing ? Or error ?
 - [ ] Pattern matching
 - [ ] Import renaming and pattern matching
+- [ ] Rewrite Og in Og
 - [ ] Tests
+  - [x] Package
+  - [x] Import
+  - [x] Struct
+  - [x] Top Level Function
+  - [x] If/ElseIf/Else
+  - [x] For
+  - [x] NestedProperty
+  - [x] GoRoutine

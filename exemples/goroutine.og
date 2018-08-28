@@ -1,0 +1,7 @@
+package main
+
+main ->
+  go ->
+    fmt.Println("test")
+
+  go some.fn()

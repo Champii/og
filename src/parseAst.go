@@ -165,28 +165,15 @@ func If_(i *If) string {
 		res = append(res, Stmt_(stmt))
 	}
 
-	for _, elseif := range i.ElseIf {
-		res = append(res, ElseIf_(elseif))
-	}
-
-	if i.Else != nil {
-		res = append(res, Else_(i.Else))
-	}
-
-	res = append(res, "}\n")
-
-	return strings.Join(res, "")
-}
-
-func ElseIf_(e *ElseIf) string {
-	res := []string{"} else if "}
-
-	res = append(res, Predicat_(e.Predicat))
-
-	res = append(res, "{\n")
-
-	for _, stmt := range e.Body {
-		res = append(res, Stmt_(stmt))
+	if i.ElseIf != nil {
+		if i.ElseIf.If != nil {
+			res = append(res, "} else ")
+			res = append(res, If_(i.ElseIf.If))
+		} else if i.ElseIf.Else != nil {
+			res = append(res, Else_(i.ElseIf.Else))
+		}
+	} else {
+		res = append(res, "}\n")
 	}
 
 	return strings.Join(res, "")
@@ -200,6 +187,8 @@ func Else_(e *Else) string {
 	for _, stmt := range e.Body {
 		res = append(res, Stmt_(stmt))
 	}
+
+	res = append(res, "}\n")
 
 	return strings.Join(res, "")
 }
@@ -248,22 +237,8 @@ func IdentOrVarDecl_(s *IdentOrVarDecl) string {
 		res = append(res, fmt.Sprintln(":=", Value_(s.VarDecl.Value)))
 	}
 
-	// if s.FuncCall != nil {
-	// 	res = append(res, fmt.Sprintln(FuncCall_(s.FuncCall)))
-	// }
-
 	return strings.Join(res, "")
 }
-
-// func FuncCallOrVar_(s *FuncCallOrVar) string {
-// 	res := []string{NestedProperty_(s.Ident)}
-
-// 	if s.FuncCall != nil {
-// 		res = append(res, fmt.Sprint(FuncCall_(s.FuncCall)))
-// 	}
-
-// 	return strings.Join(res, "")
-// }
 
 func Value_(v *Value) string {
 	if v.Bool != nil {

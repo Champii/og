@@ -40,6 +40,78 @@ func testRet(str string) string {
 	return str
 }
 `,
+		// if.og
+		`package main
+
+func main() {
+	a := 2
+
+	if a == 2 {
+		fmt.Println(a)
+	}
+
+	if a == 2 {
+		fmt.Println(a)
+	} else {
+		fmt.Println(a)
+	}
+
+	if a == 2 {
+		fmt.Println(a)
+	} else if a == 3 {
+		fmt.Println(a)
+	}
+
+	if a == 2 {
+		fmt.Println(a)
+	} else if a == 3 {
+		fmt.Println(a)
+	} else if a == 4 {
+		fmt.Println(a)
+	} else {
+		fmt.Println(a)
+	}
+
+}
+`,
+		// for.og
+		`package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	a := []string{
+		"foo",
+		"bar",
+	}
+
+	for _, i := range a {
+		fmt.Println(i)
+	}
+
+}
+`,
+		// nested_property.og
+		`package main
+
+func main() {
+	a.b[1][2].c()()(a)[1].d
+}
+`,
+		// goroutine.og
+		`package main
+
+func main() {
+	go func() {
+		fmt.Println("test")
+	}()
+
+	go some.fn()
+
+}
+`,
 	}
 
 	paths := []string{
@@ -47,13 +119,17 @@ func testRet(str string) string {
 		`import`,
 		`struct`,
 		`top_fn`,
+		`if`,
+		`for`,
+		`nested_property`,
+		`goroutine`,
 	}
 
 	for i, p := range paths {
 		res := og.Compile(fmt.Sprint("./exemples/", p, ".og"))
 
 		if res != expected[i] {
-			panic(fmt.Sprintln("Error", p, res, expected[i]))
+			panic(fmt.Sprint("Error: ", p, "\nGot: \n---\n", res, "\n---\nExpected: \n---\n", expected[i], "\n---\n"))
 		}
 	}
 }

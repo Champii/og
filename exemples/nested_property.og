@@ -1,0 +1,4 @@
+package main
+
+main ->
+  a.b[1][2].c()()(a)[1].d

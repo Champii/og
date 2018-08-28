@@ -66,17 +66,18 @@ type For struct {
 type If struct {
 	Predicat *Predicat `"if" @@ "{"`
 	Body     []*Stmt   `{ @@ } "}"`
-	ElseIf   []*ElseIf `{ @@ }`
-	Else     *Else     `[ @@ ]`
+	ElseIf   *ElseIf   `[ "else" @@ ]`
 }
 
 type ElseIf struct {
-	Predicat *Predicat `"else if" @@ "{"`
-	Body     []*Stmt   `{ @@ } "}"`
+	If   *If   `( @@`
+	Else *Else `| @@ )`
+	// Body     []*Stmt   `{ @@ } "}"`
+	// Nested   *ElseIf   `[ @@ ]`
 }
 
 type Else struct {
-	Body []*Stmt `"else" "{" { @@ } "}"`
+	Body []*Stmt `"{" { @@ } "}"`
 }
 
 type Predicat struct {
