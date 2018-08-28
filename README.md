@@ -105,6 +105,12 @@ main ->
 - [x] Pointer type
 - [x] Struct tags
 - [x] Parenthesis
+- [x] Reference and Dereference
+- [x] Increment/Decrement
+- [x] Struct instantiation
+- [x] Nil value
+- [x] Logical predicat operator (`||` / `&&`  `or` / `and`)
+
 - Tests
   - [x] Package
   - [x] Import
@@ -115,15 +121,15 @@ main ->
   - [x] NestedProperty
   - [x] GoRoutine
   - [x] Math Operation
+  - [x] Reference/Dereference
+  - [x] Increment/Decrement
+  - [x] Struct instantiation
 
 ## Todo for rewriting Og in Og
 
-- [ ] Reference and Dereference
 - [ ] Slice manipulation (`a[0:x]`)
 - [ ] Multiple return values type
 - [ ] Multiple return values in assign
-- [ ] Struct instantiation
-- [ ] Logical predicat operator (`||`, `&&`)
 
 ## Todo
 
@@ -132,7 +138,6 @@ main ->
 - [ ] Interfaces
 - [ ] Empty Function body
 - [ ] Struct compostion ("Inheritance")
-- [ ] Increment/Decrement
 - [ ] Auto return for last statement in a block
 - [ ] For with a range (for i in [0..10])
 - [ ] For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)

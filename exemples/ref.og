@@ -1,0 +1,6 @@
+package main
+
+main ->
+  a = &b
+
+  b = **a.b

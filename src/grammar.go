@@ -4,7 +4,7 @@ import (
 	"github.com/alecthomas/participle"
 )
 
-type INI struct {
+type OgProg struct {
 	Pack     string    `"package" @Ident`
 	ProgBody *ProgBody `[ @@ ]`
 }
@@ -15,8 +15,6 @@ type ProgBody struct {
 }
 
 type TopLevel struct {
-	// Func   *Func   `( @@`
-	// Struct *Struct `| @@ )`
 	Struct *Struct `( @@`
 	Func   *Func   `| @@ )`
 }
@@ -92,6 +90,8 @@ type Predicat struct {
 type PredicatOperator struct {
 	Eq  string `@(("=" "=") | "is")`
 	Neq string `| @(("!" "=") | "isnt")`
+	Or  string `@(("|" "|") | "or")`
+	And string `@(("&" "&") | "and")`
 	Gt  string `| @">"`
 	Gte string `| @(">" "=")`
 	Lt  string `| @"<"`
@@ -112,12 +112,12 @@ type VarDecl struct {
 }
 
 type NestedProperty struct {
-	// Ref                 *string                `[ @"*" | @"&" ]`
+	Ref                 []string               `{ @"*" | @"&" }`
 	Ident               string                 `@Ident`
 	ArrAccessOrFuncCall []*ArrAccessOrFuncCall `{ @@ }`
 	Nested              *NestedProperty        `[ "." @@ ]`
-	// StructInst          *StructInst            `[ @@ ]`
-	// Increment           *Increment             `[ @@ ]`
+	StructInst          *StructInst            `[ @@ ]`
+	Increment           *Increment             `[ @@ ]`
 }
 
 type ArrAccessOrFuncCall struct {
@@ -150,16 +150,17 @@ type OuterValue struct {
 
 type Value struct {
 	Bool    *bool    `( @"true" | "false")`
+	Nil     *string  `| @"nil"`
 	Number  *Number  `| @@`
 	String  *string  `| @String`
 	ArrDecl *ArrDecl `| @@`
 }
 
 type StructInst struct {
-	Open  string      `@"{"`
-	Ident string      `{ @Ident ":"`
-	Value *OuterValue `@@ }`
-	Close string      `@"}"`
+	Open  string        `@"{"`
+	Ident []string      `{ @Ident ":"`
+	Value []*OuterValue `@@ }`
+	Close string        `@"}"`
 }
 
 type Operation struct {
@@ -186,19 +187,19 @@ type ArrDecl struct {
 	Values []*OuterValue `{ @@ [ "," ] } "}"`
 }
 
-func Build(str string) (*INI, error) {
-	parser, err := participle.Build(&INI{})
+func Build(str string) (*OgProg, error) {
+	parser, err := participle.Build(&OgProg{})
 
 	if err != nil {
-		return &INI{}, err
+		return &OgProg{}, err
 	}
 
-	ast := &INI{}
+	ast := &OgProg{}
 
 	err = parser.ParseString(str, ast)
 
 	if err != nil {
-		return &INI{}, err
+		return &OgProg{}, err
 	}
 
 	return ast, nil

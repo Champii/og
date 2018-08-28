@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func parseAst(ast *INI) string {
+func parseAst(ast *OgProg) string {
 	return fmt.Sprint(
 		Pack(ast.Pack),
 		ProgBody_(ast.ProgBody),
@@ -233,6 +233,14 @@ func PredicatOperator_(o *PredicatOperator) string {
 		return "!="
 	}
 
+	if len(o.Or) > 0 {
+		return "||"
+	}
+
+	if len(o.And) > 0 {
+		return "&&"
+	}
+
 	if len(o.Gt) > 0 {
 		return ">"
 	}
@@ -293,6 +301,10 @@ func OuterValue_(v *OuterValue) string {
 func Value_(v *Value) string {
 	if v.Bool != nil {
 		return fmt.Sprint(*v.Bool)
+	}
+
+	if v.Nil != nil {
+		return fmt.Sprint(*v.Nil)
 	}
 
 	if v.Number != nil {
@@ -359,7 +371,13 @@ func Operator_(o *Operator) string {
 }
 
 func NestedProperty_(n *NestedProperty) string {
-	res := []string{n.Ident}
+	res := []string{}
+
+	for _, r := range n.Ref {
+		res = append(res, r)
+	}
+
+	res = append(res, n.Ident)
 
 	for _, a := range n.ArrAccessOrFuncCall {
 		res = append(res, ArrAccessOrFuncCall_(a))
@@ -368,6 +386,14 @@ func NestedProperty_(n *NestedProperty) string {
 	if n.Nested != nil {
 		res = append(res, ".")
 		res = append(res, NestedProperty_(n.Nested))
+	}
+
+	if n.Increment != nil {
+		res = append(res, Increment_(n.Increment))
+	}
+
+	if n.StructInst != nil {
+		res = append(res, StructInst_(n.StructInst))
 	}
 
 	return strings.Join(res, "")
@@ -435,6 +461,31 @@ func GoRoutine_(g *GoRoutine) string {
 	}
 
 	res = append(res, "\n")
+
+	return strings.Join(res, "")
+}
+
+func Increment_(i *Increment) string {
+	if i.Inc != nil {
+		return *i.Inc
+	}
+
+	if i.Dec != nil {
+		return *i.Dec
+	}
+
+	return ""
+}
+
+func StructInst_(s *StructInst) string {
+	res := []string{"{\n"}
+
+	for i, v := range s.Ident {
+		res = append(res, v+":")
+		res = append(res, OuterValue_(s.Value[i])+",\n")
+	}
+
+	res = append(res, "}")
 
 	return strings.Join(res, "")
 }

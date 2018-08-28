@@ -1,0 +1,9 @@
+package main
+
+main ->
+  a = 1
+
+  a++
+  a--
+
+  a.b.c().d++

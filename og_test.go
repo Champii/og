@@ -137,6 +137,43 @@ func main() {
 
 }
 `,
+		// ref.og
+		`package main
+
+func main() {
+	a := &b
+
+	b := **a.b
+
+}
+`,
+		// inc.og
+		`package main
+
+func main() {
+	a := 1
+
+	a++
+	a--
+	a.b.c().d++
+}
+`,
+		// struct_inst.og
+		`package main
+
+type Foo struct {
+	foo int
+	bar string
+}
+
+func main() {
+	a := Foo{
+		foo: 1,
+		bar: "lol",
+	}
+
+}
+`,
 	}
 
 	paths := []string{
@@ -149,6 +186,9 @@ func main() {
 		`nested_property`,
 		`goroutine`,
 		`operation`,
+		`ref`,
+		`inc`,
+		`struct_inst`,
 	}
 
 	for i, p := range paths {

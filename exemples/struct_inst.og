@@ -1,0 +1,10 @@
+package main
+
+struct Foo
+  foo int
+  bar string
+
+main ->
+  a = Foo
+    foo: 1
+    bar: "lol"
