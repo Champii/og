@@ -89,8 +89,8 @@ func Func_(s *Func) string {
 
 	res = append(res, ") ")
 
-	if len(s.ReturnType) > 0 {
-		res = append(res, s.ReturnType)
+	if s.ReturnType != nil {
+		res = append(res, s.ReturnType.Type)
 	}
 
 	res = append(res, "{\n")

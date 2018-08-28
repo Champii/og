@@ -1,10 +1,12 @@
 package main
 
+oneLiner -> fmt.Println("a")
+
 testBody ->
   fmt.Println("a")
 
 testArg (str string) ->
   fmt.Println(str)
 
-testRet (str string) -> string
+testRet (str string): string ->
   return str

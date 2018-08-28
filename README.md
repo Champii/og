@@ -20,7 +20,7 @@ import
 struct Foo
   bar string
 
-myFunc (a string) -> string
+myFunc (a string): string ->
   return a
 
 main ->
@@ -65,7 +65,7 @@ main ->
   foo = Foo
     bar: "bar"
 
-  t := Generic
+  t = Generic
     test: "str"
 
   fmt.Println(t.fn())
@@ -97,17 +97,20 @@ main ->
 - [x] For In
 - [x] Goroutine
 - [x] `gofmt` to format the output
+- [x] One liner functions
 - [ ] Array type
+- [ ] Slice manipulation (`a[0:x]`)
 - [ ] Empty Function body
 - [ ] Math Operators
 - [ ] Struct compostion ("Inheritance")
 - [ ] Increment/Decrement
 - [ ] Multiple return values in assign
-- [ ] One liner functions
+- [ ] Struct instantiation
+- [ ] Struct tags
 - [ ] Auto return for last statement in a block
+- [ ] Interfaces
 - [ ] For with a range (for i in [0..10])
 - [ ] For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)
-- [ ] Interfaces
 - [ ] `pub` visibility instead of capitalizing
 - [ ] External classic Method declaration
 - [ ] Existance test (if toto?) for non-nil value test
@@ -119,7 +122,7 @@ main ->
 - [ ] Pattern matching
 - [ ] Import renaming and pattern matching
 - [ ] Rewrite Og in Og
-- [ ] Tests
+- Tests
   - [x] Package
   - [x] Import
   - [x] Struct

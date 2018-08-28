@@ -7,7 +7,6 @@ import (
 type INI struct {
 	Pack     string    `"package" @Ident`
 	ProgBody *ProgBody `[ @@ ]`
-	// Comms    []*string   `{ "//" }`
 }
 
 type ProgBody struct {
@@ -16,8 +15,8 @@ type ProgBody struct {
 }
 
 type TopLevel struct {
-	Struct *Struct `@@`
-	Func   *Func   `| @@`
+	Struct *Struct `( @@`
+	Func   *Func   `| @@ )`
 }
 
 type Struct struct {
@@ -32,9 +31,13 @@ type StructField struct {
 
 type Func struct {
 	Name       string  `[ @Ident ]`
-	Args       []*Arg  `[ "(" { @@ } ")" ] "-" ">"`
-	ReturnType string  `[ @Ident ]`
-	Body       []*Stmt `[ "{" { @@ } "}" ]`
+	Args       []*Arg  `[ "(" { @@ } ")" ]`
+	ReturnType *Type   `[ ":" @@ ]`
+	Body       []*Stmt `"-" ">" [ ( @@ ) | ("{" { @@ } "}") ]`
+}
+
+type Type struct {
+	Type string `@Ident`
 }
 
 type Arg struct {
@@ -72,8 +75,6 @@ type If struct {
 type ElseIf struct {
 	If   *If   `( @@`
 	Else *Else `| @@ )`
-	// Body     []*Stmt   `{ @@ } "}"`
-	// Nested   *ElseIf   `[ @@ ]`
 }
 
 type Else struct {
@@ -104,11 +105,6 @@ type IdentOrVarDecl struct {
 type ArrAccess struct {
 	Value *Value `"[" @@ "]"`
 }
-
-// type FuncCallOrVar struct {
-// 	Ident    *NestedProperty `@@`
-// 	FuncCall *FuncCall       `[ @@ ]`
-// }
 
 type VarDecl struct {
 	Value *Value `"=" @@`
