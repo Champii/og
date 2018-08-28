@@ -56,6 +56,17 @@ func doubleArrPointerArg(str **[]*[]*string) {
 func testRet(str string) string {
 	return str
 }
+func testRet2(str string) (string, string) {
+	return str, str
+}
+func testAssign() {
+	a := foo()
+
+	a, b := foo()
+
+	a, b, c := foo()
+
+}
 `,
 		// if.og
 		`package main
@@ -107,7 +118,6 @@ func main() {
 	for _, i := range a {
 		fmt.Println(i)
 	}
-
 }
 `,
 		// nested_property.og

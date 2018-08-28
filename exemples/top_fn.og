@@ -20,3 +20,10 @@ doubleArrPointerArg (str **[]*[]*string) ->
 testRet (str string): string ->
   return str
 
+testRet2 (str string): string, string ->
+  return str, str
+
+testAssign ->
+  a = foo()
+  a, b = foo()
+  a, b, c = foo()

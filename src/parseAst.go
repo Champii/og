@@ -93,13 +93,18 @@ func Func_(s *Func) string {
 		res = res[0 : len(res)-1]
 	}
 
-	res = append(res, ") ")
+	res = append(res, ") (")
 
-	if s.ReturnType != nil {
-		res = append(res, Type_(s.ReturnType))
+	for _, t := range s.ReturnType {
+		res = append(res, Type_(t))
+		res = append(res, ",")
 	}
 
-	res = append(res, "{\n")
+	if len(s.ReturnType) == 1 {
+		res = res[:len(res)-1]
+	}
+
+	res = append(res, ") {\n")
 
 	for _, stmt := range s.Body {
 		res = append(res, Stmt_(stmt))
@@ -148,7 +153,16 @@ func Stmt_(s *Stmt) string {
 	}
 
 	if s.Return != nil {
-		return fmt.Sprintln("return", OuterValue_(s.Return))
+		res := []string{"return "}
+
+		for _, r := range s.Return {
+			res = append(res, OuterValue_(r))
+			res = append(res, ",")
+		}
+
+		res = res[:len(res)-1]
+
+		return strings.Join(res, "")
 	}
 
 	return ""
@@ -171,7 +185,7 @@ func For_(f *For) string {
 		res = append(res, Stmt_(stmt))
 	}
 
-	res = append(res, "}\n")
+	res = append(res, "}")
 
 	return strings.Join(res, "")
 }
@@ -264,8 +278,20 @@ func IdentOrVarDecl_(s *IdentOrVarDecl) string {
 	res := []string{NestedProperty_(s.Ident)}
 
 	if s.VarDecl != nil {
-		res = append(res, fmt.Sprintln(":=", OuterValue_(s.VarDecl.Value)))
+		res = append(res, VarDecl_(s.VarDecl))
 	}
+
+	return strings.Join(res, "")
+}
+
+func VarDecl_(v *VarDecl) string {
+	res := []string{}
+
+	for _, i := range v.Ident {
+		res = append(res, ","+NestedProperty_(i))
+	}
+
+	res = append(res, fmt.Sprintln(":=", OuterValue_(v.Value)))
 
 	return strings.Join(res, "")
 }

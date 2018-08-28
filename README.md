@@ -73,7 +73,7 @@ main ->
   fmt.Println(t.fn())
 ```
 
-## Done
+Done
 
 - [x] Package declaration
 - [x] Import
@@ -110,6 +110,8 @@ main ->
 - [x] Struct instantiation
 - [x] Nil value
 - [x] Logical predicat operator (`||` / `&&`  `or` / `and`)
+- [x] Multiple return in func
+- [x] Multiple return values in assign
 
 - Tests
   - [x] Package
@@ -124,12 +126,12 @@ main ->
   - [x] Reference/Dereference
   - [x] Increment/Decrement
   - [x] Struct instantiation
+  - [x] Multiple return in func
+  - [x] Multiple return values in assign
 
 ## Todo for rewriting Og in Og
 
 - [ ] Slice manipulation (`a[0:x]`)
-- [ ] Multiple return values type
-- [ ] Multiple return values in assign
 
 ## Todo
 

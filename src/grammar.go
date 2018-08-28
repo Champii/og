@@ -33,7 +33,7 @@ type StructField struct {
 type Func struct {
 	Name       string  `[ @Ident ]`
 	Args       []*Arg  `[ "(" { @@ } ")" ]`
-	ReturnType *Type   `[ ":" @@ ]`
+	ReturnType []*Type `[ ":" { @@ [","] } ]`
 	Body       []*Stmt `"-" ">" [ ( "{" { @@ } "}" ) | ( @@ ) ]`
 }
 
@@ -50,7 +50,7 @@ type Arg struct {
 type Stmt struct {
 	If             *If             `@@`
 	For            *For            `| @@`
-	Return         *OuterValue     `| ("return" @@)`
+	Return         []*OuterValue   `| ("return" { @@ [ "," ] } )`
 	GoRoutine      *GoRoutine      `| ("go" @@)`
 	IdentOrVarDecl *IdentOrVarDecl `| @@`
 }
@@ -108,7 +108,8 @@ type ArrAccess struct {
 }
 
 type VarDecl struct {
-	Value *OuterValue `"=" @@`
+	Ident []*NestedProperty `{ "," @@ }`
+	Value *OuterValue       `"=" @@`
 }
 
 type NestedProperty struct {
