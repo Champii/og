@@ -144,11 +144,11 @@ func Stmt_(s *Stmt) string {
 	}
 
 	if s.GoRoutine != nil {
-		return fmt.Sprintln(GoRoutine_(s.GoRoutine))
+		return GoRoutine_(s.GoRoutine)
 	}
 
 	if s.Return != nil {
-		return fmt.Sprintln("return ", Value_(s.Return))
+		return fmt.Sprintln("return", OuterValue_(s.Return))
 	}
 
 	return ""
@@ -218,9 +218,9 @@ func Else_(e *Else) string {
 func Predicat_(p *Predicat) string {
 	res := []string{}
 
-	res = append(res, Value_(p.First))
+	res = append(res, OuterValue_(p.First))
 	res = append(res, PredicatOperator_(p.Operator))
-	res = append(res, Value_(p.Second))
+	res = append(res, OuterValue_(p.Second))
 
 	return strings.Join(res, "")
 }
@@ -256,10 +256,38 @@ func IdentOrVarDecl_(s *IdentOrVarDecl) string {
 	res := []string{NestedProperty_(s.Ident)}
 
 	if s.VarDecl != nil {
-		res = append(res, fmt.Sprintln(":=", Value_(s.VarDecl.Value)))
+		res = append(res, fmt.Sprintln(":=", OuterValue_(s.VarDecl.Value)))
 	}
 
 	return strings.Join(res, "")
+}
+
+func ParenthesisValue_(p *ParenthesisValue) string {
+	return OuterValue_(p.Value)
+}
+
+func OuterValue_(v *OuterValue) string {
+	if v.ParenthesisValue != nil {
+		return ParenthesisValue_(v.ParenthesisValue)
+	}
+
+	if v.NestedProperty != nil {
+		return NestedProperty_(v.NestedProperty)
+	}
+
+	if v.Operation != nil {
+		return Operation_(v.Operation)
+	}
+
+	if v.Func != nil {
+		return Func_(v.Func)
+	}
+
+	if v.Value != nil {
+		return Value_(v.Value)
+	}
+
+	return ""
 }
 
 func Value_(v *Value) string {
@@ -267,16 +295,12 @@ func Value_(v *Value) string {
 		return fmt.Sprint(*v.Bool)
 	}
 
+	if v.Number != nil {
+		return Number_(v.Number)
+	}
+
 	if v.String != nil {
 		return fmt.Sprint("\"", *v.String, "\"")
-	}
-
-	if v.Operation != nil {
-		return Operation_(v.Operation)
-	}
-
-	if v.NestedProperty != nil {
-		return NestedProperty_(v.NestedProperty)
 	}
 
 	if v.ArrDecl != nil {
@@ -299,14 +323,12 @@ func Number_(n *Number) string {
 }
 
 func Operation_(o *Operation) string {
-	res := []string{Number_(o.First)}
+	res := []string{Value_(o.First)}
 
 	if o.Op != nil {
 		res = append(res, Operator_(o.Op))
-	}
 
-	if o.Nested != nil {
-		res = append(res, Operation_(o.Nested))
+		res = append(res, OuterValue_(o.Second))
 	}
 
 	return strings.Join(res, "")
@@ -366,7 +388,7 @@ func ArrAccessOrFuncCall_(a *ArrAccessOrFuncCall) string {
 func ArrAccess_(a *ArrAccess) string {
 	res := []string{"["}
 
-	res = append(res, Value_(a.Value))
+	res = append(res, OuterValue_(a.Value))
 
 	res = append(res, "]")
 
@@ -377,7 +399,7 @@ func FuncCall_(f *FuncCall) string {
 	res := []string{"("}
 
 	for _, arg := range f.Args {
-		res = append(res, Value_(arg))
+		res = append(res, OuterValue_(arg))
 		res = append(res, ",")
 	}
 
@@ -394,7 +416,7 @@ func ArrDecl_(a *ArrDecl) string {
 	res := []string{fmt.Sprint("[]", a.Type, "{\n")}
 
 	for _, arg := range a.Values {
-		res = append(res, Value_(arg))
+		res = append(res, OuterValue_(arg))
 		res = append(res, ",\n")
 	}
 
@@ -406,13 +428,10 @@ func ArrDecl_(a *ArrDecl) string {
 func GoRoutine_(g *GoRoutine) string {
 	res := []string{"go "}
 
-	if g.Func != nil {
-		res = append(res, Func_(g.Func))
-		res = append(res, "()")
-	}
+	res = append(res, OuterValue_(g.Value))
 
-	if g.Value != nil {
-		res = append(res, Value_(g.Value))
+	if g.Value.Func != nil {
+		res = append(res, "()")
 	}
 
 	res = append(res, "\n")

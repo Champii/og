@@ -124,9 +124,7 @@ func main() {
 	go func() {
 		fmt.Println("test")
 	}()
-
 	go some.fn()
-
 }
 `,
 		// operation.og

@@ -15,6 +15,8 @@ type ProgBody struct {
 }
 
 type TopLevel struct {
+	// Func   *Func   `( @@`
+	// Struct *Struct `| @@ )`
 	Struct *Struct `( @@`
 	Func   *Func   `| @@ )`
 }
@@ -34,7 +36,7 @@ type Func struct {
 	Name       string  `[ @Ident ]`
 	Args       []*Arg  `[ "(" { @@ } ")" ]`
 	ReturnType *Type   `[ ":" @@ ]`
-	Body       []*Stmt `"-" ">" [ ( @@ ) | ("{" { @@ } "}") ]`
+	Body       []*Stmt `"-" ">" [ ( "{" { @@ } "}" ) | ( @@ ) ]`
 }
 
 type Type struct {
@@ -50,15 +52,13 @@ type Arg struct {
 type Stmt struct {
 	If             *If             `@@`
 	For            *For            `| @@`
-	Return         *Value          `| ("return" @@)`
-	GoRoutine      *GoRoutine      `| @@`
+	Return         *OuterValue     `| ("return" @@)`
+	GoRoutine      *GoRoutine      `| ("go" @@)`
 	IdentOrVarDecl *IdentOrVarDecl `| @@`
-	// Value             *Value             `| @@`
 }
 
 type GoRoutine struct {
-	Func  *Func  `( "go" @@ )`
-	Value *Value `| ( "go" @@ )`
+	Value *OuterValue `@@`
 }
 
 type For struct {
@@ -84,9 +84,9 @@ type Else struct {
 }
 
 type Predicat struct {
-	First    *Value            `@@`
+	First    *OuterValue       `@@`
 	Operator *PredicatOperator `@@`
-	Second   *Value            `@@`
+	Second   *OuterValue       `@@`
 }
 
 type PredicatOperator struct {
@@ -104,18 +104,18 @@ type IdentOrVarDecl struct {
 }
 
 type ArrAccess struct {
-	Value *Value `"[" @@ "]"`
+	Value *OuterValue `"[" @@ "]"`
 }
 
 type VarDecl struct {
-	Value *Value `"=" @@`
+	Value *OuterValue `"=" @@`
 }
 
 type NestedProperty struct {
 	// Ref                 *string                `[ @"*" | @"&" ]`
 	Ident               string                 `@Ident`
-	ArrAccessOrFuncCall []*ArrAccessOrFuncCall `[ [ { @@ } ]`
-	Nested              *NestedProperty        `[ "." @@ ] ]`
+	ArrAccessOrFuncCall []*ArrAccessOrFuncCall `{ @@ }`
+	Nested              *NestedProperty        `[ "." @@ ]`
 	// StructInst          *StructInst            `[ @@ ]`
 	// Increment           *Increment             `[ @@ ]`
 }
@@ -126,7 +126,7 @@ type ArrAccessOrFuncCall struct {
 }
 
 type FuncCall struct {
-	Args []*Value `"(" { @@ [","] } ")"`
+	Args []*OuterValue `"(" { @@ [","] } ")"`
 }
 
 type Number struct {
@@ -135,30 +135,37 @@ type Number struct {
 }
 
 type ParenthesisValue struct {
-	Open  string     `@"("`
-	Value *Operation `@@`
-	Close string     `@")"`
+	Open  string      `@"("`
+	Value *OuterValue `@@`
+	Close string      `@")"`
 }
+
+type OuterValue struct {
+	NestedProperty   *NestedProperty   `( @@`
+	ParenthesisValue *ParenthesisValue `| @@`
+	Operation        *Operation        `| @@`
+	Func             *Func             `| @@`
+	Value            *Value            `| @@ )`
+}
+
 type Value struct {
-	Bool           *bool           `( @"true" | "false")`
-	Operation      *Operation      `| @@`
-	String         *string         `| @String`
-	NestedProperty *NestedProperty `| @@`
-	ArrDecl        *ArrDecl        `| @@`
+	Bool    *bool    `( @"true" | "false")`
+	Number  *Number  `| @@`
+	String  *string  `| @String`
+	ArrDecl *ArrDecl `| @@`
 }
 
 type StructInst struct {
-	Open  string `@"{"`
-	Ident string `@Ident ":"`
-	Value *Value `@@`
-	Close string `@"}"`
+	Open  string      `@"{"`
+	Ident string      `{ @Ident ":"`
+	Value *OuterValue `@@ }`
+	Close string      `@"}"`
 }
 
 type Operation struct {
-	// ParenthesisValue *ParenthesisValue `@@ |`
-	First  *Number    `( @@`
-	Op     *Operator  `[ @@`
-	Nested *Operation `@@ ] )`
+	First  *Value      `@@`
+	Op     *Operator   `[ @@`
+	Second *OuterValue `@@ ]`
 }
 
 type Operator struct {
@@ -175,12 +182,12 @@ type Increment struct {
 }
 
 type ArrDecl struct {
-	Type   string   `"[" "]" @Ident "{"`
-	Values []*Value `{ @@ [ "," ] } "}"`
+	Type   string        `"[" "]" @Ident "{"`
+	Values []*OuterValue `{ @@ [ "," ] } "}"`
 }
 
 func Build(str string) (*INI, error) {
-	parser, err := participle.Build(&INI{}, participle.UseLookahead())
+	parser, err := participle.Build(&INI{})
 
 	if err != nil {
 		return &INI{}, err

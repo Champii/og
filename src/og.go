@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os/exec"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func Compile(path string) string {
@@ -23,7 +25,7 @@ func Compile(path string) string {
 		fmt.Println("error building ast", err)
 	}
 
-	// spew.Dump(ast)
+	spew.Dump(ast)
 
 	goSrc := parseAst(ast)
 

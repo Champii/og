@@ -104,6 +104,7 @@ main ->
 - [x] Array type
 - [x] Pointer type
 - [x] Struct tags
+- [x] Parenthesis
 - Tests
   - [x] Package
   - [x] Import
@@ -122,10 +123,11 @@ main ->
 - [ ] Multiple return values type
 - [ ] Multiple return values in assign
 - [ ] Struct instantiation
+- [ ] Logical predicat operator (`||`, `&&`)
 
 ## Todo
 
-- [ ] Parenthesis
+- [ ] Binary operator (`<<`, `>>`, `.`, `|`)
 - [ ] Rewrite Og in Og
 - [ ] Interfaces
 - [ ] Empty Function body
