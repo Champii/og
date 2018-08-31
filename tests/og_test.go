@@ -105,11 +105,6 @@ import (
 )
 
 func main() {
-	a := []string{
-		"foo",
-		"bar",
-	}
-
 	for _, i := range a {
 		fmt.Println(i)
 	}
@@ -137,9 +132,7 @@ func main() {
 
 func main() {
 	a := 1 + 1
-
 	b := 1 + 2/4 - 21%42*84
-
 }
 `,
 		// ref.og
@@ -147,9 +140,7 @@ func main() {
 
 func main() {
 	a := &b
-
 	b := **a.b
-
 }
 `,
 		// inc.og
@@ -157,7 +148,6 @@ func main() {
 
 func main() {
 	a := 1
-
 	a++
 	a--
 	a.b.c().d++
@@ -176,7 +166,6 @@ func main() {
 		foo: 1,
 		bar: "lol",
 	}
-
 }
 `,
 	}

@@ -613,11 +613,23 @@ func (s *BaseGolangListener) EnterExpression(ctx *ExpressionContext) {}
 // ExitExpression is called when production expression is exited.
 func (s *BaseGolangListener) ExitExpression(ctx *ExpressionContext) {}
 
+// EnterBinary_op is called when production binary_op is entered.
+func (s *BaseGolangListener) EnterBinary_op(ctx *Binary_opContext) {}
+
+// ExitBinary_op is called when production binary_op is exited.
+func (s *BaseGolangListener) ExitBinary_op(ctx *Binary_opContext) {}
+
 // EnterUnaryExpr is called when production unaryExpr is entered.
 func (s *BaseGolangListener) EnterUnaryExpr(ctx *UnaryExprContext) {}
 
 // ExitUnaryExpr is called when production unaryExpr is exited.
 func (s *BaseGolangListener) ExitUnaryExpr(ctx *UnaryExprContext) {}
+
+// EnterUnary_op is called when production unary_op is entered.
+func (s *BaseGolangListener) EnterUnary_op(ctx *Unary_opContext) {}
+
+// ExitUnary_op is called when production unary_op is exited.
+func (s *BaseGolangListener) ExitUnary_op(ctx *Unary_opContext) {}
 
 // EnterConversion is called when production conversion is entered.
 func (s *BaseGolangListener) EnterConversion(ctx *ConversionContext) {}

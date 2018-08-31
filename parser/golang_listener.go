@@ -305,8 +305,14 @@ type GolangListener interface {
 	// EnterExpression is called when entering the expression production.
 	EnterExpression(c *ExpressionContext)
 
+	// EnterBinary_op is called when entering the binary_op production.
+	EnterBinary_op(c *Binary_opContext)
+
 	// EnterUnaryExpr is called when entering the unaryExpr production.
 	EnterUnaryExpr(c *UnaryExprContext)
+
+	// EnterUnary_op is called when entering the unary_op production.
+	EnterUnary_op(c *Unary_opContext)
 
 	// EnterConversion is called when entering the conversion production.
 	EnterConversion(c *ConversionContext)
@@ -611,8 +617,14 @@ type GolangListener interface {
 	// ExitExpression is called when exiting the expression production.
 	ExitExpression(c *ExpressionContext)
 
+	// ExitBinary_op is called when exiting the binary_op production.
+	ExitBinary_op(c *Binary_opContext)
+
 	// ExitUnaryExpr is called when exiting the unaryExpr production.
 	ExitUnaryExpr(c *UnaryExprContext)
+
+	// ExitUnary_op is called when exiting the unary_op production.
+	ExitUnary_op(c *Unary_opContext)
 
 	// ExitConversion is called when exiting the conversion production.
 	ExitConversion(c *ConversionContext)

@@ -20,6 +20,10 @@ func Parse(str string) string {
 
 	res := p.SourceFile()
 
+	// res.ToStringTree()
+
+	// res.ToStringTree([]string{"sourceFile"})
+
 	t := new(translator.GolangVisitor)
 
 	// res.Accept(t)

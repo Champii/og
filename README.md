@@ -13,6 +13,7 @@ The main goal is to simplify the syntax, to borrow some concepts from Livescript
 
 This is an exemple of how Og looks like actualy
 
+
 ```go
 package main
 

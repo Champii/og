@@ -721,7 +721,21 @@ package parser // Golang
 //  return r
 //}
 
+//func (v *GolangVisitor) VisitBinary_op(ctx *parser.Binary_opContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
 //func (v *GolangVisitor) VisitUnaryExpr(ctx *parser.UnaryExprContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitUnary_op(ctx *parser.Unary_opContext, delegate antlr.ParseTreeVisitor) interface{} {
 //  // before children
 //  r := v.VisitChildren(ctx, delegate)
 //  // afer children

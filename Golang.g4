@@ -32,6 +32,10 @@
  */
 grammar Golang;
 
+options {
+  output=AST;
+}
+
 @parser::members {
 
     /**
@@ -88,7 +92,7 @@ grammar Golang;
     func (this *GolangParser) noTerminatorBetween(tokenOffset int) bool {
         stream := this.BaseParser.GetTokenStream().(*antlr.CommonTokenStream)
 
-        tokens := stream.GetHiddenTokensToLeft(stream.LT(tokenOffset).GetTokenIndex(), antlr.TokenDefaultChannel)
+        tokens := stream.GetHiddenTokensToLeft(stream.LT(tokenOffset).GetTokenIndex(), antlr.TokenHiddenChannel)
 
         if tokens == nil {
             return true
@@ -302,8 +306,8 @@ statementNoBlock
 
 statement
     : declaration
-    | labeledStmt
     | simpleStmt
+    | labeledStmt
     | goStmt
     | returnStmt
     | breakStmt
@@ -311,10 +315,10 @@ statement
     | gotoStmt
     | fallthroughStmt
     | ifStmt
-    | block
     | switchStmt
     | selectStmt
     | forStmt
+    | block
     | deferStmt
 	;
 
@@ -481,12 +485,12 @@ forClause
 
 //RangeClause = [ ExpressionList "=" | IdentifierList ":=" ] "range" Expression .
 rangeClause
-    : (expressionList '=' | identifierList ':=' )? 'range' expression
+    : (expressionList | identifierList ) 'in' expression
     ;
 
 //GoStmt = "go" Expression .
 goStmt
-    : 'go' expression
+    : 'go' ( expression | function )
     ;
 
 //Type      = TypeName | TypeLit | "(" Type ")" .
@@ -664,7 +668,7 @@ literalValue
     ;
 
 elementList
-    : keyedElement (',' keyedElement)*
+    : keyedElement (','? keyedElement )*
     ;
 
 keyedElement
@@ -767,13 +771,21 @@ receiverType
 
 expression
     : unaryExpr
-//    | expression BINARY_OP expression
-    | expression ('||' | '&&' | '==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '|' | '^' | '*' | '/' | '%' | '<<' | '>>' | '&' | '&^') expression
+    // | expression BINARY_OP expression
+    | expression binary_op expression
+    ;
+
+binary_op
+    : ('||' | '&&' | '==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '|' | '^' | '*' | '/' | '%' | '<<' | '>>' | '&' | '&^')
     ;
 
 unaryExpr
     : primaryExpr
-    | ('+'|'-'|'!'|'^'|'*'|'&'|'<-') unaryExpr
+    | unary_op unaryExpr
+    ;
+
+unary_op
+    : ('+'|'-'|'!'|'^'|'*'|'&'|'<-')
     ;
 
 //Conversion = Type "(" Expression [ "," ] ")" .

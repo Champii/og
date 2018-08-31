@@ -306,8 +306,14 @@ type ReceiverTypeVisitor interface {
 type ExpressionVisitor interface {
 	VisitExpression(ctx *ExpressionContext, delegate antlr.ParseTreeVisitor) interface{}
 }
+type Binary_opVisitor interface {
+	VisitBinary_op(ctx *Binary_opContext, delegate antlr.ParseTreeVisitor) interface{}
+}
 type UnaryExprVisitor interface {
 	VisitUnaryExpr(ctx *UnaryExprContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type Unary_opVisitor interface {
+	VisitUnary_op(ctx *Unary_opContext, delegate antlr.ParseTreeVisitor) interface{}
 }
 type ConversionVisitor interface {
 	VisitConversion(ctx *ConversionContext, delegate antlr.ParseTreeVisitor) interface{}

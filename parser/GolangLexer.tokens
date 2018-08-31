@@ -118,7 +118,7 @@ LINE_COMMENT=76
 ':='=42
 'select'=43
 'for'=44
-'range'=45
+'in'=45
 'go'=46
 '['=47
 ']'=48

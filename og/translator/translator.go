@@ -86,11 +86,12 @@ func (v *GolangVisitor) VisitConstSpec(ctx *parser.ConstSpecContext, delegate an
 }
 
 func (v *GolangVisitor) VisitIdentifierList(ctx *parser.IdentifierListContext, delegate antlr.ParseTreeVisitor) interface{} {
+	// return v.VisitChildren(ctx, delegate)
 	return ctx.GetText()
 }
 
 func (v *GolangVisitor) VisitExpressionList(ctx *parser.ExpressionListContext, delegate antlr.ParseTreeVisitor) interface{} {
-	r := ctx.Expression().GetText()
+	r := v.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 
 	if ctx.GetChildCount() > 1 {
 		r += "," + v.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
@@ -158,7 +159,7 @@ func (v *GolangVisitor) VisitSendStmt(ctx *parser.SendStmtContext, delegate antl
 }
 
 func (v *GolangVisitor) VisitIncDecStmt(ctx *parser.IncDecStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	return ctx.GetText()
 }
 
 func (v *GolangVisitor) VisitAssignment(ctx *parser.AssignmentContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -166,7 +167,11 @@ func (v *GolangVisitor) VisitAssignment(ctx *parser.AssignmentContext, delegate 
 }
 
 func (v *GolangVisitor) VisitAssign_op(ctx *parser.Assign_opContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	return ctx.GetText()
+}
+
+func (v *GolangVisitor) VisitBinary_op(ctx *parser.Binary_opContext, delegate antlr.ParseTreeVisitor) interface{} {
+	return ctx.GetText()
 }
 
 func (v *GolangVisitor) VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -281,7 +286,7 @@ func (v *GolangVisitor) VisitRecvStmt(ctx *parser.RecvStmtContext, delegate antl
 }
 
 func (v *GolangVisitor) VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	return "for " + v.VisitChildren(ctx, delegate).(string)
 }
 
 func (v *GolangVisitor) VisitForClause(ctx *parser.ForClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -289,11 +294,25 @@ func (v *GolangVisitor) VisitForClause(ctx *parser.ForClauseContext, delegate an
 }
 
 func (v *GolangVisitor) VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	r := ""
+
+	if ctx.IdentifierList() != nil {
+		r = v.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+	} else if ctx.ExpressionList() != nil {
+		r = v.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+	}
+
+	return r + " := range " + v.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 }
 
 func (v *GolangVisitor) VisitGoStmt(ctx *parser.GoStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	expr := v.VisitChildren(ctx, delegate).(string)
+
+	if ctx.Function() != nil {
+		return "go func " + expr + "()"
+	}
+
+	return "go " + expr
 }
 
 func (v *GolangVisitor) VisitType_(ctx *parser.Type_Context, delegate antlr.ParseTreeVisitor) interface{} {
@@ -373,7 +392,8 @@ func (v *GolangVisitor) VisitParameterDecl(ctx *parser.ParameterDeclContext, del
 }
 
 func (v *GolangVisitor) VisitOperand(ctx *parser.OperandContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return ctx.GetText()
+	// return ctx.GetText()
+	return v.VisitChildren(ctx, delegate)
 }
 
 func (v *GolangVisitor) VisitLiteral(ctx *parser.LiteralContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -381,7 +401,8 @@ func (v *GolangVisitor) VisitLiteral(ctx *parser.LiteralContext, delegate antlr.
 }
 
 func (v *GolangVisitor) VisitBasicLit(ctx *parser.BasicLitContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	return ctx.GetText()
+	// return v.VisitChildren(ctx, delegate)
 }
 
 func (v *GolangVisitor) VisitOperandName(ctx *parser.OperandNameContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -401,7 +422,7 @@ func (v *GolangVisitor) VisitLiteralType(ctx *parser.LiteralTypeContext, delegat
 }
 
 func (v *GolangVisitor) VisitLiteralValue(ctx *parser.LiteralValueContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	return "{\n" + v.VisitChildren(ctx, delegate).(string) + "\n}"
 }
 
 func (v *GolangVisitor) VisitElementList(ctx *parser.ElementListContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -409,10 +430,21 @@ func (v *GolangVisitor) VisitElementList(ctx *parser.ElementListContext, delegat
 }
 
 func (v *GolangVisitor) VisitKeyedElement(ctx *parser.KeyedElementContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	r := ""
+	if ctx.Key() != nil {
+		r += v.VisitKey(ctx.Key().(*parser.KeyContext), delegate).(string) + ":"
+	}
+
+	r += v.VisitElement(ctx.Element().(*parser.ElementContext), delegate).(string) + ",\n"
+
+	return r
 }
 
 func (v *GolangVisitor) VisitKey(ctx *parser.KeyContext, delegate antlr.ParseTreeVisitor) interface{} {
+	if ctx.IDENTIFIER() != nil {
+		return ctx.GetText()
+	}
+
 	return v.VisitChildren(ctx, delegate)
 }
 
@@ -460,7 +492,7 @@ func (v *GolangVisitor) VisitSelector(ctx *parser.SelectorContext, delegate antl
 }
 
 func (v *GolangVisitor) VisitIndex(ctx *parser.IndexContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	return "[" + v.VisitChildren(ctx, delegate).(string) + "]"
 }
 
 func (v *GolangVisitor) VisitSlice(ctx *parser.SliceContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -472,6 +504,10 @@ func (v *GolangVisitor) VisitTypeAssertion(ctx *parser.TypeAssertionContext, del
 }
 
 func (v *GolangVisitor) VisitArguments(ctx *parser.ArgumentsContext, delegate antlr.ParseTreeVisitor) interface{} {
+	if ctx.GetChildCount() == 2 {
+		return "()"
+	}
+
 	return "(" + v.VisitChildren(ctx, delegate).(string) + ")"
 }
 
@@ -484,11 +520,24 @@ func (v *GolangVisitor) VisitReceiverType(ctx *parser.ReceiverTypeContext, deleg
 }
 
 func (v *GolangVisitor) VisitExpression(ctx *parser.ExpressionContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return ctx.GetText()
+	if ctx.GetChildCount() > 1 {
+		exp1 := v.VisitExpression(ctx.Expression(0).(*parser.ExpressionContext), delegate).(string)
+		op := v.VisitBinary_op(ctx.Binary_op().(*parser.Binary_opContext), delegate).(string)
+		exp2 := v.VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(string)
+
+		return exp1 + op + exp2
+	}
+
+	return v.VisitChildren(ctx, delegate)
+	// return ctx.GetText()
 }
 
 func (v *GolangVisitor) VisitUnaryExpr(ctx *parser.UnaryExprContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return v.VisitChildren(ctx, delegate)
+}
+
+func (v *GolangVisitor) VisitUnary_op(ctx *parser.Unary_opContext, delegate antlr.ParseTreeVisitor) interface{} {
+	return ctx.GetText()
 }
 
 func (v *GolangVisitor) VisitConversion(ctx *parser.ConversionContext, delegate antlr.ParseTreeVisitor) interface{} {
