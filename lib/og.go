@@ -15,7 +15,7 @@ func Compile(path string) string {
 
 	preprocessed := Preproc(string(res))
 
-	// fmt.Println(preprocessed)
+	fmt.Println(preprocessed)
 
 	ast, err := Build(string(preprocessed))
 

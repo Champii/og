@@ -1,7 +1,7 @@
 # Og
 Language that compiles to a subset of GoLang
 
-To be pronouned `O-Gee`
+To be pronounced `O-Gee`
 
 ## Goal
 
@@ -73,7 +73,7 @@ main ->
   fmt.Println(t.fn())
 ```
 
-Done
+## Done
 
 - [x] Package declaration
 - [x] Import
@@ -112,7 +112,6 @@ Done
 - [x] Logical predicat operator (`||` / `&&`  `or` / `and`)
 - [x] Multiple return in func
 - [x] Multiple return values in assign
-
 - Tests
   - [x] Package
   - [x] Import
@@ -132,6 +131,7 @@ Done
 ## Todo for rewriting Og in Og
 
 - [ ] Slice manipulation (`a[0:x]`)
+- [ ] Mitigate struct instantiation with any other block
 
 ## Todo
 

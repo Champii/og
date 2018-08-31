@@ -1,7 +1,7 @@
 package main
 
 import (
-	og "Og/src"
+	og "Og/lib"
 	"fmt"
 
 	"testing"
@@ -97,6 +97,10 @@ func main() {
 	} else if a == 4 {
 		fmt.Println(a)
 	} else {
+		fmt.Println(a)
+	}
+
+	if a != a {
 		fmt.Println(a)
 	}
 

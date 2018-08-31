@@ -24,3 +24,7 @@ main ->
     fmt.Println(a)
   else
     fmt.Println(a)
+
+  if (a != a)
+    fmt.Println(a)
+
