@@ -1,7 +1,7 @@
 package main
 
 import (
-	og "Og/lib"
+	og "Og/og"
 	"fmt"
 
 	"testing"

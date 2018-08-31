@@ -1,77 +1,17 @@
 package main
 
 import (
-	og "Og/lib"
+	"Og/og"
 	"fmt"
-	"io/ioutil"
 	"os"
-
-	"github.com/alecthomas/participle"
-	"github.com/alecthomas/participle/lexer"
-
-	"golang.org/x/exp/ebnf"
 )
 
+//go:generate java -Xmx500M -cp "/usr/local/lib/antlr-4.7.1-complete.jar" org.antlr.v4.Tool -Dlanguage=Go Golang.g4 -visitor -o parser/
+//go:generate ./scripts/fix_parser_imports.sh
 func main() {
-	readFile, err := ioutil.ReadFile("./parser/grammar.ebnf")
-	if err != nil {
-		panic(err)
+	args := os.Args[1:]
+
+	for _, arg := range args {
+		fmt.Println(og.Compile(arg))
 	}
-
-	reader, err := os.Open("./parser/grammar.ebnf")
-
-	if err != nil {
-		panic(err)
-	}
-
-	gram, err := ebnf.Parse("grammar.ebnf", reader)
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(gram)
-
-	err = ebnf.Verify(gram, "SourceFile")
-
-	if err != nil {
-		panic(err)
-	}
-
-	lexer, err := lexer.EBNF(string(readFile))
-
-	if err != nil {
-		panic(err)
-	}
-
-	parser, err := participle.Build(&og.OgProg{}, participle.Lexer(lexer))
-
-	if err != nil {
-		panic(err)
-	}
-
-	source, err := ioutil.ReadFile(os.Args[1])
-
-	if err != nil {
-		panic(err)
-	}
-
-	ast := &og.OgProg{}
-
-	err = parser.ParseBytes(source, ast)
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("AST", ast)
-
 }
-
-// func main() {
-// 	args := os.Args[1:]
-
-// 	for _, arg := range args {
-// 		fmt.Println(og.Compile(arg))
-// 	}
-// }

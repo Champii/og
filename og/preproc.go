@@ -4,7 +4,7 @@ import "strings"
 
 func indentCount(str string) int {
 	for i := range str {
-		if str[i] != ' ' {
+		if str[i] != ' ' && str[i] != '\t' {
 			return i
 		}
 	}
@@ -35,7 +35,7 @@ func Preproc(str string) string {
 		}
 
 		if indent > lastIndent {
-			res[len(res)-1] = res[len(res)-1] + "{"
+			res[len(res)-1] = res[len(res)-1] + " {"
 		} else if indent < lastIndent {
 			indentBuff := lastIndent - indent
 
