@@ -15,7 +15,7 @@ func Compile(path string) string {
 
 	preprocessed := Preproc(string(file))
 
-	// fmt.Println(preprocessed)
+	fmt.Println(preprocessed)
 
 	res := Parse(string(preprocessed))
 

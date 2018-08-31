@@ -2,25 +2,24 @@ package main
 
 main ->
   a = 2
-
-  if a is 2
+  if a == 2
     fmt.Println(a)
 
-  if a is 2
+  if a == 2
     fmt.Println(a)
   else
     fmt.Println(a)
 
-  if a is 2
+  if a == 2
     fmt.Println(a)
-  else if a is 3
+  else if a == 3
     fmt.Println(a)
 
-  if a is 2
+  if a == 2
     fmt.Println(a)
-  else if a is 3
+  else if a == 3
     fmt.Println(a)
-  else if a is 4
+  else if a == 4
     fmt.Println(a)
   else
     fmt.Println(a)

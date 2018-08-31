@@ -17,6 +17,7 @@ func TestMain(*testing.T) {
 
 import (
 	"fmt"
+	"strings"
 )
 `,
 		// struct.og
@@ -26,7 +27,6 @@ type Foo struct {
 	bar    string
 	foobar int
 }
-
 type FooTag struct {
 	bar    string ` + "`json: \"test\"`" + `
 	foobar int    ` + "`sql: \"-\"`" + `
@@ -56,16 +56,13 @@ func doubleArrPointerArg(str **[]*[]*string) {
 func testRet(str string) string {
 	return str
 }
-func testRet2(str string) (string, string) {
-	return str, str
+func testRet2(str string, str2 string) (string, string) {
+	return str, str2
 }
 func testAssign() {
 	a := foo()
-
 	a, b := foo()
-
 	a, b, c := foo()
-
 }
 `,
 		// if.og
@@ -73,23 +70,19 @@ func testAssign() {
 
 func main() {
 	a := 2
-
 	if a == 2 {
 		fmt.Println(a)
 	}
-
 	if a == 2 {
 		fmt.Println(a)
 	} else {
 		fmt.Println(a)
 	}
-
 	if a == 2 {
 		fmt.Println(a)
 	} else if a == 3 {
 		fmt.Println(a)
 	}
-
 	if a == 2 {
 		fmt.Println(a)
 	} else if a == 3 {
@@ -99,11 +92,9 @@ func main() {
 	} else {
 		fmt.Println(a)
 	}
-
 	if a != a {
 		fmt.Println(a)
 	}
-
 }
 `,
 		// for.og
@@ -206,7 +197,7 @@ func main() {
 	}
 
 	for i, p := range paths {
-		res := og.Compile(fmt.Sprint("./exemples/", p, ".og"))
+		res := og.Compile(fmt.Sprint("../exemples/", p, ".og"))
 
 		if res != expected[i] {
 			panic(fmt.Sprint("Error: ", p, "\nGot: \n---\n", res, "\n---\nExpected: \n---\n", expected[i], "\n---\n"))

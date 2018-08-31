@@ -4,36 +4,5 @@ import
   "fmt"
   "time"
 
-struct Toto
-  num string
-
-haha (a string): string ->
-  return a
-
-test2 ->
-  fmt.Println("Ouaou")
-
 main ->
-  test = "lol"
-  toto = []string
-    "toto"
-    "tata"
-
-  if test is "lol"
-    fmt.Println(test)
-  else
-    fmt.Println("Pas lol")
-
-  for _, v in toto
-    fmt.Println(v)
-
-  fmt.Println(toto[1])
-
-  fmt.Println(haha("a"))
-
-  go ->
-    fmt.Println("test")
-
-  go test2()
-
-  time.Sleep(time.Second)
+  fmt.Println(test)

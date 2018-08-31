@@ -1,4 +1,4 @@
-// Code generated from Golang.g4 by ANTLR 4.7.1. DO NOT EDIT.
+// Generated from Golang.g4 by ANTLR 4.7.1.
 
 package parser // Golang
 
@@ -7,307 +7,311 @@ import "github.com/antlr/antlr4/runtime/Go/antlr"
 // A complete Visitor for a parse tree produced by GolangParser.
 type GolangVisitor interface {
 	antlr.ParseTreeVisitor
-
-	// Visit a parse tree produced by GolangParser#sourceFile.
-	VisitSourceFile(ctx *SourceFileContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#packageClause.
-	VisitPackageClause(ctx *PackageClauseContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#importDecl.
-	VisitImportDecl(ctx *ImportDeclContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#importSpec.
-	VisitImportSpec(ctx *ImportSpecContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#importPath.
-	VisitImportPath(ctx *ImportPathContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#topLevelDecl.
-	VisitTopLevelDecl(ctx *TopLevelDeclContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#declaration.
-	VisitDeclaration(ctx *DeclarationContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#constDecl.
-	VisitConstDecl(ctx *ConstDeclContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#constSpec.
-	VisitConstSpec(ctx *ConstSpecContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#identifierList.
-	VisitIdentifierList(ctx *IdentifierListContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#expressionList.
-	VisitExpressionList(ctx *ExpressionListContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#typeDecl.
-	VisitTypeDecl(ctx *TypeDeclContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#typeSpec.
-	VisitTypeSpec(ctx *TypeSpecContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#functionDecl.
-	VisitFunctionDecl(ctx *FunctionDeclContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#function.
-	VisitFunction(ctx *FunctionContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#methodDecl.
-	VisitMethodDecl(ctx *MethodDeclContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#receiver.
-	VisitReceiver(ctx *ReceiverContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#varDecl.
-	VisitVarDecl(ctx *VarDeclContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#varSpec.
-	VisitVarSpec(ctx *VarSpecContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#block.
-	VisitBlock(ctx *BlockContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#statementList.
-	VisitStatementList(ctx *StatementListContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#statement.
-	VisitStatement(ctx *StatementContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#simpleStmt.
-	VisitSimpleStmt(ctx *SimpleStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#expressionStmt.
-	VisitExpressionStmt(ctx *ExpressionStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#sendStmt.
-	VisitSendStmt(ctx *SendStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#incDecStmt.
-	VisitIncDecStmt(ctx *IncDecStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#assignment.
-	VisitAssignment(ctx *AssignmentContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#assign_op.
-	VisitAssign_op(ctx *Assign_opContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#shortVarDecl.
-	VisitShortVarDecl(ctx *ShortVarDeclContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#emptyStmt.
-	VisitEmptyStmt(ctx *EmptyStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#labeledStmt.
-	VisitLabeledStmt(ctx *LabeledStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#returnStmt.
-	VisitReturnStmt(ctx *ReturnStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#breakStmt.
-	VisitBreakStmt(ctx *BreakStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#continueStmt.
-	VisitContinueStmt(ctx *ContinueStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#gotoStmt.
-	VisitGotoStmt(ctx *GotoStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#fallthroughStmt.
-	VisitFallthroughStmt(ctx *FallthroughStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#deferStmt.
-	VisitDeferStmt(ctx *DeferStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#ifStmt.
-	VisitIfStmt(ctx *IfStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#switchStmt.
-	VisitSwitchStmt(ctx *SwitchStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#exprSwitchStmt.
-	VisitExprSwitchStmt(ctx *ExprSwitchStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#exprCaseClause.
-	VisitExprCaseClause(ctx *ExprCaseClauseContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#exprSwitchCase.
-	VisitExprSwitchCase(ctx *ExprSwitchCaseContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#typeSwitchStmt.
-	VisitTypeSwitchStmt(ctx *TypeSwitchStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#typeSwitchGuard.
-	VisitTypeSwitchGuard(ctx *TypeSwitchGuardContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#typeCaseClause.
-	VisitTypeCaseClause(ctx *TypeCaseClauseContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#typeSwitchCase.
-	VisitTypeSwitchCase(ctx *TypeSwitchCaseContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#typeList.
-	VisitTypeList(ctx *TypeListContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#selectStmt.
-	VisitSelectStmt(ctx *SelectStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#commClause.
-	VisitCommClause(ctx *CommClauseContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#commCase.
-	VisitCommCase(ctx *CommCaseContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#recvStmt.
-	VisitRecvStmt(ctx *RecvStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#forStmt.
-	VisitForStmt(ctx *ForStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#forClause.
-	VisitForClause(ctx *ForClauseContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#rangeClause.
-	VisitRangeClause(ctx *RangeClauseContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#goStmt.
-	VisitGoStmt(ctx *GoStmtContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#type_.
-	VisitType_(ctx *Type_Context) interface{}
-
-	// Visit a parse tree produced by GolangParser#typeName.
-	VisitTypeName(ctx *TypeNameContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#typeLit.
-	VisitTypeLit(ctx *TypeLitContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#arrayType.
-	VisitArrayType(ctx *ArrayTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#arrayLength.
-	VisitArrayLength(ctx *ArrayLengthContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#elementType.
-	VisitElementType(ctx *ElementTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#pointerType.
-	VisitPointerType(ctx *PointerTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#interfaceType.
-	VisitInterfaceType(ctx *InterfaceTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#sliceType.
-	VisitSliceType(ctx *SliceTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#mapType.
-	VisitMapType(ctx *MapTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#channelType.
-	VisitChannelType(ctx *ChannelTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#methodSpec.
-	VisitMethodSpec(ctx *MethodSpecContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#functionType.
-	VisitFunctionType(ctx *FunctionTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#signature.
-	VisitSignature(ctx *SignatureContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#result.
-	VisitResult(ctx *ResultContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#parameters.
-	VisitParameters(ctx *ParametersContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#parameterList.
-	VisitParameterList(ctx *ParameterListContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#parameterDecl.
-	VisitParameterDecl(ctx *ParameterDeclContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#operand.
-	VisitOperand(ctx *OperandContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#literal.
-	VisitLiteral(ctx *LiteralContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#basicLit.
-	VisitBasicLit(ctx *BasicLitContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#operandName.
-	VisitOperandName(ctx *OperandNameContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#qualifiedIdent.
-	VisitQualifiedIdent(ctx *QualifiedIdentContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#compositeLit.
-	VisitCompositeLit(ctx *CompositeLitContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#literalType.
-	VisitLiteralType(ctx *LiteralTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#literalValue.
-	VisitLiteralValue(ctx *LiteralValueContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#elementList.
-	VisitElementList(ctx *ElementListContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#keyedElement.
-	VisitKeyedElement(ctx *KeyedElementContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#key.
-	VisitKey(ctx *KeyContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#element.
-	VisitElement(ctx *ElementContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#structType.
-	VisitStructType(ctx *StructTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#fieldDecl.
-	VisitFieldDecl(ctx *FieldDeclContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#anonymousField.
-	VisitAnonymousField(ctx *AnonymousFieldContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#functionLit.
-	VisitFunctionLit(ctx *FunctionLitContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#primaryExpr.
-	VisitPrimaryExpr(ctx *PrimaryExprContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#selector.
-	VisitSelector(ctx *SelectorContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#index.
-	VisitIndex(ctx *IndexContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#slice.
-	VisitSlice(ctx *SliceContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#typeAssertion.
-	VisitTypeAssertion(ctx *TypeAssertionContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#arguments.
-	VisitArguments(ctx *ArgumentsContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#methodExpr.
-	VisitMethodExpr(ctx *MethodExprContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#receiverType.
-	VisitReceiverType(ctx *ReceiverTypeContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#expression.
-	VisitExpression(ctx *ExpressionContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#unaryExpr.
-	VisitUnaryExpr(ctx *UnaryExprContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#conversion.
-	VisitConversion(ctx *ConversionContext) interface{}
-
-	// Visit a parse tree produced by GolangParser#eos.
-	VisitEos(ctx *EosContext) interface{}
+}
+
+type SourceFileVisitor interface {
+	VisitSourceFile(ctx *SourceFileContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type PackageClauseVisitor interface {
+	VisitPackageClause(ctx *PackageClauseContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ImportDeclVisitor interface {
+	VisitImportDecl(ctx *ImportDeclContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ImportSpecVisitor interface {
+	VisitImportSpec(ctx *ImportSpecContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ImportPathVisitor interface {
+	VisitImportPath(ctx *ImportPathContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TopLevelDeclVisitor interface {
+	VisitTopLevelDecl(ctx *TopLevelDeclContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type DeclarationVisitor interface {
+	VisitDeclaration(ctx *DeclarationContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ConstDeclVisitor interface {
+	VisitConstDecl(ctx *ConstDeclContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ConstSpecVisitor interface {
+	VisitConstSpec(ctx *ConstSpecContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type IdentifierListVisitor interface {
+	VisitIdentifierList(ctx *IdentifierListContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ExpressionListVisitor interface {
+	VisitExpressionList(ctx *ExpressionListContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TypeDeclVisitor interface {
+	VisitTypeDecl(ctx *TypeDeclContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TypeSpecVisitor interface {
+	VisitTypeSpec(ctx *TypeSpecContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type FunctionDeclVisitor interface {
+	VisitFunctionDecl(ctx *FunctionDeclContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type FunctionVisitor interface {
+	VisitFunction(ctx *FunctionContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type MethodDeclVisitor interface {
+	VisitMethodDecl(ctx *MethodDeclContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ReceiverVisitor interface {
+	VisitReceiver(ctx *ReceiverContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type VarDeclVisitor interface {
+	VisitVarDecl(ctx *VarDeclContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type VarSpecVisitor interface {
+	VisitVarSpec(ctx *VarSpecContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type BlockVisitor interface {
+	VisitBlock(ctx *BlockContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type StatementListVisitor interface {
+	VisitStatementList(ctx *StatementListContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type StatementNoBlockVisitor interface {
+	VisitStatementNoBlock(ctx *StatementNoBlockContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type StatementVisitor interface {
+	VisitStatement(ctx *StatementContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type SimpleStmtVisitor interface {
+	VisitSimpleStmt(ctx *SimpleStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ExpressionStmtVisitor interface {
+	VisitExpressionStmt(ctx *ExpressionStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type SendStmtVisitor interface {
+	VisitSendStmt(ctx *SendStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type IncDecStmtVisitor interface {
+	VisitIncDecStmt(ctx *IncDecStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type AssignmentVisitor interface {
+	VisitAssignment(ctx *AssignmentContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type Assign_opVisitor interface {
+	VisitAssign_op(ctx *Assign_opContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ShortVarDeclVisitor interface {
+	VisitShortVarDecl(ctx *ShortVarDeclContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type EmptyStmtVisitor interface {
+	VisitEmptyStmt(ctx *EmptyStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type LabeledStmtVisitor interface {
+	VisitLabeledStmt(ctx *LabeledStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ReturnStmtVisitor interface {
+	VisitReturnStmt(ctx *ReturnStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type BreakStmtVisitor interface {
+	VisitBreakStmt(ctx *BreakStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ContinueStmtVisitor interface {
+	VisitContinueStmt(ctx *ContinueStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type GotoStmtVisitor interface {
+	VisitGotoStmt(ctx *GotoStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type FallthroughStmtVisitor interface {
+	VisitFallthroughStmt(ctx *FallthroughStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type DeferStmtVisitor interface {
+	VisitDeferStmt(ctx *DeferStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type IfStmtVisitor interface {
+	VisitIfStmt(ctx *IfStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type SwitchStmtVisitor interface {
+	VisitSwitchStmt(ctx *SwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ExprSwitchStmtVisitor interface {
+	VisitExprSwitchStmt(ctx *ExprSwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ExprCaseClauseVisitor interface {
+	VisitExprCaseClause(ctx *ExprCaseClauseContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ExprSwitchCaseVisitor interface {
+	VisitExprSwitchCase(ctx *ExprSwitchCaseContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TypeSwitchStmtVisitor interface {
+	VisitTypeSwitchStmt(ctx *TypeSwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TypeSwitchGuardVisitor interface {
+	VisitTypeSwitchGuard(ctx *TypeSwitchGuardContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TypeCaseClauseVisitor interface {
+	VisitTypeCaseClause(ctx *TypeCaseClauseContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TypeSwitchCaseVisitor interface {
+	VisitTypeSwitchCase(ctx *TypeSwitchCaseContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TypeListVisitor interface {
+	VisitTypeList(ctx *TypeListContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type SelectStmtVisitor interface {
+	VisitSelectStmt(ctx *SelectStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type CommClauseVisitor interface {
+	VisitCommClause(ctx *CommClauseContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type CommCaseVisitor interface {
+	VisitCommCase(ctx *CommCaseContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type RecvStmtVisitor interface {
+	VisitRecvStmt(ctx *RecvStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ForStmtVisitor interface {
+	VisitForStmt(ctx *ForStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ForClauseVisitor interface {
+	VisitForClause(ctx *ForClauseContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type RangeClauseVisitor interface {
+	VisitRangeClause(ctx *RangeClauseContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type GoStmtVisitor interface {
+	VisitGoStmt(ctx *GoStmtContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type Type_Visitor interface {
+	VisitType_(ctx *Type_Context, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TypeNameVisitor interface {
+	VisitTypeName(ctx *TypeNameContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TypeLitVisitor interface {
+	VisitTypeLit(ctx *TypeLitContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ArrayTypeVisitor interface {
+	VisitArrayType(ctx *ArrayTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ArrayLengthVisitor interface {
+	VisitArrayLength(ctx *ArrayLengthContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ElementTypeVisitor interface {
+	VisitElementType(ctx *ElementTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type PointerTypeVisitor interface {
+	VisitPointerType(ctx *PointerTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type InterfaceTypeVisitor interface {
+	VisitInterfaceType(ctx *InterfaceTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type SliceTypeVisitor interface {
+	VisitSliceType(ctx *SliceTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type MapTypeVisitor interface {
+	VisitMapType(ctx *MapTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ChannelTypeVisitor interface {
+	VisitChannelType(ctx *ChannelTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type MethodSpecVisitor interface {
+	VisitMethodSpec(ctx *MethodSpecContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type FunctionTypeVisitor interface {
+	VisitFunctionType(ctx *FunctionTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type SignatureVisitor interface {
+	VisitSignature(ctx *SignatureContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ResultVisitor interface {
+	VisitResult(ctx *ResultContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ParametersVisitor interface {
+	VisitParameters(ctx *ParametersContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ParameterListVisitor interface {
+	VisitParameterList(ctx *ParameterListContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ParameterDeclVisitor interface {
+	VisitParameterDecl(ctx *ParameterDeclContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type OperandVisitor interface {
+	VisitOperand(ctx *OperandContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type LiteralVisitor interface {
+	VisitLiteral(ctx *LiteralContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type BasicLitVisitor interface {
+	VisitBasicLit(ctx *BasicLitContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type OperandNameVisitor interface {
+	VisitOperandName(ctx *OperandNameContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type QualifiedIdentVisitor interface {
+	VisitQualifiedIdent(ctx *QualifiedIdentContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type CompositeLitVisitor interface {
+	VisitCompositeLit(ctx *CompositeLitContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type LiteralTypeVisitor interface {
+	VisitLiteralType(ctx *LiteralTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type LiteralValueVisitor interface {
+	VisitLiteralValue(ctx *LiteralValueContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ElementListVisitor interface {
+	VisitElementList(ctx *ElementListContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type KeyedElementVisitor interface {
+	VisitKeyedElement(ctx *KeyedElementContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type KeyVisitor interface {
+	VisitKey(ctx *KeyContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ElementVisitor interface {
+	VisitElement(ctx *ElementContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type StructTypeVisitor interface {
+	VisitStructType(ctx *StructTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type FieldDeclVisitor interface {
+	VisitFieldDecl(ctx *FieldDeclContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type AnonymousFieldVisitor interface {
+	VisitAnonymousField(ctx *AnonymousFieldContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type FunctionLitVisitor interface {
+	VisitFunctionLit(ctx *FunctionLitContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type PrimaryExprVisitor interface {
+	VisitPrimaryExpr(ctx *PrimaryExprContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type SelectorVisitor interface {
+	VisitSelector(ctx *SelectorContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type IndexVisitor interface {
+	VisitIndex(ctx *IndexContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type SliceVisitor interface {
+	VisitSlice(ctx *SliceContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type TypeAssertionVisitor interface {
+	VisitTypeAssertion(ctx *TypeAssertionContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ArgumentsVisitor interface {
+	VisitArguments(ctx *ArgumentsContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type MethodExprVisitor interface {
+	VisitMethodExpr(ctx *MethodExprContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ReceiverTypeVisitor interface {
+	VisitReceiverType(ctx *ReceiverTypeContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ExpressionVisitor interface {
+	VisitExpression(ctx *ExpressionContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type UnaryExprVisitor interface {
+	VisitUnaryExpr(ctx *UnaryExprContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type ConversionVisitor interface {
+	VisitConversion(ctx *ConversionContext, delegate antlr.ParseTreeVisitor) interface{}
+}
+type EosVisitor interface {
+	VisitEos(ctx *EosContext, delegate antlr.ParseTreeVisitor) interface{}
 }

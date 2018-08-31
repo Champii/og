@@ -3,7 +3,6 @@ package og
 import (
 	"Og/og/translator"
 	"Og/parser"
-	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
@@ -17,11 +16,16 @@ func Parse(str string) string {
 
 	p := parser.NewGolangParser(stream)
 
+	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+
 	res := p.SourceFile()
 
-	t := new(translator.Translator)
+	t := new(translator.GolangVisitor)
 
-	antlr.ParseTreeWalkerDefault.Walk(t, res)
+	// res.Accept(t)
+	final := t.VisitSourceFile(res.(*parser.SourceFileContext), t)
 
-	return strings.Join(t.Out, " ")
+	// antlr.ParseTreeWalkerDefault.Walk(t, res)
+
+	return final.(string)
 }

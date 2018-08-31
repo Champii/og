@@ -1,413 +1,743 @@
-// Code generated from Golang.g4 by ANTLR 4.7.1. DO NOT EDIT.
+// Generated from Golang.g4 by ANTLR 4.7.1.
 
 package parser // Golang
 
-import "github.com/antlr/antlr4/runtime/Go/antlr"
-
-type BaseGolangVisitor struct {
-	*antlr.BaseParseTreeVisitor
-}
-
-func (v *BaseGolangVisitor) VisitSourceFile(ctx *SourceFileContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitPackageClause(ctx *PackageClauseContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitImportDecl(ctx *ImportDeclContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitImportSpec(ctx *ImportSpecContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitImportPath(ctx *ImportPathContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTopLevelDecl(ctx *TopLevelDeclContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitDeclaration(ctx *DeclarationContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitConstDecl(ctx *ConstDeclContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitConstSpec(ctx *ConstSpecContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitIdentifierList(ctx *IdentifierListContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitExpressionList(ctx *ExpressionListContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTypeDecl(ctx *TypeDeclContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTypeSpec(ctx *TypeSpecContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitFunctionDecl(ctx *FunctionDeclContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitFunction(ctx *FunctionContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitMethodDecl(ctx *MethodDeclContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitReceiver(ctx *ReceiverContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitVarDecl(ctx *VarDeclContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitVarSpec(ctx *VarSpecContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitBlock(ctx *BlockContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitStatementList(ctx *StatementListContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitStatement(ctx *StatementContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitSimpleStmt(ctx *SimpleStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitExpressionStmt(ctx *ExpressionStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitSendStmt(ctx *SendStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitIncDecStmt(ctx *IncDecStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitAssignment(ctx *AssignmentContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitAssign_op(ctx *Assign_opContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitShortVarDecl(ctx *ShortVarDeclContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitEmptyStmt(ctx *EmptyStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitLabeledStmt(ctx *LabeledStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitReturnStmt(ctx *ReturnStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitBreakStmt(ctx *BreakStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitContinueStmt(ctx *ContinueStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitGotoStmt(ctx *GotoStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitFallthroughStmt(ctx *FallthroughStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitDeferStmt(ctx *DeferStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitIfStmt(ctx *IfStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitSwitchStmt(ctx *SwitchStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitExprSwitchStmt(ctx *ExprSwitchStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitExprCaseClause(ctx *ExprCaseClauseContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitExprSwitchCase(ctx *ExprSwitchCaseContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTypeSwitchStmt(ctx *TypeSwitchStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTypeSwitchGuard(ctx *TypeSwitchGuardContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTypeCaseClause(ctx *TypeCaseClauseContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTypeSwitchCase(ctx *TypeSwitchCaseContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTypeList(ctx *TypeListContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitSelectStmt(ctx *SelectStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitCommClause(ctx *CommClauseContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitCommCase(ctx *CommCaseContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitRecvStmt(ctx *RecvStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitForStmt(ctx *ForStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitForClause(ctx *ForClauseContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitRangeClause(ctx *RangeClauseContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitGoStmt(ctx *GoStmtContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitType_(ctx *Type_Context) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTypeName(ctx *TypeNameContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTypeLit(ctx *TypeLitContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitArrayType(ctx *ArrayTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitArrayLength(ctx *ArrayLengthContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitElementType(ctx *ElementTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitPointerType(ctx *PointerTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitInterfaceType(ctx *InterfaceTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitSliceType(ctx *SliceTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitMapType(ctx *MapTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitChannelType(ctx *ChannelTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitMethodSpec(ctx *MethodSpecContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitFunctionType(ctx *FunctionTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitSignature(ctx *SignatureContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitResult(ctx *ResultContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitParameters(ctx *ParametersContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitParameterList(ctx *ParameterListContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitParameterDecl(ctx *ParameterDeclContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitOperand(ctx *OperandContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitLiteral(ctx *LiteralContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitBasicLit(ctx *BasicLitContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitOperandName(ctx *OperandNameContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitQualifiedIdent(ctx *QualifiedIdentContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitCompositeLit(ctx *CompositeLitContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitLiteralType(ctx *LiteralTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitLiteralValue(ctx *LiteralValueContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitElementList(ctx *ElementListContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitKeyedElement(ctx *KeyedElementContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitKey(ctx *KeyContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitElement(ctx *ElementContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitStructType(ctx *StructTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitFieldDecl(ctx *FieldDeclContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitAnonymousField(ctx *AnonymousFieldContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitFunctionLit(ctx *FunctionLitContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitPrimaryExpr(ctx *PrimaryExprContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitSelector(ctx *SelectorContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitIndex(ctx *IndexContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitSlice(ctx *SliceContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitTypeAssertion(ctx *TypeAssertionContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitArguments(ctx *ArgumentsContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitMethodExpr(ctx *MethodExprContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitReceiverType(ctx *ReceiverTypeContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitExpression(ctx *ExpressionContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitUnaryExpr(ctx *UnaryExprContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitConversion(ctx *ConversionContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BaseGolangVisitor) VisitEos(ctx *EosContext) interface{} {
-	return v.VisitChildren(ctx)
-}
+//import "github.com/antlr/antlr4/runtime/Go/antlr"
+
+//type GolangVisitor struct {
+//    *antlr.BaseParseTreeVisitor
+//}
+
+//func (v *GolangVisitor) Init() interface{} {
+//    return nil
+//}
+
+//func (v *GolangVisitor) VisitNext(node antlr.Tree, resultSoFar interface{}) bool {
+//    return true
+//}
+
+//func (v *GolangVisitor) Aggregate(resultSoFar, childResult interface{}) interface{} {
+//    return childResult
+//}
+
+//func (v *GolangVisitor) VisitTerminal(node antlr.TerminalNode) interface{} {
+//    return nil
+//}
+
+//func (v *GolangVisitor) VisitErrorNode(node antlr.ErrorNode) interface{} {
+//    return nil
+//}
+
+//func (v *GolangVisitor) VisitSourceFile(ctx *parser.SourceFileContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitPackageClause(ctx *parser.PackageClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitImportDecl(ctx *parser.ImportDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitImportSpec(ctx *parser.ImportSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitImportPath(ctx *parser.ImportPathContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTopLevelDecl(ctx *parser.TopLevelDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitDeclaration(ctx *parser.DeclarationContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitConstDecl(ctx *parser.ConstDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitConstSpec(ctx *parser.ConstSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitIdentifierList(ctx *parser.IdentifierListContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitExpressionList(ctx *parser.ExpressionListContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTypeDecl(ctx *parser.TypeDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTypeSpec(ctx *parser.TypeSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitFunctionDecl(ctx *parser.FunctionDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitFunction(ctx *parser.FunctionContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitMethodDecl(ctx *parser.MethodDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitBlock(ctx *parser.BlockContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitStatementList(ctx *parser.StatementListContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitStatementNoBlock(ctx *parser.StatementNoBlockContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitStatement(ctx *parser.StatementContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitExpressionStmt(ctx *parser.ExpressionStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitSendStmt(ctx *parser.SendStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitIncDecStmt(ctx *parser.IncDecStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitAssignment(ctx *parser.AssignmentContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitAssign_op(ctx *parser.Assign_opContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitContinueStmt(ctx *parser.ContinueStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitGotoStmt(ctx *parser.GotoStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitFallthroughStmt(ctx *parser.FallthroughStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitDeferStmt(ctx *parser.DeferStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitSwitchStmt(ctx *parser.SwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitExprSwitchStmt(ctx *parser.ExprSwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitExprCaseClause(ctx *parser.ExprCaseClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitExprSwitchCase(ctx *parser.ExprSwitchCaseContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTypeSwitchStmt(ctx *parser.TypeSwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTypeSwitchGuard(ctx *parser.TypeSwitchGuardContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTypeCaseClause(ctx *parser.TypeCaseClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTypeSwitchCase(ctx *parser.TypeSwitchCaseContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTypeList(ctx *parser.TypeListContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitSelectStmt(ctx *parser.SelectStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitCommClause(ctx *parser.CommClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitCommCase(ctx *parser.CommCaseContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitRecvStmt(ctx *parser.RecvStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitForClause(ctx *parser.ForClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitGoStmt(ctx *parser.GoStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitType_(ctx *parser.Type_Context, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTypeName(ctx *parser.TypeNameContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTypeLit(ctx *parser.TypeLitContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitArrayType(ctx *parser.ArrayTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitArrayLength(ctx *parser.ArrayLengthContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitElementType(ctx *parser.ElementTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitPointerType(ctx *parser.PointerTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitInterfaceType(ctx *parser.InterfaceTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitSliceType(ctx *parser.SliceTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitMapType(ctx *parser.MapTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitChannelType(ctx *parser.ChannelTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitMethodSpec(ctx *parser.MethodSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitFunctionType(ctx *parser.FunctionTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitSignature(ctx *parser.SignatureContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitParameters(ctx *parser.ParametersContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitParameterList(ctx *parser.ParameterListContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitParameterDecl(ctx *parser.ParameterDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitOperand(ctx *parser.OperandContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitLiteral(ctx *parser.LiteralContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitBasicLit(ctx *parser.BasicLitContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitOperandName(ctx *parser.OperandNameContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitQualifiedIdent(ctx *parser.QualifiedIdentContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitCompositeLit(ctx *parser.CompositeLitContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitLiteralType(ctx *parser.LiteralTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitLiteralValue(ctx *parser.LiteralValueContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitElementList(ctx *parser.ElementListContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitKeyedElement(ctx *parser.KeyedElementContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitKey(ctx *parser.KeyContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitElement(ctx *parser.ElementContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitFunctionLit(ctx *parser.FunctionLitContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitPrimaryExpr(ctx *parser.PrimaryExprContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitSelector(ctx *parser.SelectorContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitIndex(ctx *parser.IndexContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitSlice(ctx *parser.SliceContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitTypeAssertion(ctx *parser.TypeAssertionContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitArguments(ctx *parser.ArgumentsContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitMethodExpr(ctx *parser.MethodExprContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitReceiverType(ctx *parser.ReceiverTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitExpression(ctx *parser.ExpressionContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitUnaryExpr(ctx *parser.UnaryExprContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitConversion(ctx *parser.ConversionContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}
+
+//func (v *GolangVisitor) VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor) interface{} {
+//  // before children
+//  r := v.VisitChildren(ctx, delegate)
+//  // afer children
+//  return r
+//}

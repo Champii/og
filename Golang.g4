@@ -223,7 +223,7 @@ identifierList
 
 //ExpressionList = Expression { "," Expression } .
 expressionList
-    : expression ( ',' expression )*
+    : expression ( ',' expressionList )?
     ;
 
 //TypeDecl     = "type" ( TypeSpec | "(" { TypeSpec ";" } ")" ) .
@@ -248,7 +248,7 @@ functionDecl
     ;
 
 function
-    : signature block
+    : signature  '->' block
     ;
 
 //MethodDecl   = "func" Receiver MethodName ( Function | Signature ) .
@@ -275,12 +275,30 @@ varSpec
 //Block = "{" StatementList "}" .
 block
     : '{' statementList '}'
+    | statementNoBlock
     ;
 
 //StatementList = { Statement ";" } .
 statementList
     : ( statement eos )*
     ;
+
+statementNoBlock
+    : declaration
+    | labeledStmt
+    | simpleStmt
+    | goStmt
+    | returnStmt
+    | breakStmt
+    | continueStmt
+    | gotoStmt
+    | fallthroughStmt
+    | ifStmt
+    | switchStmt
+    | selectStmt
+    | forStmt
+    | deferStmt
+	;
 
 statement
     : declaration
@@ -292,8 +310,8 @@ statement
     | continueStmt
     | gotoStmt
     | fallthroughStmt
-    | block
     | ifStmt
+    | block
     | switchStmt
     | selectStmt
     | forStmt
@@ -305,8 +323,8 @@ simpleStmt
     : sendStmt
     | expressionStmt
     | incDecStmt
-    | assignment
     | shortVarDecl
+    | assignment
     | emptyStmt
     ;
 
@@ -339,7 +357,7 @@ assign_op
 
 //ShortVarDecl = IdentifierList ":=" ExpressionList .
 shortVarDecl
-    : identifierList ':=' expressionList
+    : identifierList '=' expressionList
     ;
 
 emptyStmt
@@ -558,17 +576,17 @@ functionType
     ;
 
 signature
-    : ({p.noTerminatorAfterParams(1)}? parameters? result
-    | parameters?) '->'
+    : ({p.noTerminatorAfterParams(1)}? parameters ':' result
+    | parameters)
     ;
 
 result
-    : parameters
-    | type_
+    : type_ ( ',' type_)*
+    // | type_
     ;
 
 parameters
-    : '(' ( parameterList ','? )? ')'
+    : ( '(' ( parameterList ','? )? ')' )?
     ;
 
 parameterList

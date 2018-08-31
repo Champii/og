@@ -1,4 +1,4 @@
-// Code generated from Golang.g4 by ANTLR 4.7.1. DO NOT EDIT.
+// Generated from Golang.g4 by ANTLR 4.7.1.
 
 package parser // Golang
 
@@ -11,9 +11,7 @@ var _ GolangListener = &BaseGolangListener{}
 
 // VisitTerminal is called when a terminal node is visited.
 func (s *BaseGolangListener) VisitTerminal(node antlr.TerminalNode) {}
-
-// VisitErrorNode is called when an error node is visited.
-func (s *BaseGolangListener) VisitErrorNode(node antlr.ErrorNode) {}
+func (s *BaseGolangListener) VisitErrorNode(node antlr.ErrorNode)   {}
 
 // EnterEveryRule is called when any rule is entered.
 func (s *BaseGolangListener) EnterEveryRule(ctx antlr.ParserRuleContext) {}
@@ -146,6 +144,12 @@ func (s *BaseGolangListener) EnterStatementList(ctx *StatementListContext) {}
 
 // ExitStatementList is called when production statementList is exited.
 func (s *BaseGolangListener) ExitStatementList(ctx *StatementListContext) {}
+
+// EnterStatementNoBlock is called when production statementNoBlock is entered.
+func (s *BaseGolangListener) EnterStatementNoBlock(ctx *StatementNoBlockContext) {}
+
+// ExitStatementNoBlock is called when production statementNoBlock is exited.
+func (s *BaseGolangListener) ExitStatementNoBlock(ctx *StatementNoBlockContext) {}
 
 // EnterStatement is called when production statement is entered.
 func (s *BaseGolangListener) EnterStatement(ctx *StatementContext) {}

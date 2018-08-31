@@ -1,9 +1,9 @@
 package main
 
-struct Foo
+type Foo struct
   bar string
   foobar int
 
-struct FooTag
+type FooTag struct
   bar string `json: "test"`
   foobar int `sql: "-"`

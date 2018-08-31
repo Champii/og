@@ -1,4 +1,4 @@
-// Code generated from Golang.g4 by ANTLR 4.7.1. DO NOT EDIT.
+// Generated from Golang.g4 by ANTLR 4.7.1.
 
 package parser // Golang
 
@@ -70,6 +70,9 @@ type GolangListener interface {
 
 	// EnterStatementList is called when entering the statementList production.
 	EnterStatementList(c *StatementListContext)
+
+	// EnterStatementNoBlock is called when entering the statementNoBlock production.
+	EnterStatementNoBlock(c *StatementNoBlockContext)
 
 	// EnterStatement is called when entering the statement production.
 	EnterStatement(c *StatementContext)
@@ -373,6 +376,9 @@ type GolangListener interface {
 
 	// ExitStatementList is called when exiting the statementList production.
 	ExitStatementList(c *StatementListContext)
+
+	// ExitStatementNoBlock is called when exiting the statementNoBlock production.
+	ExitStatementNoBlock(c *StatementNoBlockContext)
 
 	// ExitStatement is called when exiting the statement production.
 	ExitStatement(c *StatementContext)

@@ -5,7 +5,7 @@ all:
 	@go build
 
 run: all
-	@./og_new tests/toto.og
+	@./Og exemples/test.og
 
 clean:
 	@go clean
