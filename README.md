@@ -1,8 +1,16 @@
-Og
+Og-Lang
 ===
 Language that compiles to a subset of GoLang
 
-To be pronounced `O-Gee`
+To be pronounced `Oh-Jee`
+
+# Index
+
+- [Goal](#goal)
+- [Exemple](#exemple)
+- [Build](#build)
+- [Long term goal](#long-term-goal)
+- [Todo](#todo)
 
 # Goal
 
@@ -12,72 +20,38 @@ The main goal is to simplify the syntax, to borrow some concepts from Livescript
 
 # Exemple
 
-This is an exemple of how Og looks like actualy
-
+This is an exemple of how `og` looks like actualy
 
 ```go
 package main
 
 import
-  "fmt"
+  fmt
+  strings
+  "some/repo"
 
-struct Foo
-  bar string
+type Foo struct
+  bar int
 
-myFunc (a string): string ->
-  return a
+Foo::myFunc(foo int) : int -> return this.bar + foo
+
+myFunc(a string): string -> return a
 
 main ->
-  test = "foo"
-  toto = []string
-    "toto"
-    "tata"
+  test := "foo"
 
-  if test is "foo"
+  if test == "foo"
     fmt.Println(test)
   else
     fmt.Println("Not foo")
 
-  for _, v in toto
+  for _, v in someArray
     fmt.Println(v)
-
-  fmt.Println(toto[1])
-
-  fmt.Println(myFunc("a"))
-
-```
-
-# Long term goal
-
-```go
-package main
-
-import "fmt"
-
-struct Foo
-  num string
-
-struct Generic<T>
-  test T
-  fn ->
-    fmt.Println(this.test)
-
-genericFunc<T>(g: Generic<T>) T ->
-  g.test
-
-main ->
-  foo = Foo
-    bar: "bar"
-
-  t = Generic
-    test: "str"
-
-  fmt.Println(t.fn())
 ```
 
 # Build
 
-To have the `Visitor` pattern in GO, you have to get and build the [https://github.com/wxio/antlr4/tree/go-visitor](https://github.com/wxio/antlr4/tree/go-visitor) into jar and Go runtime
+To have the `Visitor` pattern in GO, you have to get and build the [https://github.com/wxio/antlr4/tree/go-visitor](https://github.com/wxio/antlr4/tree/go-visitor) into jar and Go runtime, as the official antlr4 repo don't have fully implemented them yet
 
 You will need `Maven`
 
@@ -100,15 +74,63 @@ mvn install -DskipTests=true
 go get -u github.com/champii/og
 cd $GO_ROOT/src/github.com/champii/og
 
-# This will regenerate the grammar and build the binary
+# This will generate the grammar,
+# Compile the existing sources,
+# Regenerate the go sources from og,
+# Recompile the new go sources to be sure
+# And run the tests.
 make
 
 # Simple exemple
-./Og exemples/import.og
+./og exemples/import.og
+```
+# Long term goal
+
+```go
+!main
+
+import fmt
+
+struct Generic<T>
+  // attributes
+  pub test T
+
+  // Class method
+  pub @new(v T) : Generic<T> -> Generic<T>{ v }
+
+  // Instance method
+  fn : T -> @test
+
+genericFunc<T>(g Generic<T>): T -> g.test
+
+main ->
+  t := Generic<string>::new("str")
+
+  fmt.Println(t.fn())
 ```
 
-# Done
+# TODO
 
+- [ ] Perfs
+- [ ] Binary operator (`<<`, `>>`, `.`, `|`)
+- [ ] Interfaces
+- [ ] Empty Function body
+- [ ] Struct compostion ("Inheritance")
+- [ ] Auto return for last statement in a block
+- [ ] For with a range (for i in [0..10])
+- [ ] For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)
+- [ ] `pub` visibility instead of capitalizing
+- [ ] Existance test (if toto?) for non-nil value test
+- [ ] Returnable and assignable statements (if, for, ...)
+- [ ] Generics
+- [ ] Error bubbling
+- [ ] Class-like method declaration (nested into the struct)
+- [ ] Pattern matching
+- [ ] Import renaming and pattern matching
+
+## Done
+
+- [x] Rewrite Og in Og
 - [x] Package declaration
 - [x] Import
 - [x] Structure
@@ -162,29 +184,3 @@ make
   - [x] Struct instantiation
   - [x] Multiple return in func
   - [x] Multiple return values in assign
-
-# Todo for rewriting Og in Og
-
-- [ ] Slice manipulation (`a[0:x]`)
-- [ ] External classic Method declaration
-- [ ] Variable shadowing ? Or error ?
-
-# Todo
-
-- [ ] Perfs
-- [ ] Binary operator (`<<`, `>>`, `.`, `|`)
-- [ ] Rewrite Og in Og
-- [ ] Interfaces
-- [ ] Empty Function body
-- [ ] Struct compostion ("Inheritance")
-- [ ] Auto return for last statement in a block
-- [ ] For with a range (for i in [0..10])
-- [ ] For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)
-- [ ] `pub` visibility instead of capitalizing
-- [ ] Existance test (if toto?) for non-nil value test
-- [ ] Returnable and assignable statements (if, for, ...)
-- [ ] Generics
-- [ ] Error bubbling
-- [ ] Class-like method declaration (nested into the struct)
-- [ ] Pattern matching
-- [ ] Import renaming and pattern matching

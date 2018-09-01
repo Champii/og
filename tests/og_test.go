@@ -184,7 +184,7 @@ func main() {
 	}
 
 	for i, p := range paths {
-		res := og.Compile(fmt.Sprint("../exemples/", p, ".og"))
+		res := og.Compile(fmt.Sprint("./exemples/", p, ".og"))
 
 		if res != expected[i] {
 			panic(fmt.Sprint("Error: ", p, "\nGot: \n---\n", res, "\n---\nExpected: \n---\n", expected[i], "\n---\n"))
