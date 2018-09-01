@@ -9,11 +9,11 @@ import
 Parse(str string): string ->
 	input := antlr.NewInputStream(str)
 
-	lexer := parser.NewGolangLexer(input)
+	lexer := parser.NewOgLexer(input)
 
 	stream := antlr.NewCommonTokenStream(lexer, 0)
 
-	p := parser.NewGolangParser(stream)
+	p := parser.NewOgParser(stream)
 
 	// p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 
@@ -23,7 +23,7 @@ Parse(str string): string ->
 
 	// res.ToStringTree([]string{"sourceFile"})
 
-	t := new(translator.GolangVisitor)
+	t := new(translator.OgVisitor)
 
 	// res.Accept(t)
 	final := t.VisitSourceFile(res.(*parser.SourceFileContext), t)
