@@ -153,29 +153,34 @@ struct Generic<T>
   pub test T
 
   // Class method
-  pub @new(v T) : Generic<T> -> Generic<T>{ v }
+  T => Generic<T>
+  pub @new(v) -> Generic<T>{ v }
 
   // Instance method
   fn : T -> @test
 
 genericFunc<T>(g Generic<T>): T -> g.test
 
+// External type declaration
+Generic<T> => T
+genericFunc<T>(g) -> g.test
+
 main ->
   t := Generic<string>::new("str")
 
   fmt.Println(t.fn())
+
+  a = [0..10].map((+ 10))
 ```
 
 # TODO
 
-- [ ] Slice manipulation `[1:x]`
 - [ ] Beautyful and meaningful compile error with source context
 - [ ] External type declaration like Haskell: `myFunc :: string -> Foo -> Bar`
 - [ ] OneLiner if/for: `if a => 1`, `for b => b--`
 - [ ] Predicat recapture: `if a => that`
 - [ ] Perfs
 - [ ] Binary operator (`<<`, `>>`, `.`, `|`)
-- [ ] Interfaces
 - [ ] Empty Function body
 - [ ] Struct compostion ("Inheritance")
 - [ ] Auto return for last statement in a block
@@ -186,6 +191,8 @@ main ->
 - [ ] Returnable and assignable statements (if, for, ...)
 - [ ] Generics
 - [ ] Error bubbling
+- [ ] `map` Type
+- [ ] `chan` Type
 - [ ] Method receiver pointer type
 - [ ] Class-like method declaration (nested into the struct)
 - [ ] Pattern matching
@@ -196,6 +203,8 @@ main ->
 # Changelog
 
 ## Current working tree
+  - Slice manipulation
+  - Interfaces
 
 ## 0.1.2
   - Support for simple `struct ID {}` declaration. Still support `type ID struct {}`.

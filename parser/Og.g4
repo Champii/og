@@ -541,7 +541,7 @@ pointerType
 //MethodName         = identifier .
 //InterfaceTypeName  = TypeName .
 interfaceType
-    : 'interface' IDENTIFIER? '{' ( methodSpec eos )* '}'
+    : 'interface' IDENTIFIER? ('{' ( methodSpec eos )* '}')?
     ;
 
 //SliceType = "[" "]" ElementType .
@@ -561,7 +561,7 @@ channelType
     ;
 
 methodSpec
-    : {p.noTerminatorAfterParams(2)}? IDENTIFIER parameters result
+    : {p.noTerminatorAfterParams(2)}? IDENTIFIER parameters ':' result
     | typeName
     | IDENTIFIER parameters
     ;

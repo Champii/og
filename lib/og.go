@@ -28,6 +28,9 @@ func Compile(config_ OgConfig) {
 	}
 }
 func walker(filePath string, info os.FileInfo, err error) error {
+	if err != nil {
+		return err
+	}
 	if info.IsDir() == true {
 		return nil
 	}

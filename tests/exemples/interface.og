@@ -1,0 +1,14 @@
+!main
+
+interface Foo
+
+type Foo2 interface
+
+interface Foo4
+  Foo(a int): string
+
+interface Foo5
+  SomeType
+  Foo()
+  Bar(a int): string
+  Other : interface{}

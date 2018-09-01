@@ -1,6 +1,7 @@
 !translator
 
 import
+	strings
 	"github.com/champii/og/parser"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
@@ -17,6 +18,9 @@ OgVisitor::Aggregate(resultSoFar, childResult interface{}): interface{} ->
 				_      => return childResult
 
 	return nil
+
+// *parser.SourceFileContext -> antlr.ParseTreeVisitor -> interface{}
+// OgVisitor::VisitSourceFile(ctx, delegate) -> @VisitChildren(ctx, delegate)
 
 OgVisitor::VisitSourceFile(ctx *parser.SourceFileContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return this.VisitChildren(ctx, delegate)
@@ -39,7 +43,7 @@ OgVisitor::VisitImportPath(ctx *parser.ImportPathContext, delegate antlr.ParseTr
 		return "\"" + txt + "\"\n"
 
 OgVisitor::VisitTopLevelDecl(ctx *parser.TopLevelDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+	return this.VisitChildren(ctx, delegate).(string) + "\n"
 
 OgVisitor::VisitDeclaration(ctx *parser.DeclarationContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return this.VisitChildren(ctx, delegate)
@@ -70,13 +74,13 @@ OgVisitor::VisitTypeSpec(ctx *parser.TypeSpecContext, delegate antlr.ParseTreeVi
 	return ctx.IDENTIFIER().GetText() + " " + this.VisitChildren(ctx, delegate).(string)
 
 OgVisitor::VisitFunctionDecl(ctx *parser.FunctionDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "\nfunc " + ctx.IDENTIFIER().GetText() + this.VisitChildren(ctx, delegate).(string)
+	return "func " + ctx.IDENTIFIER().GetText() + this.VisitChildren(ctx, delegate).(string)
 
 OgVisitor::VisitFunction(ctx *parser.FunctionContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return this.VisitChildren(ctx, delegate)
 
 OgVisitor::VisitMethodDecl(ctx *parser.MethodDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "\nfunc " + this.VisitChildren(ctx, delegate).(string)
+	return "func " + this.VisitChildren(ctx, delegate).(string)
 
 OgVisitor::VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	c := ctx.IDENTIFIER(0).GetText()
@@ -304,7 +308,16 @@ OgVisitor::VisitPointerType(ctx *parser.PointerTypeContext, delegate antlr.Parse
 	return "*" + this.VisitChildren(ctx, delegate).(string)
 
 OgVisitor::VisitInterfaceType(ctx *parser.InterfaceTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "interface{}"
+	idx := ""
+	methods := ""
+
+	if ctx.IDENTIFIER() != nil
+		idx = ctx.IDENTIFIER().GetText() + " "
+
+	if len(ctx.AllMethodSpec()) != 0
+		methods = this.VisitChildren(ctx, delegate).(string)
+
+	return  idx + "interface" + "{\n" + methods + "}"
 
 OgVisitor::VisitSliceType(ctx *parser.SliceTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return "[]" + this.VisitChildren(ctx, delegate).(string)
@@ -316,7 +329,12 @@ OgVisitor::VisitChannelType(ctx *parser.ChannelTypeContext, delegate antlr.Parse
 	return this.VisitChildren(ctx, delegate)
 
 OgVisitor::VisitMethodSpec(ctx *parser.MethodSpecContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+	idx := ""
+
+	if ctx.IDENTIFIER() != nil
+		idx = ctx.IDENTIFIER().GetText()
+
+	return idx + this.VisitChildren(ctx, delegate).(string) + "\n"
 
 OgVisitor::VisitFunctionType(ctx *parser.FunctionTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return this.VisitChildren(ctx, delegate)
@@ -401,7 +419,7 @@ OgVisitor::VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTr
 	if len(ctx.AllFieldDecl()) != 0
 		res = this.VisitChildren(ctx, delegate).(string)
 
-	return  idx + " struct {\n" + res + "}\n"
+	return  idx + " struct {\n" + res + "}"
 
 OgVisitor::VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	if ctx.IdentifierList() != nil
@@ -435,7 +453,34 @@ OgVisitor::VisitIndex(ctx *parser.IndexContext, delegate antlr.ParseTreeVisitor)
 	return "[" + this.VisitChildren(ctx, delegate).(string) + "]"
 
 OgVisitor::VisitSlice(ctx *parser.SliceContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+	txt := ctx.GetText()
+	splited := strings.Split(txt, ":")
+	res := "["
+	i := 0
+
+	if len(splited) == 2
+		if splited[0] != "["
+			res += this.VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
+			i++
+		res += ":"
+		if splited[1] != "]"
+			res += this.VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
+			i++
+
+	if len(splited) == 3
+		if splited[0] != "["
+			res += this.VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
+			i++
+		res += ":"
+		if splited[1] != ""
+			res += this.VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
+			i++
+		res += ":"
+		if splited[2] != "]"
+			res += this.VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
+			i++
+
+	return res + "]"
 
 OgVisitor::VisitTypeAssertion(ctx *parser.TypeAssertionContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return ".(" + this.VisitChildren(ctx, delegate).(string) + ")"

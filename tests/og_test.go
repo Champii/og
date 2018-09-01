@@ -181,6 +181,40 @@ func main() {
 	}
 }
 `,
+		// slices.og
+		`package main
+
+func main() {
+	a := []string{
+		"a",
+		"b",
+		"c",
+	}
+	b := a[1:2]
+	b := a[1:]
+	b := a[:]
+	b := a[:3]
+	b := a[1:2:3]
+	b := a[:2:3]
+}
+`,
+		// interface.og
+		`package main
+
+type Foo interface {
+}
+type Foo2 interface {
+}
+type Foo4 interface {
+	Foo(a int) string
+}
+type Foo5 interface {
+	SomeType
+	Foo()
+	Bar(a int) string
+	Other() interface{}
+}
+`,
 	}
 
 	paths := []string{
@@ -197,6 +231,8 @@ func main() {
 		`ref`,
 		`inc`,
 		`struct_inst`,
+		`slices`,
+		`interface`,
 	}
 
 	for i, p := range paths {
