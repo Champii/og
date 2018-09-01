@@ -1,8 +1,8 @@
 package main
 
 import (
-	"Og/toto"
 	"fmt"
+	"og/lib"
 	"os"
 )
 

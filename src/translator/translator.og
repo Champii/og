@@ -1,6 +1,6 @@
 package translator // Golang
 import
-	"Og/parser"
+	"og/parser"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 
@@ -267,7 +267,7 @@ GolangVisitor::VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.P
 	else if ctx.ExpressionList() != nil
 		r = this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
 
-	return r + " = range " + this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+	return r + " := range " + this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 
 GolangVisitor::VisitGoStmt(ctx *parser.GoStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	expr := this.VisitChildren(ctx, delegate).(string)
