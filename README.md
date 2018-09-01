@@ -1,8 +1,15 @@
 Og-Lang
 ===
-Language that compiles to a subset of GoLang
 
-To be pronounced `Oh-Jee`
+### v0.1.0
+
+Language inspired from [Livescript](http://livescript.net) that compiles to a subset of GoLang.
+
+To be pronounced `Oh-Jee`.
+
+Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
+
+`og` is written in `og`. See the [src](https://github.com/champii/og/tree/master/src) folder for `og` source, and the [lib](https://github.com/champii/og/tree/master/lib) folder for the compiled one.
 
 # Index
 
@@ -16,11 +23,11 @@ To be pronounced `Oh-Jee`
 
 To provide a usable language that compiles to Golang
 
-The main goal is to simplify the syntax, to borrow some concepts from Livescript, to implement Generics and macro processing, as well as some syntaxic sugar to avoid all the boilerplate Golang force us into.
+The main goal is to simplify the syntax, to borrow some concepts from Livescript and other functional languages, to implement Generics and macro processing, as well as some syntaxic sugar to avoid all the boilerplate Golang force us into.
 
 # Exemple
 
-This is an exemple of how `og` looks like actualy
+This is an exemple of how `og` looks like actualy. See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder.
 
 ```go
 package main
@@ -51,9 +58,15 @@ main ->
 
 # Build
 
-To have the `Visitor` pattern in GO, you have to get and build the [https://github.com/wxio/antlr4/tree/go-visitor](https://github.com/wxio/antlr4/tree/go-visitor) into jar and Go runtime, as the official antlr4 repo don't have fully implemented them yet
+Here is the procedure to regenerate the parser from the grammar if you want to make changes to it.
 
-You will need `Maven`
+If you just want to (re)build the binary, you can call `make build` or just `go build`
+
+## Build Antlr
+
+This implementation needs the `TreeVisitor` pattern from `Antlr`. You have to get and build the [https://github.com/wxio/antlr4/tree/go-visitor](https://github.com/wxio/antlr4/tree/go-visitor) into jar and Go runtime, as the official antlr4 repo don't have fully implemented them yet.
+
+You will need `Maven`.
 
 ```bash
 # Install maven
@@ -69,7 +82,11 @@ git checkout go-visitor
 
 # Build the jar
 mvn install -DskipTests=true
+```
 
+## Og
+
+```bash
 # Get Og
 go get -u github.com/champii/og
 cd $GO_ROOT/src/github.com/champii/og
@@ -81,8 +98,14 @@ cd $GO_ROOT/src/github.com/champii/og
 # And run the tests.
 make
 
+# This will just build the sources (if needed)
+make build
+
+# And install
+sudo make install
+
 # Simple exemple
-./og exemples/import.og
+og exemples/import.og
 ```
 # Long term goal
 
@@ -111,6 +134,7 @@ main ->
 
 # TODO
 
+- [ ] Efficient multi-path recursive compile
 - [ ] Perfs
 - [ ] Binary operator (`<<`, `>>`, `.`, `|`)
 - [ ] Interfaces

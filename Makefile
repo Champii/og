@@ -17,9 +17,9 @@ define run_and_test
 	$(1) > $@.out 2> $@.log; \
 	RESULT=$$?; \
 	if [ $$RESULT -ne 0 ]; then \
-		printf '%-60b%b' '$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n'; \
+		printf '%-60b%b' '- $(OBJ_COLOR)$(2)' '$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n'; \
 	elif [ -s $@.log ]; then \
-		printf '%-60b%b' '$(WARNING_COLOR)$(WARNING_STRING)$(NO_COLOR)\n'; \
+		printf '%-60b%b' '- $(OBJ_COLOR)$(2)' '$(WARNING_COLOR)$(WARNING_STRING)$(NO_COLOR)\n'; \
 	else \
 		printf '%-60b%b' '- $(OBJ_COLOR)$(2)' '$(OK_COLOR)$(OK_STRING)$(NO_COLOR)\n'; \
 	fi; \
@@ -44,6 +44,9 @@ build:
 
 test:
 	@$(call run_and_test,go test og/tests,Testing)
+
+install:
+	@$(call run_and_test,cp ./og /usr/bin,Installing into /usr/bin/og)
 
 clean:
 	@go clean
