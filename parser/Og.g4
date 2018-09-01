@@ -176,7 +176,7 @@ sourceFile
 //PackageClause  = "package" PackageName .
 //PackageName    = identifier .
 packageClause
-    : 'package' IDENTIFIER
+    : ('package' | '!') IDENTIFIER
     ;
 
 importDecl

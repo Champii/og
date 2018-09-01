@@ -16,4 +16,3 @@ func Parse(str string) string {
 	final := t.VisitSourceFile(res.(*parser.SourceFileContext), t)
 	return final.(string)
 }
-

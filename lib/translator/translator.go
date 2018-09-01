@@ -141,6 +141,11 @@ func (this *OgVisitor) VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate
 	return this.VisitChildren(ctx, delegate)
 }
 func (this *OgVisitor) VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
+	if ctx.GetChildCount() == 0 {
+		{
+			return "return"
+		}
+	}
 	return "return " + this.VisitChildren(ctx, delegate).(string)
 }
 func (this *OgVisitor) VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -452,4 +457,3 @@ func (this *OgVisitor) VisitConversion(ctx *parser.ConversionContext, delegate a
 func (this *OgVisitor) VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return this.VisitChildren(ctx, delegate)
 }
-

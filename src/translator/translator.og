@@ -1,4 +1,5 @@
-package translator // Og
+package translator
+
 import
 	"github.com/champii/og/parser"
 
@@ -139,6 +140,10 @@ OgVisitor::VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.Parse
 	return this.VisitChildren(ctx, delegate)
 
 OgVisitor::VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
+	if ctx.GetChildCount() == 0 {
+		return "return"
+	}
+
 	return "return " + this.VisitChildren(ctx, delegate).(string)
 
 OgVisitor::VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->

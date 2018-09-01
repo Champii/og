@@ -31,14 +31,14 @@ The main goal is to simplify the syntax, to borrow some concepts from Livescript
 This is an exemple of how `og` looks like actualy. See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder.
 
 ```go
-package main
+!main
 
 import
   fmt
   strings
   "some/repo"
 
-type Foo struct
+struct Foo
   bar int
 
 Foo::myFunc(foo int) : int -> return this.bar + foo
@@ -135,6 +135,7 @@ main ->
 
 # TODO
 
+- [ ] Beautyful and meaningful compile error with source context
 - [ ] Efficient multi-path recursive compile
 - [ ] External type declaration like Haskell: `myFunc :: string -> Foo -> Bar`
 - [ ] OneLiner if/for: `if a => 1`, `for b => b--`
@@ -152,6 +153,7 @@ main ->
 - [ ] Returnable and assignable statements (if, for, ...)
 - [ ] Generics
 - [ ] Error bubbling
+- [ ] Method receiver pointer type
 - [ ] Class-like method declaration (nested into the struct)
 - [ ] Pattern matching
 - [ ] Import renaming and pattern matching
@@ -159,8 +161,9 @@ main ->
 # Changelog
 
 ## Current working tree
-  - Add support for simple `struct ID {}` declaration. Still support `type ID struct {}`
-  - Add an alias `class` that stands for `struct`
+  - Add support for simple `struct ID {}` declaration. Still support `type ID struct {}`.
+  - Add an alias `class` => `struct`.
+  - Add shorthand for `package main` => `!main`.
 
 ## 0.1.0
   - Initial release

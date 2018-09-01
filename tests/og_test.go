@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	og "og/lib"
 
 	"testing"
@@ -10,6 +11,9 @@ import (
 func TestMain(*testing.T) {
 	expected := []string{
 		// package.og
+		`package main
+`,
+		// package_short.og
 		`package main
 `,
 		// import.og
@@ -181,6 +185,7 @@ func main() {
 
 	paths := []string{
 		`package`,
+		`package_short`,
 		`import`,
 		`struct`,
 		`top_fn`,
@@ -195,7 +200,13 @@ func main() {
 	}
 
 	for i, p := range paths {
-		res := og.Compile(fmt.Sprint("./exemples/", p, ".og"))
+		data, err := ioutil.ReadFile(fmt.Sprint("./exemples/", p, ".og"))
+
+		if err != nil {
+			panic(err)
+		}
+
+		res := og.ProcessFile(fmt.Sprint("./exemples/", p, ".og"), string(data))
 
 		if res != expected[i] {
 			panic(fmt.Sprint("Error: ", p, "\nGot: \n---\n", res, "\n---\nExpected: \n---\n", expected[i], "\n---\n"))

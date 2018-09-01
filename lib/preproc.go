@@ -47,4 +47,3 @@ func Preproc(str string) string {
 	joined := strings.Join(res, "\n") + "\n"
 	return joined
 }
-
