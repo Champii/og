@@ -1,7 +1,7 @@
-Og-Lang
+Og-Lang v0.1.0
 ===
 
-### v0.1.0
+### Golang On Steroids
 
 Language inspired from [Livescript](http://livescript.net) that compiles to a subset of GoLang.
 
@@ -15,6 +15,7 @@ Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar
 
 - [Goal](#goal)
 - [Exemple](#exemple)
+- [Usage](#usage)
 - [Build](#build)
 - [Long term goal](#long-term-goal)
 - [Todo](#todo)
@@ -56,6 +57,27 @@ main ->
   for _, v in someArray
     fmt.Println(v)
 ```
+# Usage
+
+```
+NAME:
+  Oglang - Golang on steroids
+
+USAGE:
+  og [options] Folders|Files
+
+VERSION:
+  0.1.0
+
+OPTIONS:
+  -o value, --out value  Output directory. If input is recursive folder, the tree is recreated (default: "./")
+  -p, --print            Print only to stdout. No files created
+  -d, --dirty            Don't use 'go fmt'
+  -b, --blocks           Get only the generated blocks from indent. No compilation to go.
+  -v, --verbose          Show the filenames
+  -h, --help             Print help
+  -V, --version          Print version
+```
 
 # Build
 
@@ -92,7 +114,8 @@ mvn install -DskipTests=true
 go get -u github.com/champii/og
 cd $GO_ROOT/src/github.com/champii/og
 
-# This will generate the grammar,
+# This needs Antlr4 (see above)
+# As it will generate the grammar,
 # Compile the existing sources,
 # Regenerate the go sources from og,
 # Recompile the new go sources to be sure
@@ -102,12 +125,16 @@ make
 # This will just build the sources (if needed)
 make build
 
+# To Recompile Og to Go + build + test
+make bootstrap
+
 # And install
 sudo make install
 
 # Simple exemple
 og exemples/import.og
 ```
+
 # Long term goal
 
 ```go
@@ -135,8 +162,8 @@ main ->
 
 # TODO
 
+- [ ] Slice manipulation `[1:x]`
 - [ ] Beautyful and meaningful compile error with source context
-- [ ] Efficient multi-path recursive compile
 - [ ] External type declaration like Haskell: `myFunc :: string -> Foo -> Bar`
 - [ ] OneLiner if/for: `if a => 1`, `for b => b--`
 - [ ] Predicat recapture: `if a => that`
@@ -161,9 +188,11 @@ main ->
 # Changelog
 
 ## Current working tree
-  - Add support for simple `struct ID {}` declaration. Still support `type ID struct {}`.
-  - Add an alias `class` => `struct`.
-  - Add shorthand for `package main` => `!main`.
+  - Support for simple `struct ID {}` declaration. Still support `type ID struct {}`.
+  - Alias `class` => `struct`.
+  - Allow empty `class` declaration
+  - Shorthand for `package main` => `!main`.
+  - Cli support with options and recursive directory walking
 
 ## 0.1.0
   - Initial release
