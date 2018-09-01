@@ -44,7 +44,7 @@ func walker(filePath string, info os.FileInfo, err error) error {
 }
 func ProcessFile(filePath string, data string) string {
 	if config.Verbose == true {
-		fmt.Println(filePath)
+		fmt.Print(filePath)
 	}
 	preprocessed := Preproc(string(data))
 	if config.Blocks == true {

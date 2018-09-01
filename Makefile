@@ -36,10 +36,16 @@ grammar:
 	@$(call run_and_test,go generate,Generating grammar)
 
 bootstrap:
-	@$(call run_and_test,./scripts/bootstrap_glob.sh,Transforming [og -> go] from previous build)
+	@$(call run_and_test,./og -o lib src,Transforming [og -> go])
 	@$(call run_and_test,go build,Recompiling new go files)
 	@$(call run_and_test,go test og/tests,Testing)
+
+rebootstrap:
+	@$(call run_and_test,og -o lib src,Transforming [og -> go] from previous build)
+	@$(call run_and_test,go build,Compiling new go files)
+	@$(call run_and_test,go test og/tests,Testing)
 	@$(call run_and_test,./og -o lib src,Transforming [og -> go])
+	@$(call run_and_test,go build,Recompiling new go files)
 	@$(call run_and_test,go test og/tests,Testing)
 
 build:

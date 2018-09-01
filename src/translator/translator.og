@@ -1,4 +1,4 @@
-package translator
+!translator
 
 import
 	"github.com/champii/og/parser"

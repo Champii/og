@@ -1,4 +1,4 @@
-Og-Lang v0.1.2
+Og-Lang v0.1.3
 ===
 
 ### Golang On Steroids
@@ -67,7 +67,7 @@ USAGE:
   og [options] Folders|Files
 
 VERSION:
-  0.1.2
+  0.1.3
 
 OPTIONS:
   -o value, --out value  Output directory. If input is recursive folder, the tree is recreated (default: "./")
@@ -125,8 +125,14 @@ make
 # This will just build the sources (if needed)
 make build
 
+# This needs the previous version of `og` binary at global scope.
 # To Recompile Og to Go + build + test
 make bootstrap
+
+# Needs the previous version of `og` binary at global scope.
+# It recompiles og from the previous global version
+# Handy in case of mistake in the source
+make rebootstrap
 
 # And install
 sudo make install
@@ -184,10 +190,14 @@ main ->
 - [ ] Class-like method declaration (nested into the struct)
 - [ ] Pattern matching
 - [ ] Import renaming and pattern matching
+- [ ] Adapt Golang tooling like `gofmt` or `golint`
+- [ ] VSCode extension
 
 # Changelog
 
 ## Current working tree
+
+## 0.1.2
   - Support for simple `struct ID {}` declaration. Still support `type ID struct {}`.
   - Alias `class` => `struct`.
   - Allow empty `class` declaration

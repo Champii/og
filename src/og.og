@@ -1,4 +1,4 @@
-package og
+!og
 
 import
 	fmt
@@ -9,7 +9,7 @@ import
 	"io/ioutil"
 	"os/exec"
 
-type OgConfig struct
+struct OgConfig
 	Blocks  bool
 	Dirty   bool
 	Print   bool
@@ -46,7 +46,7 @@ walker(filePath string, info os.FileInfo, err error): error ->
 
 ProcessFile(filePath string, data string): string ->
 	if config.Verbose == true
-		fmt.Println(filePath)
+		fmt.Print(filePath)
 
 	preprocessed := Preproc(string(data))
 
