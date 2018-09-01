@@ -1,7 +1,6 @@
 Og-Lang
 ===
 
-
 ### v0.1.0
 
 Language inspired from [Livescript](http://livescript.net) that compiles to a subset of GoLang.

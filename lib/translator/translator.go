@@ -2,7 +2,7 @@ package translator
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"og/parser"
+	"github.com/champii/og/parser"
 )
 
 type OgVisitor struct {

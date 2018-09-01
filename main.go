@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"og/lib"
 	"os"
+
+	"github.com/champii/og/lib"
 )
 
 //go:generate java -Xmx500M -cp "/usr/local/lib/antlr-4.7.1-complete.jar" org.antlr.v4.Tool -Dlanguage=Go ./parser/Og.g4 -visitor -o .

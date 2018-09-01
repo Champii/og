@@ -1,10 +1,9 @@
 package og
 
 import (
-	"og/lib/translator"
-	"og/parser"
-
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/champii/og/lib/translator"
+	"github.com/champii/og/parser"
 )
 
 func Parse(str string) string {
@@ -17,3 +16,4 @@ func Parse(str string) string {
 	final := t.VisitSourceFile(res.(*parser.SourceFileContext), t)
 	return final.(string)
 }
+
