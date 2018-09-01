@@ -1,4 +1,4 @@
-Og-Lang v0.1.0
+Og-Lang v0.1.2
 ===
 
 ### Golang On Steroids
@@ -67,7 +67,7 @@ USAGE:
   og [options] Folders|Files
 
 VERSION:
-  0.1.0
+  0.1.2
 
 OPTIONS:
   -o value, --out value  Output directory. If input is recursive folder, the tree is recreated (default: "./")
