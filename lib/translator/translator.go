@@ -83,9 +83,9 @@ func (this *OgVisitor) VisitMethodDecl(ctx *parser.MethodDeclContext, delegate a
 	return "\nfunc " + this.VisitChildren(ctx, delegate).(string)
 }
 func (this *OgVisitor) VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor) interface{} {
-	class := ctx.IDENTIFIER(0).GetText()
+	c := ctx.IDENTIFIER(0).GetText()
 	method := ctx.IDENTIFIER(1).GetText()
-	return "(this *" + class + ") " + method
+	return "(this *" + c + ") " + method
 }
 func (this *OgVisitor) VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return "var " + this.VisitChildren(ctx, delegate).(string)
@@ -372,7 +372,15 @@ func (this *OgVisitor) VisitElement(ctx *parser.ElementContext, delegate antlr.P
 	return this.VisitChildren(ctx, delegate)
 }
 func (this *OgVisitor) VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return "struct {\n" + this.VisitChildren(ctx, delegate).(string) + "}\n"
+	idx := ""
+	res := ""
+	if ctx.IDENTIFIER() != nil {
+		idx = ctx.IDENTIFIER().GetText()
+	}
+	if len(ctx.AllFieldDecl()) != 0 {
+		res = this.VisitChildren(ctx, delegate).(string)
+	}
+	return idx + " struct {\n" + res + "}\n"
 }
 func (this *OgVisitor) VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	if ctx.IdentifierList() != nil {

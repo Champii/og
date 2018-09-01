@@ -30,9 +30,9 @@ define run_and_test
 	exit $$RESULT
 endef
 
-all: generate build bootstrap test
+all: grammar build bootstrap test
 
-generate:
+grammar:
 	@$(call run_and_test,go generate,Generating grammar)
 
 bootstrap:

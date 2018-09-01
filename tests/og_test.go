@@ -24,8 +24,19 @@ import (
 		`package main
 
 type Foo struct {
-	bar    string
-	foobar int
+}
+type Foo struct {
+}
+type Foo struct {
+}
+type Foo struct {
+}
+type Foo struct {
+	bar string
+}
+type Foo struct {
+	foo int
+	bar string
 }
 type FooTag struct {
 	bar    string ` + "`json: \"test\"`" + `

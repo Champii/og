@@ -78,9 +78,9 @@ OgVisitor::VisitMethodDecl(ctx *parser.MethodDeclContext, delegate antlr.ParseTr
 	return "\nfunc " + this.VisitChildren(ctx, delegate).(string)
 
 OgVisitor::VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	class := ctx.IDENTIFIER(0).GetText()
+	c := ctx.IDENTIFIER(0).GetText()
 	method := ctx.IDENTIFIER(1).GetText()
-	return "(this *" + class + ") " + method
+	return "(this *" + c + ") " + method
 
 OgVisitor::VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return "var " + this.VisitChildren(ctx, delegate).(string)
@@ -387,7 +387,16 @@ OgVisitor::VisitElement(ctx *parser.ElementContext, delegate antlr.ParseTreeVisi
 	return this.VisitChildren(ctx, delegate)
 
 OgVisitor::VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "struct {\n" + this.VisitChildren(ctx, delegate).(string) + "}\n"
+	idx := ""
+	res := ""
+
+	if ctx.IDENTIFIER() != nil
+		idx = ctx.IDENTIFIER().GetText()
+
+	if len(ctx.AllFieldDecl()) != 0
+		res = this.VisitChildren(ctx, delegate).(string)
+
+	return  idx + " struct {\n" + res + "}\n"
 
 OgVisitor::VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	if ctx.IdentifierList() != nil

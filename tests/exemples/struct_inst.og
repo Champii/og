@@ -1,6 +1,6 @@
 package main
 
-type Foo struct
+class Foo
   foo int
   bar string
 

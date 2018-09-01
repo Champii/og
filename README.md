@@ -18,6 +18,7 @@ Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar
 - [Build](#build)
 - [Long term goal](#long-term-goal)
 - [Todo](#todo)
+- [Changelog](#changelog)
 
 # Goal
 
@@ -135,6 +136,9 @@ main ->
 # TODO
 
 - [ ] Efficient multi-path recursive compile
+- [ ] External type declaration like Haskell: `myFunc :: string -> Foo -> Bar`
+- [ ] OneLiner if/for: `if a => 1`, `for b => b--`
+- [ ] Predicat recapture: `if a => that`
 - [ ] Perfs
 - [ ] Binary operator (`<<`, `>>`, `.`, `|`)
 - [ ] Interfaces
@@ -152,8 +156,14 @@ main ->
 - [ ] Pattern matching
 - [ ] Import renaming and pattern matching
 
-## Done
+# Changelog
 
+## Current working tree
+  - Add support for simple `struct ID {}` declaration. Still support `type ID struct {}`
+  - Add an alias `class` that stands for `struct`
+
+## 0.1.0
+  - Initial release
 - [x] Rewrite Og in Og
 - [x] Package declaration
 - [x] Import

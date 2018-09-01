@@ -228,7 +228,9 @@ expressionList
 
 //TypeDecl     = "type" ( TypeSpec | "(" { TypeSpec ";" } ")" ) .
 typeDecl
-    : 'type' ( typeSpec | '(' ( typeSpec eos )* ')' )
+    : ('type' ( typeSpec | '(' ( typeSpec eos )* ')' ))
+    | structType
+    | interfaceType
     ;
 
 //TypeSpec     = identifier Type .
@@ -539,7 +541,7 @@ pointerType
 //MethodName         = identifier .
 //InterfaceTypeName  = TypeName .
 interfaceType
-    : 'interface' '{' ( methodSpec eos )* '}'
+    : 'interface' IDENTIFIER? '{' ( methodSpec eos )* '}'
     ;
 
 //SliceType = "[" "]" ElementType .
@@ -689,7 +691,7 @@ element
 //AnonymousField = [ "*" ] TypeName .
 //Tag            = string_lit .
 structType
-    : 'struct' '{' ( fieldDecl eos )* '}'
+    : ('struct' | 'class') IDENTIFIER? ('{' ( fieldDecl eos )* '}')?
     ;
 
 fieldDecl
@@ -841,6 +843,7 @@ KEYWORD
     | 'import'
     | 'return'
     | 'var'
+    | 'class'
     ;
 
 

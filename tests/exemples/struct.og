@@ -1,8 +1,16 @@
 package main
 
+struct Foo
+class Foo
 type Foo struct
+type Foo class
+
+class Foo
   bar string
-  foobar int
+
+struct Foo
+  foo int
+  bar string
 
 type FooTag struct
   bar string `json: "test"`
