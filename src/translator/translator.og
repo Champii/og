@@ -30,7 +30,7 @@ GolangVisitor::VisitImportSpec(ctx *parser.ImportSpecContext, delegate antlr.Par
 	return this.VisitChildren(ctx, delegate)
 
 GolangVisitor::VisitImportPath(ctx *parser.ImportPathContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	txt = ctx.GetText()
+	txt := ctx.GetText()
 
 	if txt[0] == '"'
 		return txt + "\n"
@@ -54,7 +54,7 @@ GolangVisitor::VisitIdentifierList(ctx *parser.IdentifierListContext, delegate a
 	return ctx.GetText()
 
 GolangVisitor::VisitExpressionList(ctx *parser.ExpressionListContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r = this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+	r := this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 
 	if ctx.GetChildCount() > 1
 		r += "," + this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
@@ -78,8 +78,8 @@ GolangVisitor::VisitMethodDecl(ctx *parser.MethodDeclContext, delegate antlr.Par
 	return "\nfunc " + this.VisitChildren(ctx, delegate).(string)
 
 GolangVisitor::VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	class = ctx.IDENTIFIER(0).GetText()
-	method = ctx.IDENTIFIER(1).GetText()
+	class := ctx.IDENTIFIER(0).GetText()
+	method := ctx.IDENTIFIER(1).GetText()
 	return "(this *" + class + ") " + method
 
 GolangVisitor::VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
@@ -117,17 +117,20 @@ GolangVisitor::VisitAssignment(ctx *parser.AssignmentContext, delegate antlr.Par
 	return this.VisitChildren(ctx, delegate)
 
 GolangVisitor::VisitAssign_op(ctx *parser.Assign_opContext, delegate antlr.ParseTreeVisitor): interface{} ->
+	if len(ctx.GetText()) == 1
+		return "="
+
 	return ctx.GetText()
 
 GolangVisitor::VisitBinary_op(ctx *parser.Binary_opContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return ctx.GetText()
 
 GolangVisitor::VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	idList = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+	idList := this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
 
-	exprList = this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+	exprList := this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
 
-	return idList + " = " + exprList
+	return idList + " := " + exprList
 
 GolangVisitor::VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return this.VisitChildren(ctx, delegate)
@@ -154,7 +157,7 @@ GolangVisitor::VisitDeferStmt(ctx *parser.DeferStmtContext, delegate antlr.Parse
 	return "defer " + this.VisitChildren(ctx, delegate).(string)
 
 GolangVisitor::VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r = "if "
+	r := "if "
 
 	if ctx.SimpleStmt() != nil
 		r += this.VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(string) + ";"
@@ -173,7 +176,7 @@ GolangVisitor::VisitSwitchStmt(ctx *parser.SwitchStmtContext, delegate antlr.Par
 	return this.VisitChildren(ctx, delegate)
 
 GolangVisitor::VisitExprSwitchStmt(ctx *parser.ExprSwitchStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r = "switch "
+	r := "switch "
 
 	if ctx.Expression() != nil
 		r += this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
@@ -188,8 +191,8 @@ GolangVisitor::VisitExprSwitchStmt(ctx *parser.ExprSwitchStmtContext, delegate a
 	return r
 
 GolangVisitor::VisitExprCaseClause(ctx *parser.ExprCaseClauseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	sCase = this.VisitExprSwitchCase(ctx.ExprSwitchCase().(*parser.ExprSwitchCaseContext), delegate).(string)
-	stmts = this.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).(string)
+	sCase := this.VisitExprSwitchCase(ctx.ExprSwitchCase().(*parser.ExprSwitchCaseContext), delegate).(string)
+	stmts := this.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).(string)
 
 	return sCase + ":" + stmts
 
@@ -200,7 +203,7 @@ GolangVisitor::VisitExprSwitchCase(ctx *parser.ExprSwitchCaseContext, delegate a
 	return "case " + this.VisitChildren(ctx, delegate).(string)
 
 GolangVisitor::VisitTypeSwitchStmt(ctx *parser.TypeSwitchStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r = "switch "
+	r := "switch "
 
 	r += this.VisitTypeSwitchGuard(ctx.TypeSwitchGuard().(*parser.TypeSwitchGuardContext), delegate).(string)
 
@@ -214,18 +217,18 @@ GolangVisitor::VisitTypeSwitchStmt(ctx *parser.TypeSwitchStmtContext, delegate a
 	return r
 
 GolangVisitor::VisitTypeSwitchGuard(ctx *parser.TypeSwitchGuardContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r = ""
+	r := ""
 
 	if ctx.IDENTIFIER() != nil
 		r += ctx.IDENTIFIER().GetText() + "="
 
-	expr = this.VisitPrimaryExpr(ctx.PrimaryExpr().(*parser.PrimaryExprContext), delegate).(string)
+	expr := this.VisitPrimaryExpr(ctx.PrimaryExpr().(*parser.PrimaryExprContext), delegate).(string)
 
 	return r + expr + ".(type)"
 
 GolangVisitor::VisitTypeCaseClause(ctx *parser.TypeCaseClauseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	sCase = this.VisitTypeSwitchCase(ctx.TypeSwitchCase().(*parser.TypeSwitchCaseContext), delegate).(string)
-	stmts = this.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).(string)
+	sCase := this.VisitTypeSwitchCase(ctx.TypeSwitchCase().(*parser.TypeSwitchCaseContext), delegate).(string)
+	stmts := this.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).(string)
 
 	return sCase + ":" + stmts
 
@@ -257,7 +260,7 @@ GolangVisitor::VisitForClause(ctx *parser.ForClauseContext, delegate antlr.Parse
 	return this.VisitChildren(ctx, delegate)
 
 GolangVisitor::VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r = ""
+	r := ""
 
 	if ctx.IdentifierList() != nil
 		r = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
@@ -267,7 +270,7 @@ GolangVisitor::VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.P
 	return r + " = range " + this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 
 GolangVisitor::VisitGoStmt(ctx *parser.GoStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	expr = this.VisitChildren(ctx, delegate).(string)
+	expr := this.VisitChildren(ctx, delegate).(string)
 
 	if ctx.Function() != nil
 		return "go func " + expr + "()"
@@ -335,7 +338,7 @@ GolangVisitor::VisitOperand(ctx *parser.OperandContext, delegate antlr.ParseTree
 	if ctx.Expression() != nil
 		return "(" + this.VisitChildren(ctx, delegate).(string) + ")"
 
-		return this.VisitChildren(ctx, delegate)
+	return this.VisitChildren(ctx, delegate)
 
 GolangVisitor::VisitLiteral(ctx *parser.LiteralContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return this.VisitChildren(ctx, delegate)
@@ -366,7 +369,7 @@ GolangVisitor::VisitElementList(ctx *parser.ElementListContext, delegate antlr.P
 	return this.VisitChildren(ctx, delegate)
 
 GolangVisitor::VisitKeyedElement(ctx *parser.KeyedElementContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r = ""
+	r := ""
 	if ctx.Key() != nil
 		r += this.VisitKey(ctx.Key().(*parser.KeyContext), delegate).(string) + ":"
 
@@ -388,10 +391,10 @@ GolangVisitor::VisitStructType(ctx *parser.StructTypeContext, delegate antlr.Par
 
 GolangVisitor::VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	if ctx.IdentifierList() != nil
-		idList = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
-		type_ = this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
+		idList := this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+		type_ := this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
 
-		tag = ""
+		tag := ""
 
 		if ctx.STRING_LIT() != nil
 			tag = ctx.STRING_LIT().GetText()
@@ -437,9 +440,9 @@ GolangVisitor::VisitReceiverType(ctx *parser.ReceiverTypeContext, delegate antlr
 
 GolangVisitor::VisitExpression(ctx *parser.ExpressionContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	if ctx.GetChildCount() > 1
-		exp1 = this.VisitExpression(ctx.Expression(0).(*parser.ExpressionContext), delegate).(string)
-		op = this.VisitBinary_op(ctx.Binary_op().(*parser.Binary_opContext), delegate).(string)
-		exp2 = this.VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(string)
+		exp1 := this.VisitExpression(ctx.Expression(0).(*parser.ExpressionContext), delegate).(string)
+		op := this.VisitBinary_op(ctx.Binary_op().(*parser.Binary_opContext), delegate).(string)
+		exp2 := this.VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(string)
 
 		return exp1 + op + exp2
 
@@ -452,8 +455,8 @@ GolangVisitor::VisitUnary_op(ctx *parser.Unary_opContext, delegate antlr.ParseTr
 	return ctx.GetText()
 
 GolangVisitor::VisitConversion(ctx *parser.ConversionContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	t = this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
-	exp = this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+	t := this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
+	exp := this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 
 	return t + "(" + exp + ")"
 

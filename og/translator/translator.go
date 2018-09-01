@@ -118,15 +118,17 @@ func (v *GolangVisitor) VisitFunction(ctx *parser.FunctionContext, delegate antl
 }
 
 func (v *GolangVisitor) VisitMethodDecl(ctx *parser.MethodDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	return "\nfunc " + v.VisitChildren(ctx, delegate).(string)
 }
 
 func (v *GolangVisitor) VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	class := ctx.IDENTIFIER(0).GetText()
+	method := ctx.IDENTIFIER(1).GetText()
+	return "(this *" + class + ") " + method
 }
 
 func (v *GolangVisitor) VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	return "var " + v.VisitChildren(ctx, delegate).(string)
 }
 
 func (v *GolangVisitor) VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -171,6 +173,10 @@ func (v *GolangVisitor) VisitAssignment(ctx *parser.AssignmentContext, delegate 
 }
 
 func (v *GolangVisitor) VisitAssign_op(ctx *parser.Assign_opContext, delegate antlr.ParseTreeVisitor) interface{} {
+	if len(ctx.GetText()) == 1 {
+		return "="
+	}
+
 	return ctx.GetText()
 }
 
@@ -242,31 +248,79 @@ func (v *GolangVisitor) VisitSwitchStmt(ctx *parser.SwitchStmtContext, delegate 
 }
 
 func (v *GolangVisitor) VisitExprSwitchStmt(ctx *parser.ExprSwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	r := "switch "
+
+	if ctx.Expression() != nil {
+		r += v.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+	}
+
+	r += "{"
+
+	for _, c := range ctx.AllExprCaseClause() {
+		r += v.VisitExprCaseClause(c.(*parser.ExprCaseClauseContext), delegate).(string)
+	}
+
+	r += "}"
+
+	return r
 }
 
 func (v *GolangVisitor) VisitExprCaseClause(ctx *parser.ExprCaseClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	sCase := v.VisitExprSwitchCase(ctx.ExprSwitchCase().(*parser.ExprSwitchCaseContext), delegate).(string)
+	stmts := v.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).(string)
+
+	return sCase + ":" + stmts
 }
 
 func (v *GolangVisitor) VisitExprSwitchCase(ctx *parser.ExprSwitchCaseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	if ctx.GetText() == "_" {
+		return "default"
+	}
+
+	return "case " + v.VisitChildren(ctx, delegate).(string)
 }
 
 func (v *GolangVisitor) VisitTypeSwitchStmt(ctx *parser.TypeSwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	r := "switch "
+
+	r += v.VisitTypeSwitchGuard(ctx.TypeSwitchGuard().(*parser.TypeSwitchGuardContext), delegate).(string)
+
+	r += "{\n"
+
+	for _, c := range ctx.AllTypeCaseClause() {
+		r += v.VisitTypeCaseClause(c.(*parser.TypeCaseClauseContext), delegate).(string)
+	}
+
+	r += "}"
+
+	return r
 }
 
 func (v *GolangVisitor) VisitTypeSwitchGuard(ctx *parser.TypeSwitchGuardContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	r := ""
+
+	if ctx.IDENTIFIER() != nil {
+		r += ctx.IDENTIFIER().GetText() + ":="
+	}
+
+	expr := v.VisitPrimaryExpr(ctx.PrimaryExpr().(*parser.PrimaryExprContext), delegate).(string)
+
+	return r + expr + ".(type)"
 }
 
 func (v *GolangVisitor) VisitTypeCaseClause(ctx *parser.TypeCaseClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	sCase := v.VisitTypeSwitchCase(ctx.TypeSwitchCase().(*parser.TypeSwitchCaseContext), delegate).(string)
+	stmts := v.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).(string)
+
+	return sCase + ":" + stmts
 }
 
 func (v *GolangVisitor) VisitTypeSwitchCase(ctx *parser.TypeSwitchCaseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	if ctx.GetText() == "_" {
+		return "default"
+	}
+
+	return "case " + v.VisitChildren(ctx, delegate).(string)
 }
 
 func (v *GolangVisitor) VisitTypeList(ctx *parser.TypeListContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -348,7 +402,9 @@ func (v *GolangVisitor) VisitPointerType(ctx *parser.PointerTypeContext, delegat
 }
 
 func (v *GolangVisitor) VisitInterfaceType(ctx *parser.InterfaceTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	// TODO
+	return "interface{}"
+	// return "interface " + v.VisitChildren(ctx, delegate).(string)
 }
 
 func (v *GolangVisitor) VisitSliceType(ctx *parser.SliceTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -396,6 +452,10 @@ func (v *GolangVisitor) VisitParameterDecl(ctx *parser.ParameterDeclContext, del
 }
 
 func (v *GolangVisitor) VisitOperand(ctx *parser.OperandContext, delegate antlr.ParseTreeVisitor) interface{} {
+	if ctx.Expression() != nil {
+		return "(" + v.VisitChildren(ctx, delegate).(string) + ")"
+
+	}
 	// return ctx.GetText()
 	return v.VisitChildren(ctx, delegate)
 }
@@ -426,6 +486,9 @@ func (v *GolangVisitor) VisitLiteralType(ctx *parser.LiteralTypeContext, delegat
 }
 
 func (v *GolangVisitor) VisitLiteralValue(ctx *parser.LiteralValueContext, delegate antlr.ParseTreeVisitor) interface{} {
+	if ctx.ElementList() == nil {
+		return "{}"
+	}
 	return "{\n" + v.VisitChildren(ctx, delegate).(string) + "\n}"
 }
 
@@ -504,7 +567,7 @@ func (v *GolangVisitor) VisitSlice(ctx *parser.SliceContext, delegate antlr.Pars
 }
 
 func (v *GolangVisitor) VisitTypeAssertion(ctx *parser.TypeAssertionContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	return ".(" + v.VisitChildren(ctx, delegate).(string) + ")"
 }
 
 func (v *GolangVisitor) VisitArguments(ctx *parser.ArgumentsContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -544,7 +607,10 @@ func (v *GolangVisitor) VisitUnary_op(ctx *parser.Unary_opContext, delegate antl
 }
 
 func (v *GolangVisitor) VisitConversion(ctx *parser.ConversionContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	t := v.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
+	exp := v.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+
+	return t + "(" + exp + ")"
 }
 
 func (v *GolangVisitor) VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor) interface{} {

@@ -24,6 +24,6 @@ testRet2 (str string, str2 string): string, string ->
   return str, str2
 
 testAssign ->
-  a = foo()
-  a, b = foo()
-  a, b, c = foo()
+  a := foo()
+  a, b := foo()
+  a, b, c := foo()

@@ -218,7 +218,7 @@ constSpec
 //
 //IdentifierList = identifier { "," identifier } .
 identifierList
-    : IDENTIFIER ( ',' IDENTIFIER )*
+    : ('_' | IDENTIFIER) ( ',' ('_' | IDENTIFIER) )*
     ;
 
 //ExpressionList = Expression { "," Expression } .
@@ -254,11 +254,11 @@ function
 //MethodDecl   = "func" Receiver MethodName ( Function | Signature ) .
 //Receiver     = Parameters .
 methodDecl
-    : 'func' receiver IDENTIFIER ( function | signature )
+    : receiver ( function | signature )
     ;
 
 receiver
-    : parameters
+    : IDENTIFIER '::' IDENTIFIER
     ;
 
 //VarDecl     = "var" ( VarSpec | "(" { VarSpec ";" } ")" ) .
@@ -357,7 +357,7 @@ assign_op
 
 //ShortVarDecl = IdentifierList ":=" ExpressionList .
 shortVarDecl
-    : identifierList '=' expressionList
+    : identifierList ':=' expressionList
     ;
 
 emptyStmt
@@ -418,11 +418,11 @@ exprSwitchStmt
     ;
 
 exprCaseClause
-    : exprSwitchCase ':' statementList
+    : exprSwitchCase '=>' statementList
     ;
 
 exprSwitchCase
-    : 'case' expressionList | 'default'
+    : expressionList | '_'
     ;
 
 //TypeSwitchStmt  = "switch" [ SimpleStmt ";" ] TypeSwitchGuard "{" { TypeCaseClause } "}" .
@@ -434,13 +434,13 @@ typeSwitchStmt
     : 'switch' ( simpleStmt ';' )? typeSwitchGuard '{' typeCaseClause* '}'
     ;
 typeSwitchGuard
-    : ( IDENTIFIER ':=' )? primaryExpr '.' '(' 'type' ')'
+    : ( IDENTIFIER '=' )? primaryExpr '.' '(' 'type' ')'
     ;
 typeCaseClause
-    : typeSwitchCase ':' statementList
+    : typeSwitchCase '=>' statementList
     ;
 typeSwitchCase
-    : 'case' typeList | 'default'
+    : typeList | '_'
     ;
 typeList
     : type_ ( ',' type_ )*
@@ -629,7 +629,7 @@ basicLit
     ;
 
 operandName
-    : IDENTIFIER
+    : '_' | IDENTIFIER
     | qualifiedIdent
     ;
 
@@ -811,7 +811,7 @@ eos
 // Identifiers
 //identifier = letter { letter | unicode_digit } .
 IDENTIFIER
-    : LETTER ( LETTER | UNICODE_DIGIT )*
+    : ('_' | LETTER) ( ('_' | LETTER) | UNICODE_DIGIT )*
     ;
 
 // Keywords

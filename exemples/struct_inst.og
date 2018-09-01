@@ -5,6 +5,6 @@ type Foo struct
   bar string
 
 main ->
-  a = Foo
+  a := Foo
     foo: 1
     bar: "lol"

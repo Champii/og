@@ -1,17 +1,15 @@
 package og
 
-import (
-	"fmt"
+import
+	fmt
 	"io/ioutil"
 	"os/exec"
-)
 
-func Compile(path string) string {
+Compile(path string): string ->
 	file, err := ioutil.ReadFile(path)
 
-	if err != nil {
+	if err != nil
 		fmt.Println("error reading file", path, err)
-	}
 
 	preprocessed := Preproc(string(file))
 
@@ -24,20 +22,17 @@ func Compile(path string) string {
 	final := format(res)
 
 	return final
-}
 
-func format(str string) string {
+format(str string): string ->
 	cmd := exec.Command("gofmt")
 
 	stdin, _ := cmd.StdinPipe()
 
-	go func() {
+	go ->
 		defer stdin.Close()
 
 		stdin.Write([]byte(str))
-	}()
 
 	final, _ := cmd.CombinedOutput()
 
 	return string(final)
-}

@@ -146,6 +146,7 @@ make
 - [x] Logical predicat operator (`||` / `&&`  `or` / `and`)
 - [x] Multiple return in func
 - [x] Multiple return values in assign
+- [x] Type assertion
 - Tests
   - [x] Package
   - [x] Import
@@ -166,7 +167,7 @@ make
 
 - [ ] Slice manipulation (`a[0:x]`)
 - [ ] External classic Method declaration
-- [ ] Type assertion
+- [ ] Variable shadowing ? Or error ?
 
 # Todo
 
@@ -185,6 +186,5 @@ make
 - [ ] Generics
 - [ ] Error bubbling
 - [ ] Class-like method declaration (nested into the struct)
-- [ ] Variable shadowing ? Or error ?
 - [ ] Pattern matching
 - [ ] Import renaming and pattern matching
