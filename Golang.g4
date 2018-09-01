@@ -32,10 +32,6 @@
  */
 grammar Golang;
 
-options {
-  output=AST;
-}
-
 @parser::members {
 
     /**
@@ -174,7 +170,7 @@ options {
 
 //SourceFile       = PackageClause ";" { ImportDecl ";" } { TopLevelDecl ";" } .
 sourceFile
-    : packageClause eos ( importDecl eos )* ( topLevelDecl eos )*
+    : packageClause eos ( importDecl eos )* ( topLevelDecl eos )* EOF
     ;
 
 //PackageClause  = "package" PackageName .
@@ -252,7 +248,7 @@ functionDecl
     ;
 
 function
-    : signature  '->' block
+    : signature  '->' ( block | statementNoBlock)
     ;
 
 //MethodDecl   = "func" Receiver MethodName ( Function | Signature ) .
@@ -279,7 +275,7 @@ varSpec
 //Block = "{" StatementList "}" .
 block
     : '{' statementList '}'
-    | statementNoBlock
+    // | statementNoBlock
     ;
 
 //StatementList = { Statement ";" } .
@@ -628,6 +624,8 @@ basicLit
     | IMAGINARY_LIT
     | RUNE_LIT
     | STRING_LIT
+    | ('true' | 'false')
+    | 'nil'
     ;
 
 operandName
@@ -799,6 +797,10 @@ eos
     | {p.lineTerminatorAhead()}?
     | {p.GetTokenStream().LT(1).GetText() == "}"}?
     ;
+
+// ErrorChar
+//    : .
+//    ;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

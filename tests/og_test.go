@@ -35,9 +35,7 @@ type FooTag struct {
 		// top_fn.og
 		`package main
 
-func oneLiner() {
-	fmt.Println("a")
-}
+func oneLiner() { fmt.Println("a") }
 func testBody() {
 	fmt.Println("a")
 }

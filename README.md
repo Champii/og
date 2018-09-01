@@ -1,15 +1,16 @@
-# Og
+Og
+===
 Language that compiles to a subset of GoLang
 
 To be pronounced `O-Gee`
 
-## Goal
+# Goal
 
 To provide a usable language that compiles to Golang
 
 The main goal is to simplify the syntax, to borrow some concepts from Livescript, to implement Generics and macro processing, as well as some syntaxic sugar to avoid all the boilerplate Golang force us into.
 
-## Exemple
+# Exemple
 
 This is an exemple of how Og looks like actualy
 
@@ -46,7 +47,7 @@ main ->
 
 ```
 
-## Long term goal
+# Long term goal
 
 ```go
 package main
@@ -74,7 +75,39 @@ main ->
   fmt.Println(t.fn())
 ```
 
-## Done
+# Build
+
+To have the `Visitor` pattern in GO, you have to get and build the [https://github.com/wxio/antlr4/tree/go-visitor](https://github.com/wxio/antlr4/tree/go-visitor) into jar and Go runtime
+
+You will need `Maven`
+
+```bash
+# Install maven
+sudo apt install maven
+
+# Get the repo
+cd $GO_ROOT/src
+go get -u github.com/wxio/antlr4
+cd github.com/wxio/antlr4
+
+# Switch to go-visitor branch
+git checkout go-visitor
+
+# Build the jar
+mvn install -DskipTests=true
+
+# Get Og
+go get -u github.com/champii/og
+cd $GO_ROOT/src/github.com/champii/og
+
+# This will regenerate the grammar and build the binary
+make
+
+# Simple exemple
+./Og exemples/import.og
+```
+
+# Done
 
 - [x] Package declaration
 - [x] Import
@@ -129,13 +162,15 @@ main ->
   - [x] Multiple return in func
   - [x] Multiple return values in assign
 
-## Todo for rewriting Og in Og
+# Todo for rewriting Og in Og
 
 - [ ] Slice manipulation (`a[0:x]`)
-- [ ] Mitigate struct instantiation with any other block
+- [ ] External classic Method declaration
+- [ ] Type assertion
 
-## Todo
+# Todo
 
+- [ ] Perfs
 - [ ] Binary operator (`<<`, `>>`, `.`, `|`)
 - [ ] Rewrite Og in Og
 - [ ] Interfaces
@@ -145,7 +180,6 @@ main ->
 - [ ] For with a range (for i in [0..10])
 - [ ] For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)
 - [ ] `pub` visibility instead of capitalizing
-- [ ] External classic Method declaration
 - [ ] Existance test (if toto?) for non-nil value test
 - [ ] Returnable and assignable statements (if, for, ...)
 - [ ] Generics

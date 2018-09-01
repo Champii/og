@@ -24,6 +24,6 @@ main ->
   else
     fmt.Println(a)
 
-  if (a != a)
+  if a != a
     fmt.Println(a)
 

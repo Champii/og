@@ -146,6 +146,10 @@ func (v *GolangVisitor) VisitStatement(ctx *parser.StatementContext, delegate an
 	return v.VisitChildren(ctx, delegate).(string) + "\n"
 }
 
+func (v *GolangVisitor) VisitStatementNoBlock(ctx *parser.StatementNoBlockContext, delegate antlr.ParseTreeVisitor) interface{} {
+	return "{" + v.VisitChildren(ctx, delegate).(string) + "}"
+}
+
 func (v *GolangVisitor) VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return v.VisitChildren(ctx, delegate)
 }
@@ -211,7 +215,7 @@ func (v *GolangVisitor) VisitFallthroughStmt(ctx *parser.FallthroughStmtContext,
 }
 
 func (v *GolangVisitor) VisitDeferStmt(ctx *parser.DeferStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return v.VisitChildren(ctx, delegate)
+	return "defer " + v.VisitChildren(ctx, delegate).(string)
 }
 
 func (v *GolangVisitor) VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -529,7 +533,6 @@ func (v *GolangVisitor) VisitExpression(ctx *parser.ExpressionContext, delegate 
 	}
 
 	return v.VisitChildren(ctx, delegate)
-	// return ctx.GetText()
 }
 
 func (v *GolangVisitor) VisitUnaryExpr(ctx *parser.UnaryExprContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -545,5 +548,6 @@ func (v *GolangVisitor) VisitConversion(ctx *parser.ConversionContext, delegate 
 }
 
 func (v *GolangVisitor) VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor) interface{} {
+	// return ctx.GetText()
 	return v.VisitChildren(ctx, delegate)
 }

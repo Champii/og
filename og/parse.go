@@ -16,7 +16,7 @@ func Parse(str string) string {
 
 	p := parser.NewGolangParser(stream)
 
-	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+	// p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 
 	res := p.SourceFile()
 
