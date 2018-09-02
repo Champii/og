@@ -1,6 +1,6 @@
 Og-Lang
 ===
-### *v0.1.6*
+### *v0.1.7*
 
 <table>
   <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em></td></tr>
@@ -123,7 +123,7 @@ USAGE:
   og [options] Folders|Files
 
 VERSION:
-  v0.1.6
+  v0.1.7
 
 OPTIONS:
   -o value, --out value  Output directory. If input is recursive folder, the tree is recreated (default: "./")
@@ -196,7 +196,9 @@ og exemples/import.og
 
 # Changelog
 
-## v0.1.6: Current version
+## v0.1.7: Current version
+
+## v0.1.6
   - Release system for develop
 
 ## v0.1.5
