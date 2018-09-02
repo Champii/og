@@ -196,7 +196,10 @@ og exemples/import.og
 
 # Changelog
 
-## v0.1.5: Current version
+## v0.1.6: Current version
+  - Release system for develop
+
+## v0.1.5
   - Forced `Go` syntax highlight on `Og` files for `Github`
   - Rework translator to adapt to new method syntax and `@` alias
   - No need to specify the `{}` in `interface{}` types
