@@ -12,9 +12,13 @@ ERROR_STRING = [ERROR]
 WARN_STRING  = [WARNING]
 COM_STRING   = [Compiling]
 
+define section_title
+	printf "%b" "\n$(WARN_COLOR)-> $(OK_COLOR)$(1)$(NO_COLOR)\n";
+endef
+
 define run_and_test
 	printf "%b" "- $(OBJ_COLOR)$(2)$(NO_COLOR)\r"; \
-	$(1) > $@.out 2> $@.log; \
+	$(1) > /dev/null 2> $@.log; \
 	RESULT=$$?; \
 	if [ $$RESULT -ne 0 ]; then \
 		printf '%-60b%b' '- $(OBJ_COLOR)$(2)' '$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n'; \
@@ -24,9 +28,7 @@ define run_and_test
 		printf '%-60b%b' '- $(OBJ_COLOR)$(2)' '$(OK_COLOR)$(OK_STRING)$(NO_COLOR)\n'; \
 	fi; \
 	cat $@.log; \
-	cat $@.out; \
 	rm -f $@.log; \
-	rm -f $@.out; \
 	exit $$RESULT
 endef
 
@@ -39,26 +41,35 @@ all: grammar build
 
 grammar: parser/*.go
 parser/*.go: parser/Og.g4
+	@$(call section_title,Grammar)
 	@$(call run_and_test,go generate,Generating parser from $<)
 	@make clean build --no-print-directory
 
-re: clean grammar
-	@$(call run_and_test,og -o lib src,Transforming [og -> go] from previous build)
-	@make --no-print-directory
-
-build: $(EXE)
-# $(EXE): $(RES)
+build:
+	@$(call section_title,Oglang to Golang Compilation)
+	@make $(EXE) --no-print-directory
 
 $(EXE): $(RES)
+	@$(call section_title,Building Binary)
 	@$(call run_and_test,go build,Building go source)
-	@$(call run_and_test,go test og/tests,Testing)
+	@make test --no-print-directory
 
+re: clean
+	@$(call section_title,Full Bbootstrap)
+	@make re_ --no-print-directory
+
+re_: grammar
+	@$(call run_and_test,og -o lib src,Recompiling all sources from previous og version)
+	@make build --no-print-directory
+	@$(call section_title,Rebuilding with new og version)
+	@make clean all --no-print-directory
 
 test:
 	@$(call run_and_test,go test og/tests,Testing)
 
 clean:
-	@go clean
+	@$(call section_title,Cleaning)
+	@$(call run_and_test,rm -f $(RES),Delete src folder)
 
 lib/%.go: src/%.og
 	@$(call run_and_test,./og -o lib $?,Compiling $<)

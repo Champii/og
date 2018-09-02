@@ -26,6 +26,7 @@ Compile(config_ OgConfig) ->
   for _, p in config.Paths
     filepath.Walk(p, walker)
 
+
 walker(filePath string, info os.FileInfo, err error): error ->
   if err != nil
     return err
