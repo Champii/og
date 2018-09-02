@@ -183,9 +183,9 @@ og exemples/import.og
 ## v0.1.5
   - Forced `Go` syntax highlight on `Og` files for `Github`
   - Rework translator to adapt to new method syntax and `@` alias
-  - No need to specify the `{}` in `interface{}` types
+  - No need to specify the `{}` in `interface{}` for arguments types (not for return values yet)
     ```go
-      fn(a interface): interface -> a
+      fn(a interface): interface{} -> a
     ```
 
 ## v0.1.4
