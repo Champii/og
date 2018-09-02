@@ -1,4 +1,4 @@
-.PHONY: all clean
+.PHONY: all build clean
 
 COM_COLOR   = \033[0;34m
 OBJ_COLOR   = \033[0;36m
@@ -32,32 +32,33 @@ endef
 
 SRC_PATH=src/
 SRC=$(wildcard $(SRC_PATH)*.og $(SRC_PATH)translator/*.og)
-RES=lib/
+RES=$(subst src/, lib/, $(SRC:.og=.go))
 EXE=og
 
-all: grammar bootstrap
+all: grammar build
 
 grammar: parser/*.go
 parser/*.go: parser/Og.g4
-	@$(call run_and_test,go generate,Generating grammar)
-
-bootstrap: $(RES)
-$(RES): $(SRC)
-	@$(call run_and_test,./og -o lib src,Transforming [og -> go])
-	@make build -s
-	@make test -s
+	@$(call run_and_test,go generate,Generating parser from $<)
+	@make clean build --no-print-directory
 
 re: clean grammar
 	@$(call run_and_test,og -o lib src,Transforming [og -> go] from previous build)
-	@make build -s
-	@make test -s
-	@make bootstrap -s
+	@make --no-print-directory
 
-build:
-	@$(call run_and_test,go build,Compiling go files)
+build: $(EXE)
+# $(EXE): $(RES)
 
-test: $(EXE)
+$(EXE): $(RES)
+	@$(call run_and_test,go build,Building go source)
+	@$(call run_and_test,go test og/tests,Testing)
+
+
+test:
 	@$(call run_and_test,go test og/tests,Testing)
 
 clean:
 	@go clean
+
+lib/%.go: src/%.og
+	@$(call run_and_test,./og -o lib $?,Compiling $<)

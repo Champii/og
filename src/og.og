@@ -17,6 +17,7 @@ struct OgConfig
   Paths   []string
   OutPath string
 
+
 var config OgConfig
 
 Compile(config_ OgConfig) ->

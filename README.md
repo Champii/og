@@ -23,7 +23,7 @@ Og-Lang
 
 To be pronounced `Oh-Jee`.
 
-`Oglang` is an indentation based languagem mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of `GoLang` but aim to be a superset and to be totally backward compatible with it. The goal is for every `Go` file to be a valid `Og` file
+`Oglang` is an indentation based language mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of `GoLang` but aim to be a superset and to be totally backward compatible with it. The goal is for every `Go` file to be a valid `Og` file
 
 ### Bootstraped Language
 

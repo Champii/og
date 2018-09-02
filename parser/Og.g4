@@ -259,7 +259,6 @@ methodDecl
     : receiver ( function | signature )
     ;
 
-
 receiver
     : IDENTIFIER '::' IDENTIFIER
     ;
