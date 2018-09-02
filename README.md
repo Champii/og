@@ -196,7 +196,7 @@ og exemples/import.og
 
 # Changelog
 
-## 0.1.5: Current version
+## v0.1.5: Current version
   - Forced `Go` syntax highlight on `Og` files for `Github`
   - Rework translator to adapt to new method syntax and `@` alias
   - No need to specify the `{}` in `interface{}` types
@@ -204,7 +204,7 @@ og exemples/import.og
       fn(a interface): interface -> a
     ```
 
-## 0.1.4
+## v0.1.4
   - Class-like method declaration (nested into the struct)
     ```go
       struct Foo
@@ -212,7 +212,7 @@ og exemples/import.og
         f : int -> return @bar
     ```
 
-## 0.1.3
+## v0.1.3
   - Slice manipulation
       ```go
       someArr[1:x]
@@ -226,7 +226,7 @@ og exemples/import.og
     ```go
       Foo::bar : SomeType -> return @someProp
     ```
-## 0.1.2
+## v0.1.2
   - Support for simple `struct ID {}` declaration. Still support `type ID struct {}`.
     ```go
       // Equivalent
@@ -259,7 +259,7 @@ og exemples/import.og
       Foo::bar -> doSomething()
     ```
 
-## 0.1.0
+## v0.1.0
   - Initial release
 
 

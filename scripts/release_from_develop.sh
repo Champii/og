@@ -77,7 +77,21 @@ NEXT_TAG="$VNUM1.$VNUM2.$VNUM3"
 
 echo "Preparing next version: $NEXT_TAG"
 
+sed -i -e "s/$NEW_TAG: Current version/$NEXT_TAG: Current version\\n\\n## __PLACEHOLDER__/g" README.md
+
+if [[ "$?" != "0" ]]; then
+  echo "Error"
+  exit
+fi
+
 sed -i -e "s/$NEW_TAG/$NEXT_TAG/g" README.md
+
+if [[ "$?" != "0" ]]; then
+  echo "Error"
+  exit
+fi
+
+sed -i -e "s/__PLACEHOLDER__/$NEW_TAG/g" README.md
 
 if [[ "$?" != "0" ]]; then
   echo "Error"
