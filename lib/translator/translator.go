@@ -53,10 +53,20 @@ func (this *OgVisitor) VisitDeclaration(ctx *parser.DeclarationContext, delegate
 	return this.VisitChildren(ctx, delegate)
 }
 func (this *OgVisitor) VisitConstDecl(ctx *parser.ConstDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	return "const " + this.VisitChildren(ctx, delegate).(string)
 }
 func (this *OgVisitor) VisitConstSpec(ctx *parser.ConstSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	res := ""
+	if ctx.IdentifierList() != nil {
+		res += this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+	}
+	if ctx.Type_() != nil {
+		res += " " + this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
+	}
+	if ctx.ExpressionList() != nil {
+		res += " = " + this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+	}
+	return res
 }
 func (this *OgVisitor) VisitIdentifierList(ctx *parser.IdentifierListContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return ctx.GetText()
@@ -92,7 +102,15 @@ func (this *OgVisitor) VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.P
 	return "var " + this.VisitChildren(ctx, delegate).(string)
 }
 func (this *OgVisitor) VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	res := ""
+	res += this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+	if ctx.Type_() != nil {
+		res += this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
+	}
+	if ctx.ExpressionList() != nil {
+		res += " = " + this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+	}
+	return res
 }
 func (this *OgVisitor) VisitBlock(ctx *parser.BlockContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return "{\n" + this.VisitChildren(ctx, delegate).(string) + "}"
@@ -306,10 +324,16 @@ func (this *OgVisitor) VisitSliceType(ctx *parser.SliceTypeContext, delegate ant
 	return "[]" + this.VisitChildren(ctx, delegate).(string)
 }
 func (this *OgVisitor) VisitMapType(ctx *parser.MapTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	res := "map["
+	res += this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string) + "]"
+	res += this.VisitElementType(ctx.ElementType().(*parser.ElementTypeContext), delegate).(string)
+	return res
 }
 func (this *OgVisitor) VisitChannelType(ctx *parser.ChannelTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return this.VisitChildren(ctx, delegate)
+}
+func (this *OgVisitor) VisitChannelDecl(ctx *parser.ChannelDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
+	return ctx.GetText()
 }
 func (this *OgVisitor) VisitMethodSpec(ctx *parser.MethodSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
 	idx := ""
@@ -325,7 +349,11 @@ func (this *OgVisitor) VisitSignature(ctx *parser.SignatureContext, delegate ant
 	return this.VisitChildren(ctx, delegate)
 }
 func (this *OgVisitor) VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return "(" + ctx.GetText() + ")"
+	res := ""
+	for _, t := range ctx.AllType_() {
+		res += this.VisitType_(t.(*parser.Type_Context), delegate).(string) + ","
+	}
+	return "(" + res + ")"
 }
 func (this *OgVisitor) VisitParameters(ctx *parser.ParametersContext, delegate antlr.ParseTreeVisitor) interface{} {
 	if ctx.ParameterList() == nil {

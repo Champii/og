@@ -1,0 +1,5 @@
+!main
+
+var foo string
+var foo = "bar"
+var foo string = "bar"

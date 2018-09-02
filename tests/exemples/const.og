@@ -1,0 +1,4 @@
+!main
+
+const foo = "bar"
+const foo string = "bar"

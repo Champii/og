@@ -175,6 +175,11 @@ og exemples/import.og
 # Changelog
 
 ## v0.1.8: Current version
+  - Proper `const` declaration
+  - Proper `var` declaration
+  - Map declaration
+  - Chan type (`chan T`, `<-chan T` and `chan<- T`)
+  - Fixed a bug with result type that were not being parsed. We can now use `interface` instread of `interface{}` everywhere
 
 ## v0.1.7
   - Add custom antlr4 directly into sources. No need to build it yourself
@@ -252,15 +257,14 @@ og exemples/import.og
 # TODO
 
 ## Golang superset goal
-- [ ] `const` declaration
-- [ ] `map` Type
-- [ ] `chan` Type
+- [ ] `const` and `var` multiple consecutive declaration
 - [ ] Labels
 - [ ] `break`
 - [ ] `goto`
 - [ ] `continue`
 - [ ] `fallthrough`
 - [ ] `select`
+- [ ] `make`, `append`, ...
 - [ ] For with a custom variable (for i = 0; i < 10; i++)
 - [ ] Method receiver pointer type
 - [ ] Function literal (assignable)

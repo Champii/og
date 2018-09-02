@@ -35,8 +35,22 @@ struct OgVisitor
 
   VisitTopLevelDecl(ctx *parser.TopLevelDeclContext, delegate antlr.ParseTreeVisitor)         : interface{} -> return @VisitChildren(ctx, delegate).(string) + "\n"
   VisitDeclaration(ctx *parser.DeclarationContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
-  VisitConstDecl(ctx *parser.ConstDeclContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
-  VisitConstSpec(ctx *parser.ConstSpecContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitConstDecl(ctx *parser.ConstDeclContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return "const " + @VisitChildren(ctx, delegate).(string)
+  VisitConstSpec(ctx *parser.ConstSpecContext, delegate antlr.ParseTreeVisitor)               : interface{} ->
+    res := ""
+
+    if ctx.IdentifierList() != nil
+      res += @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+
+    if ctx.Type_() != nil
+      res += " " + @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
+
+
+    if ctx.ExpressionList() != nil
+      res += " = " + @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+
+    return res
+
   VisitIdentifierList(ctx *parser.IdentifierListContext, delegate antlr.ParseTreeVisitor)     : interface{} -> return ctx.GetText()
   VisitExpressionList(ctx *parser.ExpressionListContext, delegate antlr.ParseTreeVisitor)     : interface{} ->
     r := @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
@@ -57,7 +71,19 @@ struct OgVisitor
     return "(this *" + c + ") " + method
 
   VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.ParseTreeVisitor)                   : interface{} -> return "var " + @VisitChildren(ctx, delegate).(string)
-  VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.ParseTreeVisitor)                   : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.ParseTreeVisitor)                   : interface{} ->
+    res := ""
+
+    res += @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+
+    if ctx.Type_() != nil
+      res += @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
+
+    if ctx.ExpressionList() != nil
+      res += " = " + @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+
+    return res
+
   VisitBlock(ctx *parser.BlockContext, delegate antlr.ParseTreeVisitor)                       : interface{} -> return "{\n" + @VisitChildren(ctx, delegate).(string) + "}"
   VisitStatementList(ctx *parser.StatementListContext, delegate antlr.ParseTreeVisitor)       : interface{} -> return @VisitChildren(ctx, delegate)
   VisitStatement(ctx *parser.StatementContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate).(string) + "\n"
@@ -219,8 +245,15 @@ struct OgVisitor
 
   VisitSliceType(ctx *parser.SliceTypeContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return "[]" + @VisitChildren(ctx, delegate).(string)
 
-  VisitMapType(ctx *parser.MapTypeContext, delegate antlr.ParseTreeVisitor)                   : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitMapType(ctx *parser.MapTypeContext, delegate antlr.ParseTreeVisitor)                   : interface{} ->
+    res := "map["
+    res += @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string) + "]"
+    res += @VisitElementType(ctx.ElementType().(*parser.ElementTypeContext), delegate).(string)
+
+    return res
+
   VisitChannelType(ctx *parser.ChannelTypeContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitChannelDecl(ctx *parser.ChannelDeclContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return ctx.GetText()
   VisitMethodSpec(ctx *parser.MethodSpecContext, delegate antlr.ParseTreeVisitor)             : interface{} ->
     idx := ""
 
@@ -231,7 +264,13 @@ struct OgVisitor
 
   VisitFunctionType(ctx *parser.FunctionTypeContext, delegate antlr.ParseTreeVisitor)         : interface{} -> return @VisitChildren(ctx, delegate)
   VisitSignature(ctx *parser.SignatureContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
-  VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor)                     : interface{} -> return "(" + ctx.GetText() + ")"
+  VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor)                     : interface{} ->
+    res := ""
+
+    for _, t in ctx.AllType_()
+      res += @VisitType_(t.(*parser.Type_Context), delegate).(string) + ","
+
+    return "(" + res + ")"
 
   VisitParameters(ctx *parser.ParametersContext, delegate antlr.ParseTreeVisitor)             : interface{} ->
     if ctx.ParameterList() == nil

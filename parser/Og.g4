@@ -212,7 +212,7 @@ constDecl
 
 //ConstSpec      = IdentifierList [ [ Type ] "=" ExpressionList ] .
 constSpec
-    : identifierList ( type_? '=' expressionList )?
+    : identifierList ( type_? '=' expressionList )
     ;
 
 //
@@ -557,7 +557,11 @@ mapType
 
 //ChannelType = ( "chan" | "chan" "<-" | "<-" "chan" ) ElementType .
 channelType
-    : ( 'chan' | 'chan' '<-' | '<-' 'chan' ) elementType
+    : channelDecl elementType
+    ;
+
+channelDecl
+    : ( 'chan' | 'chan' '<-' | '<-' 'chan' )
     ;
 
 methodSpec

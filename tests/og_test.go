@@ -258,6 +258,37 @@ func main() {
 	foo.f()
 }
 `,
+		// const.og
+		`package main
+
+const foo = "bar"
+const foo string = "bar"
+`,
+		// var.og
+		`package main
+
+var foo string
+var foo = "bar"
+var foo string = "bar"
+`,
+		// map.og
+		`package main
+
+func fn(m map[string]string) map[string]string { return m }
+func main() {
+	m := map[string]string{}
+}
+`,
+		// chan.og
+		`package main
+
+func fn(c1 chan<- int, c2 <-chan int) chan int { 0 }
+func main() {
+	c := make(chan string)
+	c := make(chan<- string)
+	c := make(<-chan string)
+}
+`,
 	}
 
 	paths := []string{
@@ -279,6 +310,10 @@ func main() {
 		`switch`,
 		`this`,
 		`internal_method`,
+		`const`,
+		`var`,
+		`map`,
+		`chan`,
 	}
 
 	for i, p := range paths {

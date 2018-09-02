@@ -1,0 +1,7 @@
+!main
+
+fn(c1 chan<- int,c2 <-chan int): chan int -> 0
+main ->
+	c := make(chan string)
+	c := make(chan<- string)
+	c := make(<-chan string)
