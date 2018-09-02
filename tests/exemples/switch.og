@@ -1,0 +1,13 @@
+!main
+
+main ->
+	switch a
+		2 => 1
+
+	switch b
+		"x" => b
+		_   => other
+
+	switch t.(type)
+		string => "string"
+		_      => "other"

@@ -215,6 +215,38 @@ type Foo5 interface {
 	Other() interface{}
 }
 `,
+		// switch.og
+		`package main
+
+func main() {
+	switch a {
+	case 2:
+		1
+	}
+	switch b {
+	case "x":
+		b
+	default:
+		other
+	}
+	switch t.(type) {
+	case string:
+		"string"
+	default:
+		"other"
+	}
+}
+`,
+		// this.og
+		`package main
+
+type Test struct {
+	i int
+}
+
+func (this *Test) f() *Test { return this }
+func (this *Test) g() int   { return this.i }
+`,
 	}
 
 	paths := []string{
@@ -233,6 +265,8 @@ type Foo5 interface {
 		`struct_inst`,
 		`slices`,
 		`interface`,
+		`switch`,
+		`this`,
 	}
 
 	for i, p := range paths {

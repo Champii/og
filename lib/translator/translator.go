@@ -353,10 +353,22 @@ func (this *OgVisitor) VisitBasicLit(ctx *parser.BasicLitContext, delegate antlr
 	return ctx.GetText()
 }
 func (this *OgVisitor) VisitOperandName(ctx *parser.OperandNameContext, delegate antlr.ParseTreeVisitor) interface{} {
+	if ctx.IDENTIFIER() != nil {
+		return ctx.IDENTIFIER().GetText()
+	}
+	if ctx.QualifiedIdent() != nil || ctx.This_() != nil {
+		return this.VisitChildren(ctx, delegate)
+	}
 	return ctx.GetText()
 }
+func (this *OgVisitor) VisitThis_(ctx *parser.This_Context, delegate antlr.ParseTreeVisitor) interface{} {
+	return "this"
+}
 func (this *OgVisitor) VisitQualifiedIdent(ctx *parser.QualifiedIdentContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	if ctx.This_() != nil {
+		return "this." + ctx.IDENTIFIER(0).GetText()
+	}
+	return ctx.IDENTIFIER(0).GetText() + "." + ctx.IDENTIFIER(1).GetText()
 }
 func (this *OgVisitor) VisitCompositeLit(ctx *parser.CompositeLitContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return this.VisitChildren(ctx, delegate)

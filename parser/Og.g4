@@ -633,11 +633,17 @@ basicLit
 operandName
     : '_' | IDENTIFIER
     | qualifiedIdent
+    | this_
+    ;
+
+this_
+    : '@'
     ;
 
 //QualifiedIdent = PackageName "." identifier .
 qualifiedIdent
     : IDENTIFIER '.' IDENTIFIER
+    | this_ IDENTIFIER
     ;
 
 //CompositeLit  = LiteralType LiteralValue .

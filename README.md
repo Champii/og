@@ -1,15 +1,19 @@
 Og-Lang v0.1.3
 ===
 
-### Golang On Steroids
+#### `Golang On Steroids` - _Socrates_.
 
-Language inspired from [Livescript](http://livescript.net) that compiles to a subset of GoLang.
+`Oglang` is an indentation based languagem mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of GoLang (for the moment :D).
 
 To be pronounced `Oh-Jee`.
 
-Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
+`Oglang` is written in itself. It is said to be a 'Bootstraped' language. In fact, `Oglang` needs the previous release of itself to build itself.
 
-`og` is written in `og`. See the [src](https://github.com/champii/og/tree/master/src) folder for `og` source, and the [lib](https://github.com/champii/og/tree/master/lib) folder for the compiled one.
+See the [src](https://github.com/champii/og/tree/master/src) folder for `Oglang` source.
+
+And the [lib](https://github.com/champii/og/tree/master/lib) folder for the compiled one (in Golang).
+
+Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
 
 # Index
 
@@ -17,19 +21,19 @@ Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar
 - [Exemple](#exemple)
 - [Usage](#usage)
 - [Build](#build)
-- [Long term goal](#long-term-goal)
 - [Todo](#todo)
 - [Changelog](#changelog)
+- [Long term utopia](#long-term-utopia)
 
 # Goal
 
-To provide a usable language that compiles to Golang
+To provide a superset of `Golang` to be a usable language that compiles to Golang
 
 The main goal is to simplify the syntax, to borrow some concepts from Livescript and other functional languages, to implement Generics and macro processing, as well as some syntaxic sugar to avoid all the boilerplate Golang force us into.
 
 # Exemple
 
-This is an exemple of how `og` looks like actualy. See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder.
+This is an exemple of how `Oglang` looks like actualy. See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder.
 
 ```go
 !main
@@ -42,9 +46,9 @@ import
 struct Foo
   bar int
 
-Foo::myFunc(foo int) : int -> return this.bar + foo
+Foo::myFunc(foo int) : int -> return @bar + foo
 
-myFunc(a string): string -> return a
+otherFunc(a string): string -> return a
 
 main ->
   test := "foo"
@@ -56,6 +60,10 @@ main ->
 
   for _, v in someArray
     fmt.Println(v)
+
+  switch test
+    "foo" => doSomething()
+    _     => doDefault()
 ```
 # Usage
 
@@ -141,40 +149,10 @@ sudo make install
 og exemples/import.og
 ```
 
-# Long term goal
-
-```go
-!main
-
-import fmt
-
-struct Generic<T>
-  // attributes
-  pub test T
-
-  // Class method
-  T => Generic<T>
-  pub @new(v) -> Generic<T>{ v }
-
-  // Instance method
-  fn : T -> @test
-
-genericFunc<T>(g Generic<T>): T -> g.test
-
-// External type declaration
-Generic<T> => T
-genericFunc<T>(g) -> g.test
-
-main ->
-  t := Generic<string>::new("str")
-
-  fmt.Println(t.fn())
-
-  a = [0..10].map((+ 10))
-```
-
 # TODO
 
+- [ ] Make `Oglang` a valid super-set of `Golang`.
+- [ ] Make tests truly executable
 - [ ] Beautyful and meaningful compile error with source context
 - [ ] External type declaration like Haskell: `myFunc :: string -> Foo -> Bar`
 - [ ] OneLiner if/for: `if a => 1`, `for b => b--`
@@ -193,9 +171,27 @@ main ->
 - [ ] Error bubbling
 - [ ] `map` Type
 - [ ] `chan` Type
+- [ ] `const` declaration
+- [ ] Send statement `a <- b`
+- [ ] Incrementation everywhere
+- [ ] Send statement `a <- b`
+- [ ] Empty statement (need to avoid skiping empty lines in preproc)
+- [ ] Labels
+- [ ] `break`
+- [ ] `goto`
+- [ ] `continue`
+- [ ] `fallthrough`
+- [ ] `select`
+- [ ] Rest params `...`
+- [ ] Recever type in methodExpr
+- [ ] Function literal (assignable)
+- [ ] Proper Anonymous field in structs
 - [ ] Method receiver pointer type
+- [ ] Auto add `default` to switch ?
 - [ ] Class-like method declaration (nested into the struct)
 - [ ] Pattern matching
+- [ ] Function currying
+- [ ] Function shorthand `(+ 10)`
 - [ ] Import renaming and pattern matching
 - [ ] Adapt Golang tooling like `gofmt` or `golint`
 - [ ] VSCode extension
@@ -205,6 +201,7 @@ main ->
 ## Current working tree
   - Slice manipulation
   - Interfaces
+  - Alias `@` => `this`
 
 ## 0.1.2
   - Support for simple `struct ID {}` declaration. Still support `type ID struct {}`.
@@ -215,57 +212,88 @@ main ->
 
 ## 0.1.0
   - Initial release
-- [x] Rewrite Og in Og
-- [x] Package declaration
-- [x] Import
-- [x] Structure
-- [x] Top level Function
-- [x] Function arguments and type
-- [x] Function return type
-- [x] Return keyword
-- [x] Assignation
-- [x] Bool
-- [x] Int
-- [x] Float
-- [x] String
-- [x] Array
-- [x] Nested property (a.b.c)
-- [x] Function call
-- [x] Array access (a[0])
-- [x] If
-- [x] Else If
-- [x] Else
-- [x] Predicate operator
-- [x] Is / Isnt alias of `==` / `!=`
-- [x] For In
-- [x] Goroutine
-- [x] `gofmt` to format the output
-- [x] One liner functions
-- [x] Math Operators
-- [x] Array type
-- [x] Pointer type
-- [x] Struct tags
-- [x] Parenthesis
-- [x] Reference and Dereference
-- [x] Increment/Decrement
-- [x] Struct instantiation
-- [x] Nil value
-- [x] Logical predicat operator (`||` / `&&`  `or` / `and`)
-- [x] Multiple return in func
-- [x] Multiple return values in assign
-- [x] Type assertion
-- Tests
-  - [x] Package
-  - [x] Import
-  - [x] Struct
-  - [x] Top Level Function
-  - [x] If/ElseIf/Else
-  - [x] For
-  - [x] NestedProperty
-  - [x] GoRoutine
-  - [x] Math Operation
-  - [x] Reference/Dereference
-  - [x] Increment/Decrement
-  - [x] Struct instantiation
-  - [x] Multiple return in func
-  - [x] Multiple return values in assign
+
+# Long term utopia
+
+```go
+!main
+
+import fmt
+
+// Generics
+struct Generic<T>
+  // attributes
+  pub test T
+
+  // Instance method
+  fn : T -> @test
+
+  // Class method with external type declaration
+  $ T -> Generic<T>
+  pub @new(v) -> Generic<T>{ v }
+
+
+// External grouped method definition
+Generic<T>::(
+  // With '*', tells the receiver (this or @) is a pointer to Generic<T>
+  *method1 : int -> 1
+
+  // External type declaration with no return
+  $ int -> SomeComplexType -> (AnotherOne -> interface{}) -> ()
+  method2(a, b, c) -> 2
+)
+
+// Returnable statements, nil existence test, predicat recapture (that)
+genericFunc<T>(g Generic<T>): T -> if g.fn()? => that
+                                   else       => somethingElse
+
+// External type declaration
+$ Generic<T> -> T
+genericFunc<T>(g) -> g.test
+
+// Multiple return values
+$ int -> (int, string)
+multipleReturn(i) -> i, "foo"
+
+// Automatic "it" argument when not specified
+$ string -> string
+someFunc -> it + "Hello"
+
+// No arguments, multiple return values, error bubbling
+# (error, SomeType)
+failableFunc ->
+  res1 := funcsThatMayFail()?
+  res2 := funcsThatFail()?
+
+  res1 + res2
+
+// Macro definition (like rust)
+$macro my_macro ->
+  ($number:expr) =>
+    myFunc$(number) : int -> $number
+    if $number > 0
+      $my_macro($number - 1)
+
+// Generate 10 function `myFunc10(), myFunc9(), .. myFunc0()` that all return their number,
+$my_macro(10)
+
+// Operator definition with precedence
+operator ~~ 9
+
+// Typeclass (could be implemented with macros ? lets see...)
+impl SomeTypeClass for MyType
+  x ~~ y = x.DoSomething(y)
+
+main ->
+  t := Generic<string>::new("str")
+
+  // Range array creation, call chaining,
+  // function currying and function shorthand.
+  // Here a == [10, 11, 12, 13, 14, 15]
+  a := []int{0..10}
+    |> map((+ 10))
+    |> filter((<= 15))
+
+  // Function composition
+  f := map >> filter
+```

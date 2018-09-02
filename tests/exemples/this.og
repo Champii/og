@@ -1,0 +1,7 @@
+!main
+
+struct Test
+  i int
+
+Test::f : *Test -> return @
+Test::g : int -> return @i
