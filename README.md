@@ -190,9 +190,6 @@ make bootstrap
 # Handy in case of mistake in the source or for release
 make rebootstrap
 
-# And install
-sudo make install
-
 # Simple exemple
 og exemples/import.og
 ```

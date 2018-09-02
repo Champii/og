@@ -54,8 +54,5 @@ build:
 test:
 	@$(call run_and_test,go test og/tests,Testing)
 
-install:
-	@$(call run_and_test,cp ./og /usr/bin,Installing into /usr/bin/og)
-
 clean:
 	@go clean
