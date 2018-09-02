@@ -1,23 +1,23 @@
 Og-Lang
 ===
-### v0.1.4
+### *v0.1.4*
 
 <table>
-  <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em>.</td></tr>
-  <tr><td><b>"The Code like it should be. 5/7"</b></td><td>- <em>Mahatma Gandhi</em>.</td></tr>
-  <tr><td><b>"...[Recursive Facepalm]..."</b></td> <td>- <em>Google</em>.</td></tr>
+  <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em></td></tr>
+  <tr><td><b>"The Code like it should be. 5/7"</b></td><td>- <em>Mahatma Gandhi</em></td></tr>
+  <tr><td><b>"...[Recursive Facepalm]..."</b></td> <td>- <em>Google</em></td></tr>
 </table>
 
 # Index
 
-- [Intro](#intro)
-- [Basics](#basics)
-- [Usage](#usage)
-- [Build](#build)
-- [Changelog](#changelog)
-- [Todo](#todo)
-- [Long term utopia](#long-term-utopia)
-
+1. [Intro](#intro)
+1. [Install](#install)
+1. [Basics](#basics)
+1. [Usage](#usage)
+1. [Build](#build)
+1. [Changelog](#changelog)
+1. [Todo](#todo)
+1. [Long term utopia](#long-term-utopia)
 
 # Intro
 
@@ -25,25 +25,33 @@ To be pronounced `Oh-Jee`.
 
 `Oglang` is an indentation based languagem mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of `GoLang` but aim to be a superset and to be totally backward compatible with it. The goal is for every `Go` file to be a valid `Og` file
 
-## Bootstraped Language
----
+### Bootstraped Language
 
 `Oglang` is written in itself. It is said to be a 'Bootstraped' language. In fact, `Oglang` needs the previous release of itself to build itself.
 
-See the [src](https://github.com/champii/og/tree/master/src) folder for `Oglang` source.
+See the [Src](https://github.com/champii/og/tree/master/src) folder for `Oglang` source.
 
-And the [lib](https://github.com/champii/og/tree/master/lib) folder for the compiled one (in Golang).
+And the [Lib](https://github.com/champii/og/tree/master/lib) folder for the compiled one (in Golang).
 
 Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
 
-## Goal
----
+### Goal
 
 The main goal is to simplify the syntax, to borrow some concepts from Livescript and other functional languages, to implement Generics and macro processing, as well as some syntaxic sugar to avoid all the boilerplate code Golang forces us into.
 
+# Install
+
+```bash
+# You just have to `go get` the repo
+go get -u github.com/champii/og
+
+# If your `$PATH` includes `$GOPATH/bin` (and it should)
+og --version
+```
+
 # Basics
 
-This is an exemple of how `Oglang` looks like actualy. See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder.
+This is an exemple of how `Oglang` looks like actualy. See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder or the [Src](https://github.com/champii/og/tree/master/src) folder.
 
 ```go
 !main // package shorthand
@@ -104,6 +112,7 @@ main ->
   // No need to add the extra `()`
   go -> doSomething()
 ```
+
 # Usage
 
 ```
@@ -143,7 +152,7 @@ You will need `Maven`.
 sudo apt install maven
 
 # Get the repo
-cd $GO_ROOT/src
+cd $GOPATH/src
 go get -u github.com/wxio/antlr4
 cd github.com/wxio/antlr4
 
@@ -159,7 +168,7 @@ mvn install -DskipTests=true
 ```bash
 # Get Og
 go get -u github.com/champii/og
-cd $GO_ROOT/src/github.com/champii/og
+cd $GOPATH/src/github.com/champii/og
 
 # This needs Antlr4 (see above)
 # As it will generate the grammar,
