@@ -141,36 +141,14 @@ Here is the procedure to regenerate the parser from the grammar if you want to m
 
 If you just want to (re)build the binary, you can call `make build` or just `go build` (needs a previously generated parser from grammar. See below)
 
-## Build Antlr
-
-This implementation needs the `TreeVisitor` pattern from `Antlr`. You have to get and build the [https://github.com/wxio/antlr4/tree/go-visitor](https://github.com/wxio/antlr4/tree/go-visitor) into jar and Go runtime, as the official antlr4 repo don't have fully implemented them yet.
-
-You will need `Maven`.
-
-```bash
-# Install maven
-sudo apt install maven
-
-# Get the repo
-cd $GOPATH/src
-go get -u github.com/wxio/antlr4
-cd github.com/wxio/antlr4
-
-# Switch to go-visitor branch
-git checkout go-visitor
-
-# Build the jar
-mvn install -DskipTests=true
-```
-
-## Og
+You will need `Java`, the Antlr4 library is in `./parser/antlr4-4.7.1-SNAPSHOT-complete.jar`
 
 ```bash
 # Get Og
 go get -u github.com/champii/og
 cd $GOPATH/src/github.com/champii/og
 
-# This needs Antlr4 (see above)
+# This needs java (see above)
 # As it will generate the grammar,
 # Compile the existing sources,
 # Regenerate the go sources from og,
@@ -182,7 +160,7 @@ make
 make build
 
 # This needs a previously built version of `og` binary at local scope.
-# To Recompile Og to Go + build + test
+# Recompiles Og to Go + build + test
 make bootstrap
 
 # Needs the last official `og` binary version at global scope.
@@ -197,6 +175,7 @@ og exemples/import.og
 # Changelog
 
 ## v0.1.7: Current version
+  - Add custom antlr4 directly into sources. No need to build it yourself
 
 ## v0.1.6
   - Release system for develop
