@@ -106,7 +106,9 @@ struct OgVisitor
     return idList + " := " + exprList
 
   VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor)               : interface -> return @VisitChildren(ctx, delegate)
-  VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor)           : interface -> return @VisitChildren(ctx, delegate)
+  VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor)           : interface ->
+    return ctx.IDENTIFIER().GetText() + ":" + @VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(string)
+
   VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate antlr.ParseTreeVisitor)             : interface ->
     if ctx.GetChildCount() == 0 {
       return "return"
@@ -114,10 +116,24 @@ struct OgVisitor
 
     return "return " + @VisitChildren(ctx, delegate).(string)
 
-  VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor)               : interface -> return @VisitChildren(ctx, delegate)
-  VisitContinueStmt(ctx *parser.ContinueStmtContext, delegate antlr.ParseTreeVisitor)         : interface -> return @VisitChildren(ctx, delegate)
-  VisitGotoStmt(ctx *parser.GotoStmtContext, delegate antlr.ParseTreeVisitor)                 : interface -> return @VisitChildren(ctx, delegate)
-  VisitFallthroughStmt(ctx *parser.FallthroughStmtContext, delegate antlr.ParseTreeVisitor)   : interface -> return @VisitChildren(ctx, delegate)
+  VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor)               : interface ->
+    res := "break "
+
+    if ctx.IDENTIFIER() != nil
+      res += ctx.IDENTIFIER().GetText()
+
+    return res
+
+  VisitContinueStmt(ctx *parser.ContinueStmtContext, delegate antlr.ParseTreeVisitor)         : interface ->
+    res := "continue "
+
+    if ctx.IDENTIFIER() != nil
+      res += ctx.IDENTIFIER().GetText()
+
+    return res
+
+  VisitGotoStmt(ctx *parser.GotoStmtContext, delegate antlr.ParseTreeVisitor)                 : interface -> return "goto " + ctx.IDENTIFIER().GetText()
+  VisitFallthroughStmt(ctx *parser.FallthroughStmtContext, delegate antlr.ParseTreeVisitor)   : interface -> return "fallthrough"
   VisitDeferStmt(ctx *parser.DeferStmtContext, delegate antlr.ParseTreeVisitor)               : interface -> return "defer " + @VisitChildren(ctx, delegate).(string)
   VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.ParseTreeVisitor)                     : interface ->
     r := "if "

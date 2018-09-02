@@ -157,7 +157,7 @@ func (this *OgVisitor) VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate ant
 	return this.VisitChildren(ctx, delegate)
 }
 func (this *OgVisitor) VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	return ctx.IDENTIFIER().GetText() + ":" + this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(string)
 }
 func (this *OgVisitor) VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	if ctx.GetChildCount() == 0 {
@@ -168,16 +168,24 @@ func (this *OgVisitor) VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate a
 	return "return " + this.VisitChildren(ctx, delegate).(string)
 }
 func (this *OgVisitor) VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	res := "break "
+	if ctx.IDENTIFIER() != nil {
+		res += ctx.IDENTIFIER().GetText()
+	}
+	return res
 }
 func (this *OgVisitor) VisitContinueStmt(ctx *parser.ContinueStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	res := "continue "
+	if ctx.IDENTIFIER() != nil {
+		res += ctx.IDENTIFIER().GetText()
+	}
+	return res
 }
 func (this *OgVisitor) VisitGotoStmt(ctx *parser.GotoStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	return "goto " + ctx.IDENTIFIER().GetText()
 }
 func (this *OgVisitor) VisitFallthroughStmt(ctx *parser.FallthroughStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	return "fallthrough"
 }
 func (this *OgVisitor) VisitDeferStmt(ctx *parser.DeferStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return "defer " + this.VisitChildren(ctx, delegate).(string)

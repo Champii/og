@@ -1,0 +1,11 @@
+!main
+
+main ->
+  here: toto()
+  for i in foo
+    continue
+    continue label
+    break
+    break label
+    fallthrough
+    goto here

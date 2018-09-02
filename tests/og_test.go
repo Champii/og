@@ -289,6 +289,23 @@ func main() {
 	c := make(<-chan string)
 }
 `,
+		// loop_flow.og
+		`package main
+
+func main() {
+here:
+	toto()
+
+	for i := range foo {
+		continue
+		continue label
+		break
+		break label
+		fallthrough
+		goto here
+	}
+}
+`,
 	}
 
 	paths := []string{
@@ -314,6 +331,7 @@ func main() {
 		`var`,
 		`map`,
 		`chan`,
+		`loop_flow`,
 	}
 
 	for i, p := range paths {

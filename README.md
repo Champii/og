@@ -175,6 +175,7 @@ og exemples/import.og
 # Changelog
 
 ## v0.1.9: Current version
+  - `break`, `goto`, `continue`, `fallthrough`, `labels`
 
 ## v0.1.8
   - Proper `const` declaration
@@ -259,23 +260,19 @@ og exemples/import.og
 # TODO
 
 ## Golang superset goal
-- [ ] `const` and `var` multiple consecutive declaration
-- [ ] Labels
-- [ ] `break`
-- [ ] `goto`
-- [ ] `continue`
-- [ ] `fallthrough`
+- [ ] Proper Anonymous field in structs
 - [ ] `select`
-- [ ] `make`, `append`, ...
-- [ ] For with a custom variable (for i = 0; i < 10; i++)
 - [ ] Method receiver pointer type
-- [ ] Function literal (assignable)
-- [ ] Rest params `...`
 - [ ] Recever type in methodExpr
+- [ ] Function literal (assignable)
+- [ ] `const` and `var` multiple consecutive declaration
+- [ ] Rest params `...`
 - [ ] Send statement `a <- b`
+- [ ] `make`, `append`, ...
+- [ ] Allow parenthesis for `import`
+- [ ] For with a custom variable (for i = 0; i < 10; i++)
 - [ ] Binary operator (`<<`, `>>`, `.`, `|`)
 - [ ] Import renaming and pattern matching
-- [ ] Proper Anonymous field in structs
 - [ ] Incrementation everywhere
 - [ ] Make tests truly executable
 - [ ] Beautyful and meaningful compile error with source context
