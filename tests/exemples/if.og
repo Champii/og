@@ -2,9 +2,9 @@ package main
 
 main ->
   a := 2
+
   if a == 2
     fmt.Println(a)
-
   if a == 2
     fmt.Println(a)
   else

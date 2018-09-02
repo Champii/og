@@ -156,17 +156,10 @@ cd $GOPATH/src/github.com/champii/og
 # And run the tests.
 make
 
-# This will just build the sources (if needed)
-make build
-
-# This needs a previously built version of `og` binary at local scope.
-# Recompiles Og to Go + build + test
-make bootstrap
-
 # Needs the last official `og` binary version at global scope.
 # It recompiles og from the previous global version
 # Handy in case of mistake in the source or for release
-make rebootstrap
+make re
 
 # Simple exemple
 og exemples/import.og
@@ -175,6 +168,7 @@ og exemples/import.og
 # Changelog
 
 ## v0.1.10: Current version
+  - Better `Makefile` that cares about whether a file has changed or not before applying rules
 
 ## v0.1.9
   - `break`, `goto`, `continue`, `fallthrough`, `labels`

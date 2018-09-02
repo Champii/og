@@ -558,8 +558,8 @@ func (this *OgVisitor) VisitConversion(ctx *parser.ConversionContext, delegate a
 	return t + "(" + exp + ")"
 }
 func (this *OgVisitor) VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor) interface{} {
-	if ctx.EOF() != nil {
-		return ""
+	if ctx.EOF() != nil || ctx.GetText() == ";" {
+		return "\n"
 	}
-	return ctx.GetText()
+	return ""
 }

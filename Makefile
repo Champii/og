@@ -30,28 +30,33 @@ define run_and_test
 	exit $$RESULT
 endef
 
-all: grammar build bootstrap
+SRC_PATH=src/
+SRC=$(wildcard $(SRC_PATH)*.og $(SRC_PATH)translator/*.og)
+RES=lib/
+EXE=og
 
-grammar:
+all: grammar bootstrap
+
+grammar: parser/*.go
+parser/*.go: parser/Og.g4
 	@$(call run_and_test,go generate,Generating grammar)
 
-bootstrap:
+bootstrap: $(RES)
+$(RES): $(SRC)
 	@$(call run_and_test,./og -o lib src,Transforming [og -> go])
-	@$(call run_and_test,go build,Recompiling new go files)
-	@$(call run_and_test,go test og/tests,Testing)
+	@make build -s
+	@make test -s
 
-rebootstrap:
+re: clean grammar
 	@$(call run_and_test,og -o lib src,Transforming [og -> go] from previous build)
-	@$(call run_and_test,go build,Compiling new go files)
-	@$(call run_and_test,go test og/tests,Testing)
-	@$(call run_and_test,./og -o lib src,Transforming [og -> go])
-	@$(call run_and_test,go build,Recompiling new go files)
-	@$(call run_and_test,go test og/tests,Testing)
+	@make build -s
+	@make test -s
+	@make bootstrap -s
 
 build:
-	@$(call run_and_test,go build,Building go src)
+	@$(call run_and_test,go build,Compiling go files)
 
-test:
+test: $(EXE)
 	@$(call run_and_test,go test og/tests,Testing)
 
 clean:

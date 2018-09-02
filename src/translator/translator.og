@@ -445,7 +445,7 @@ struct OgVisitor
     return t + "(" + exp + ")"
 
   VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor)                           : interface ->
-    if ctx.EOF() != nil
-      return ""
+    if ctx.EOF() != nil || ctx.GetText() == ";"
+      return "\n"
 
-    return ctx.GetText()
+    return ""
