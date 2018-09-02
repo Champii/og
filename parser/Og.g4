@@ -701,7 +701,12 @@ structType
     ;
 
 fieldDecl
-    : ({p.noTerminatorBetween(2)}? identifierList type_ | anonymousField) STRING_LIT?
+    : (({p.noTerminatorBetween(2)}? identifierList type_ | anonymousField) STRING_LIT?)
+    | inlineStructMethod
+    ;
+
+inlineStructMethod
+    : functionDecl
     ;
 
 anonymousField

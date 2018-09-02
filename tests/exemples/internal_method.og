@@ -1,0 +1,9 @@
+!main
+
+class Foo
+	a int
+	f -> fmt.Println(@a)
+
+main ->
+	foo := Foo{}
+	foo.f()

@@ -247,6 +247,19 @@ type Test struct {
 func (this *Test) f() *Test { return this }
 func (this *Test) g() int   { return this.i }
 `,
+		// internal_method.og
+		`package main
+
+type Foo struct {
+	a int
+}
+
+func (this *Foo) f() { fmt.Println(this.a) }
+func main() {
+	foo := Foo{}
+	foo.f()
+}
+`,
 	}
 
 	paths := []string{
@@ -267,6 +280,7 @@ func (this *Test) g() int   { return this.i }
 		`interface`,
 		`switch`,
 		`this`,
+		`internal_method`,
 	}
 
 	for i, p := range paths {

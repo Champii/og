@@ -1,6 +1,7 @@
 package translator
 
 import (
+	"fmt"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/champii/og/parser"
 	"strings"
@@ -405,13 +406,20 @@ func (this *OgVisitor) VisitElement(ctx *parser.ElementContext, delegate antlr.P
 func (this *OgVisitor) VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	idx := ""
 	res := ""
+	methods := ""
 	if ctx.IDENTIFIER() != nil {
 		idx = ctx.IDENTIFIER().GetText()
 	}
-	if len(ctx.AllFieldDecl()) != 0 {
-		res = this.VisitChildren(ctx, delegate).(string)
+	for _, f := range ctx.AllFieldDecl() {
+		t := this.VisitFieldDecl(f.(*parser.FieldDeclContext), delegate).(string)
+		fmt.Println("TEST", t[:5])
+		if t[:5] == "func " {
+			methods += "\nfunc (this *" + idx + ") " + t[5:]
+		} else {
+			res += t
+		}
 	}
-	return idx + " struct {\n" + res + "}"
+	return idx + " struct {\n" + res + "}" + methods
 }
 func (this *OgVisitor) VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	if ctx.IdentifierList() != nil {
@@ -422,9 +430,16 @@ func (this *OgVisitor) VisitFieldDecl(ctx *parser.FieldDeclContext, delegate ant
 			tag = ctx.STRING_LIT().GetText()
 		}
 		return idList + type_ + " " + tag + "\n"
+	} else if ctx.InlineStructMethod() != nil {
+		r := this.VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(string)
+		fmt.Println("HUH ?!", r)
+		return r
 	} else {
 		return ctx.GetText()
 	}
+	return this.VisitChildren(ctx, delegate)
+}
+func (this *OgVisitor) VisitInlineStructMethod(ctx *parser.InlineStructMethodContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return this.VisitChildren(ctx, delegate)
 }
 func (this *OgVisitor) VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor) interface{} {

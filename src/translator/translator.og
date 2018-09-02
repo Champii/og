@@ -1,6 +1,7 @@
 !translator
 
 import
+	fmt
 	strings
 	"github.com/champii/og/parser"
 
@@ -425,14 +426,21 @@ OgVisitor::VisitElement(ctx *parser.ElementContext, delegate antlr.ParseTreeVisi
 OgVisitor::VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	idx := ""
 	res := ""
+	methods := ""
 
 	if ctx.IDENTIFIER() != nil
 		idx = ctx.IDENTIFIER().GetText()
 
-	if len(ctx.AllFieldDecl()) != 0
-		res = this.VisitChildren(ctx, delegate).(string)
+	for _, f in ctx.AllFieldDecl()
+		t := this.VisitFieldDecl(f.(*parser.FieldDeclContext), delegate).(string)
+		fmt.Println("TEST", t[:5])
 
-	return  idx + " struct {\n" + res + "}"
+		if t[:5] == "func "
+			methods += "\nfunc (this *" + idx + ") " + t[5:]
+		else
+			res += t
+
+	return  idx + " struct {\n" + res + "}" + methods
 
 OgVisitor::VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	if ctx.IdentifierList() != nil
@@ -445,9 +453,16 @@ OgVisitor::VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTree
 			tag = ctx.STRING_LIT().GetText()
 
 		return idList + type_ + " " + tag + "\n"
+	else if ctx.InlineStructMethod() != nil
+		r := this.VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(string)
+		fmt.Println("HUH ?!", r)
+		return r
 	else
 		return ctx.GetText()
 
+	return this.VisitChildren(ctx, delegate)
+
+OgVisitor::VisitInlineStructMethod(ctx *parser.InlineStructMethodContext, delegate antlr.ParseTreeVisitor): interface{} ->
 	return this.VisitChildren(ctx, delegate)
 
 OgVisitor::VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor): interface{} ->

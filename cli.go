@@ -20,14 +20,6 @@ func parseArgs(done func(og.OgConfig)) {
 			Verbose: c.Bool("v"),
 			OutPath: c.String("o"),
 			Paths:   []string(c.Args()),
-			// ListenAddr:    c.String("l"),
-			// BootstrapAddr: c.String("c"),
-			// Folder:        c.String("f"),
-			// Verbose:       c.Int("v"),
-			// Stats:         c.Bool("s"),
-			// NoGui:         c.Bool("g"),
-			// Cluster:       c.Int("n"),
-			// Cli:           c.Bool("i"),
 		}
 
 		done(options)
@@ -73,7 +65,7 @@ COPYRIGHT:
 	app := cli.NewApp()
 
 	app.Name = "Oglang"
-	app.Version = "0.1.3"
+	app.Version = "0.1.4"
 	app.Compiled = time.Now()
 
 	app.Usage = "Golang on steroids"

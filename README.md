@@ -1,4 +1,4 @@
-Og-Lang v0.1.3
+Og-Lang v0.1.4
 ===
 
 #### `Golang On Steroids` - _Socrates_.
@@ -39,34 +39,63 @@ The main goal is to simplify the syntax, to borrow some concepts from Livescript
 This is an exemple of how `Oglang` looks like actualy. See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder.
 
 ```go
-!main
+!main // package shorthand
 
+// No parenthesis and single word can omit quotes
 import
   fmt
   strings
   "some/repo"
 
+// Alias for `type Foo struct`
 struct Foo
+  // Classical property declaration
   bar int
 
-Foo::myFunc(foo int) : int -> return @bar + foo
+  // Inline method declaration
+  // with no arguments that returns `this.bar`
+  getBar : int -> return @bar
 
+// External Foo method declaration
+Foo::inc(foo int) -> @bar = @bar + foo
+
+// Alias for `type Bar interface`
+interface Bar
+  Foo()
+  Bar(i int): SomeType
+
+// Alias for struct
+class Test
+
+// Classical top-level function declaration
 otherFunc(a string): string -> return a
 
 main ->
-  test := "foo"
+  test := Foo{}
 
-  if test == "foo"
-    fmt.Println(test)
+  test.inc(42)
+
+  if test.getBar() == 42
+    answerTheUltimateQuestion()
   else
-    fmt.Println("Not foo")
+    enterTheVoid()
 
-  for _, v in someArray
-    fmt.Println(v)
+  someArr := []string
+    "value1"
+    "value2"
 
-  switch test
-    "foo" => doSomething()
-    _     => doDefault()
+  for i, v in someArray
+    fmt.Println(i, v)
+
+  switch test.getBar()
+    42 => doSomething()
+    _  => doDefault()
+
+  go someFunc()
+
+  // Auto executed closure when in goroutines
+  // No need to add the extra `()`
+  go -> doSomething()
 ```
 # Usage
 
@@ -78,7 +107,7 @@ USAGE:
   og [options] Folders|Files
 
 VERSION:
-  0.1.3
+  0.1.4
 
 OPTIONS:
   -o value, --out value  Output directory. If input is recursive folder, the tree is recreated (default: "./")
@@ -191,7 +220,6 @@ og exemples/import.og
 - [ ] Proper Anonymous field in structs
 - [ ] Method receiver pointer type
 - [ ] Auto add `default` to switch ?
-- [ ] Class-like method declaration (nested into the struct)
 - [ ] Pattern matching
 - [ ] Function currying
 - [ ] Function shorthand `(+ 10)`
@@ -201,17 +229,60 @@ og exemples/import.og
 
 # Changelog
 
-## Current working tree
-  - Slice manipulation
-  - Interfaces
-  - Alias `@` => `this`
+## 0.1.4: Current version
+  - Class-like method declaration (nested into the struct)
+    ```go
+      struct Foo
+        bar int
+        f : int -> return @bar
+    ```
 
+## 0.1.3
+  - Slice manipulation
+      ```go
+      someArr[1:x]
+      ```
+  - Interfaces
+      ```go
+      interface Foo
+        Fn(a ArgType): ResType
+      ```
+  - Alias `@` => `this`
+    ```go
+      Foo::bar : SomeType -> return @someProp
+    ```
 ## 0.1.2
   - Support for simple `struct ID {}` declaration. Still support `type ID struct {}`.
+    ```go
+      // Equivalent
+      struct Foo {}
+      type Foo struct {}
+    ```
   - Alias `class` => `struct`.
+    ```go
+      // Equivalent
+      struct Foo {}
+      class Foo {}
+    ```
   - Allow empty `class` declaration
+    ```go
+      struct Foo
+    ```
   - Shorthand for `package main` => `!main`.
+    ```go
+      // Equivalent
+      !main
+      package main
+    ```
   - Cli support with options and recursive directory walking
+    ```bash
+      og -o lib src
+    ```
+  - External class declaration
+    ```go
+      struct Foo
+      Foo::bar -> doSomething()
+    ```
 
 ## 0.1.0
   - Initial release
