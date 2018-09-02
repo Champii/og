@@ -1,6 +1,6 @@
 Og-Lang
 ===
-### *v0.1.8*
+### *v0.1.9*
 
 <table>
   <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em></td></tr>
@@ -123,7 +123,7 @@ USAGE:
   og [options] Folders|Files
 
 VERSION:
-  v0.1.8
+  v0.1.9
 
 OPTIONS:
   -o value, --out value  Output directory. If input is recursive folder, the tree is recreated (default: "./")
@@ -174,7 +174,9 @@ og exemples/import.og
 
 # Changelog
 
-## v0.1.8: Current version
+## v0.1.9: Current version
+
+## v0.1.8
   - Proper `const` declaration
   - Proper `var` declaration
   - Map declaration

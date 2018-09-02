@@ -65,7 +65,7 @@ COPYRIGHT:
 	app := cli.NewApp()
 
 	app.Name = "Oglang"
-	app.Version = "v0.1.8"
+	app.Version = "v0.1.9"
 	app.Compiled = time.Now()
 
 	app.Usage = "Golang on steroids"
