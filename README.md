@@ -2,7 +2,10 @@ Og-Lang v0.1.3
 ===
 
 #### `Golang On Steroids` - _Socrates_.
+#### `The world like it should be` - _Mahatma Gandhi_.
+#### `...[Facepalm]...` - _Google_.
 
+# Intro
 `Oglang` is an indentation based languagem mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of GoLang (for the moment :D).
 
 To be pronounced `Oh-Jee`.
