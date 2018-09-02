@@ -1,548 +1,392 @@
 !translator
 
 import
-	strings
-	"github.com/champii/og/parser"
+  strings
+  "github.com/champii/og/parser"
+  "github.com/antlr/antlr4/runtime/Go/antlr"
+
+struct OgVisitor
+  *antlr.BaseParseTreeVisitor
+
+  Aggregate(resultSoFar interface{}, childResult interface{}): interface{} ->
+    switch childResult.(type)
+      _      => return resultSoFar
+      string =>
+        switch resultSoFar.(type)
+          string => return resultSoFar.(string) + childResult.(string)
+          _      => return childResult
+
+    return nil
+
+  // *parser.SourceFileContext -> antlr.ParseTreeVisitor -> interface{}
+  // VisitSourceFile(ctx, delegate) -> @VisitChildren(ctx, delegate)
+
+  VisitSourceFile(ctx *parser.SourceFileContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitPackageClause(ctx *parser.PackageClauseContext, delegate antlr.ParseTreeVisitor)       : interface{} -> return "package " + ctx.IDENTIFIER().GetText() + "\n"
+  VisitImportDecl(ctx *parser.ImportDeclContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return "import (\n" + @VisitChildren(ctx, delegate).(string) + ")\n"
+  VisitImportSpec(ctx *parser.ImportSpecContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitImportPath(ctx *parser.ImportPathContext, delegate antlr.ParseTreeVisitor)             : interface{} ->
+    txt := ctx.GetText()
+
+    if txt[0] == '"'
+      return txt + "\n"
+    else
+      return "\"" + txt + "\"\n"
+
+  VisitTopLevelDecl(ctx *parser.TopLevelDeclContext, delegate antlr.ParseTreeVisitor)         : interface{} -> return @VisitChildren(ctx, delegate).(string) + "\n"
+  VisitDeclaration(ctx *parser.DeclarationContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitConstDecl(ctx *parser.ConstDeclContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitConstSpec(ctx *parser.ConstSpecContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitIdentifierList(ctx *parser.IdentifierListContext, delegate antlr.ParseTreeVisitor)     : interface{} -> return ctx.GetText()
+  VisitExpressionList(ctx *parser.ExpressionListContext, delegate antlr.ParseTreeVisitor)     : interface{} ->
+    r := @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+
+    if ctx.GetChildCount() > 1
+      r += "," + @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+
+    return r
+
+  VisitTypeDecl(ctx *parser.TypeDeclContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return "type " + @VisitChildren(ctx, delegate).(string)
+  VisitTypeSpec(ctx *parser.TypeSpecContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return ctx.IDENTIFIER().GetText() + " " + @VisitChildren(ctx, delegate).(string)
+  VisitFunctionDecl(ctx *parser.FunctionDeclContext, delegate antlr.ParseTreeVisitor)         : interface{} -> return "func " + ctx.IDENTIFIER().GetText() + @VisitChildren(ctx, delegate).(string)
+  VisitFunction(ctx *parser.FunctionContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitMethodDecl(ctx *parser.MethodDeclContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return "func " + @VisitChildren(ctx, delegate).(string)
+  VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor)                 : interface{} ->
+    c := ctx.IDENTIFIER(0).GetText()
+    method := ctx.IDENTIFIER(1).GetText()
+    return "(this *" + c + ") " + method
+
+  VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.ParseTreeVisitor)                   : interface{} -> return "var " + @VisitChildren(ctx, delegate).(string)
+  VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.ParseTreeVisitor)                   : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitBlock(ctx *parser.BlockContext, delegate antlr.ParseTreeVisitor)                       : interface{} -> return "{\n" + @VisitChildren(ctx, delegate).(string) + "}"
+  VisitStatementList(ctx *parser.StatementListContext, delegate antlr.ParseTreeVisitor)       : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitStatement(ctx *parser.StatementContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate).(string) + "\n"
+  VisitStatementNoBlock(ctx *parser.StatementNoBlockContext, delegate antlr.ParseTreeVisitor) : interface{} -> return "{" + @VisitChildren(ctx, delegate).(string) + "}"
+  VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitExpressionStmt(ctx *parser.ExpressionStmtContext, delegate antlr.ParseTreeVisitor)     : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitSendStmt(ctx *parser.SendStmtContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitIncDecStmt(ctx *parser.IncDecStmtContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return ctx.GetText()
+  VisitAssignment(ctx *parser.AssignmentContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitAssign_op(ctx *parser.Assign_opContext, delegate antlr.ParseTreeVisitor)               : interface{} ->
+    if len(ctx.GetText()) == 1
+      return "="
 
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+    return ctx.GetText()
 
-type OgVisitor struct
-	*antlr.BaseParseTreeVisitor
+  VisitBinary_op(ctx *parser.Binary_opContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return ctx.GetText()
+  VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delegate antlr.ParseTreeVisitor)         : interface{} ->
+    idList := @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+    exprList := @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+    return idList + " := " + exprList
 
-OgVisitor::Aggregate(resultSoFar, childResult interface{}): interface{} ->
-	switch childResult.(type)
-		_      => return resultSoFar
-		string =>
-			switch resultSoFar.(type)
-				string => return resultSoFar.(string) + childResult.(string)
-				_      => return childResult
+  VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate antlr.ParseTreeVisitor)             : interface{} ->
+    if ctx.GetChildCount() == 0 {
+      return "return"
+    }
 
-	return nil
+    return "return " + @VisitChildren(ctx, delegate).(string)
+
+  VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitContinueStmt(ctx *parser.ContinueStmtContext, delegate antlr.ParseTreeVisitor)         : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitGotoStmt(ctx *parser.GotoStmtContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitFallthroughStmt(ctx *parser.FallthroughStmtContext, delegate antlr.ParseTreeVisitor)   : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitDeferStmt(ctx *parser.DeferStmtContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return "defer " + @VisitChildren(ctx, delegate).(string)
+  VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.ParseTreeVisitor)                     : interface{} ->
+    r := "if "
 
-// *parser.SourceFileContext -> antlr.ParseTreeVisitor -> interface{}
-// OgVisitor::VisitSourceFile(ctx, delegate) -> @VisitChildren(ctx, delegate)
+    if ctx.SimpleStmt() != nil
+      r += @VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(string) + ";"
 
-OgVisitor::VisitSourceFile(ctx *parser.SourceFileContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+    r += @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+    r += @VisitBlock(ctx.Block(0).(*parser.BlockContext), delegate).(string)
 
-OgVisitor::VisitPackageClause(ctx *parser.PackageClauseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "package " + ctx.IDENTIFIER().GetText() + "\n"
+    if ctx.Block(1) != nil
+      r += "else " + @VisitBlock(ctx.Block(1).(*parser.BlockContext), delegate).(string)
+    else if ctx.IfStmt() != nil
+      r += "else " + @VisitIfStmt(ctx.IfStmt().(*parser.IfStmtContext), delegate).(string)
 
-OgVisitor::VisitImportDecl(ctx *parser.ImportDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "import (\n" + this.VisitChildren(ctx, delegate).(string) + ")\n"
+    return r
 
-OgVisitor::VisitImportSpec(ctx *parser.ImportSpecContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitSwitchStmt(ctx *parser.SwitchStmtContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitExprSwitchStmt(ctx *parser.ExprSwitchStmtContext, delegate antlr.ParseTreeVisitor)     : interface{} ->
+    r := "switch "
 
-OgVisitor::VisitImportPath(ctx *parser.ImportPathContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	txt := ctx.GetText()
+    if ctx.Expression() != nil
+      r += @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 
-	if txt[0] == '"'
-		return txt + "\n"
-	else
-		return "\"" + txt + "\"\n"
+    r += "{\n"
 
-OgVisitor::VisitTopLevelDecl(ctx *parser.TopLevelDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate).(string) + "\n"
+    for _, c in ctx.AllExprCaseClause()
+      r += @VisitExprCaseClause(c.(*parser.ExprCaseClauseContext), delegate).(string)
 
-OgVisitor::VisitDeclaration(ctx *parser.DeclarationContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+    r += "}"
 
-OgVisitor::VisitConstDecl(ctx *parser.ConstDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+    return r
 
-OgVisitor::VisitConstSpec(ctx *parser.ConstSpecContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitExprCaseClause(ctx *parser.ExprCaseClauseContext, delegate antlr.ParseTreeVisitor)     : interface{} ->
+    sCase := @VisitExprSwitchCase(ctx.ExprSwitchCase().(*parser.ExprSwitchCaseContext), delegate).(string)
+    stmts := @VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).(string)
 
-OgVisitor::VisitIdentifierList(ctx *parser.IdentifierListContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	// return this.VisitChildren(ctx, delegate)
-	return ctx.GetText()
+    return sCase + ":" + stmts
 
-OgVisitor::VisitExpressionList(ctx *parser.ExpressionListContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r := this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+  VisitExprSwitchCase(ctx *parser.ExprSwitchCaseContext, delegate antlr.ParseTreeVisitor)     : interface{} ->
+    if ctx.GetText() == "_"
+      return "default"
 
-	if ctx.GetChildCount() > 1
-		r += "," + this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+    return "case " + @VisitChildren(ctx, delegate).(string)
 
-	return r
+  VisitTypeSwitchStmt(ctx *parser.TypeSwitchStmtContext, delegate antlr.ParseTreeVisitor)     : interface{} ->
+    r := "switch "
 
-OgVisitor::VisitTypeDecl(ctx *parser.TypeDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "type " + this.VisitChildren(ctx, delegate).(string)
+    r += @VisitTypeSwitchGuard(ctx.TypeSwitchGuard().(*parser.TypeSwitchGuardContext), delegate).(string)
 
-OgVisitor::VisitTypeSpec(ctx *parser.TypeSpecContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	// TODO: allow for multiple types declarations
-	return ctx.IDENTIFIER().GetText() + " " + this.VisitChildren(ctx, delegate).(string)
+    r += "{"
 
-OgVisitor::VisitFunctionDecl(ctx *parser.FunctionDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "func " + ctx.IDENTIFIER().GetText() + this.VisitChildren(ctx, delegate).(string)
+    for _, c in ctx.AllTypeCaseClause()
+      r += @VisitTypeCaseClause(c.(*parser.TypeCaseClauseContext), delegate).(string)
 
-OgVisitor::VisitFunction(ctx *parser.FunctionContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+    r += "}"
 
-OgVisitor::VisitMethodDecl(ctx *parser.MethodDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "func " + this.VisitChildren(ctx, delegate).(string)
+    return r
 
-OgVisitor::VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	c := ctx.IDENTIFIER(0).GetText()
-	method := ctx.IDENTIFIER(1).GetText()
-	return "(this *" + c + ") " + method
+  VisitTypeSwitchGuard(ctx *parser.TypeSwitchGuardContext, delegate antlr.ParseTreeVisitor)   : interface{} ->
+    r := ""
 
-OgVisitor::VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "var " + this.VisitChildren(ctx, delegate).(string)
+    if ctx.IDENTIFIER() != nil
+      r += ctx.IDENTIFIER().GetText() + "="
 
-OgVisitor::VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+    expr := @VisitPrimaryExpr(ctx.PrimaryExpr().(*parser.PrimaryExprContext), delegate).(string)
 
-OgVisitor::VisitBlock(ctx *parser.BlockContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "{\n" + this.VisitChildren(ctx, delegate).(string) + "}"
-	// return "{}\n"
+    return r + expr + ".(type)"
 
-OgVisitor::VisitStatementList(ctx *parser.StatementListContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitTypeCaseClause(ctx *parser.TypeCaseClauseContext, delegate antlr.ParseTreeVisitor)     : interface{} ->
+    sCase := @VisitTypeSwitchCase(ctx.TypeSwitchCase().(*parser.TypeSwitchCaseContext), delegate).(string)
+    stmts := @VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).(string)
 
-OgVisitor::VisitStatement(ctx *parser.StatementContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate).(string) + "\n"
+    return sCase + ":" + stmts
 
-OgVisitor::VisitStatementNoBlock(ctx *parser.StatementNoBlockContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "{" + this.VisitChildren(ctx, delegate).(string) + "}"
+  VisitTypeSwitchCase(ctx *parser.TypeSwitchCaseContext, delegate antlr.ParseTreeVisitor)     : interface{} ->
+    if ctx.GetText() == "_"
+      return "default"
 
-OgVisitor::VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+    return "case " + @VisitChildren(ctx, delegate).(string)
 
-OgVisitor::VisitExpressionStmt(ctx *parser.ExpressionStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitTypeList(ctx *parser.TypeListContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitSelectStmt(ctx *parser.SelectStmtContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitCommClause(ctx *parser.CommClauseContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitCommCase(ctx *parser.CommCaseContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitRecvStmt(ctx *parser.RecvStmtContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.ParseTreeVisitor)                   : interface{} -> return "for " + @VisitChildren(ctx, delegate).(string)
+  VisitForClause(ctx *parser.ForClauseContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.ParseTreeVisitor)           : interface{} ->
+    r := ""
 
-OgVisitor::VisitSendStmt(ctx *parser.SendStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+    if ctx.IdentifierList() != nil
+      r = @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+    else if ctx.ExpressionList() != nil
+      r = @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
 
-OgVisitor::VisitIncDecStmt(ctx *parser.IncDecStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return ctx.GetText()
+    return r + " := range " + @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 
-OgVisitor::VisitAssignment(ctx *parser.AssignmentContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitGoStmt(ctx *parser.GoStmtContext, delegate antlr.ParseTreeVisitor)                     : interface{} ->
+    expr := @VisitChildren(ctx, delegate).(string)
 
-OgVisitor::VisitAssign_op(ctx *parser.Assign_opContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if len(ctx.GetText()) == 1
-		return "="
+    if ctx.Function() != nil
+      return "go func " + expr + "()"
 
-	return ctx.GetText()
+    return "go " + expr
 
-OgVisitor::VisitBinary_op(ctx *parser.Binary_opContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return ctx.GetText()
+  VisitType_(ctx *parser.Type_Context, delegate antlr.ParseTreeVisitor)                       : interface{} -> return " " + @VisitChildren(ctx, delegate).(string)
+  VisitTypeName(ctx *parser.TypeNameContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return ctx.GetText()
+  VisitTypeLit(ctx *parser.TypeLitContext, delegate antlr.ParseTreeVisitor)                   : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitArrayType(ctx *parser.ArrayTypeContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitArrayLength(ctx *parser.ArrayLengthContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitElementType(ctx *parser.ElementTypeContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitPointerType(ctx *parser.PointerTypeContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return "*" + @VisitChildren(ctx, delegate).(string)
+  VisitInterfaceType(ctx *parser.InterfaceTypeContext, delegate antlr.ParseTreeVisitor)       : interface{} ->
+    idx := ""
+    methods := ""
 
-OgVisitor::VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	idList := this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+    if ctx.IDENTIFIER() != nil
+      idx = ctx.IDENTIFIER().GetText() + " "
 
-	exprList := this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+    if len(ctx.AllMethodSpec()) != 0
+      methods = "\n" + @VisitChildren(ctx, delegate).(string)
 
-	return idList + " := " + exprList
+    return  idx + "interface" + "{" + methods + "}"
 
-OgVisitor::VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitSliceType(ctx *parser.SliceTypeContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return "[]" + @VisitChildren(ctx, delegate).(string)
 
-OgVisitor::VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitMapType(ctx *parser.MapTypeContext, delegate antlr.ParseTreeVisitor)                   : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitChannelType(ctx *parser.ChannelTypeContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitMethodSpec(ctx *parser.MethodSpecContext, delegate antlr.ParseTreeVisitor)             : interface{} ->
+    idx := ""
 
-OgVisitor::VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.GetChildCount() == 0 {
-		return "return"
-	}
+    if ctx.IDENTIFIER() != nil
+      idx = ctx.IDENTIFIER().GetText()
 
-	return "return " + this.VisitChildren(ctx, delegate).(string)
+    return idx + @VisitChildren(ctx, delegate).(string) + "\n"
 
-OgVisitor::VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitFunctionType(ctx *parser.FunctionTypeContext, delegate antlr.ParseTreeVisitor)         : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitSignature(ctx *parser.SignatureContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor)                     : interface{} -> return "(" + ctx.GetText() + ")"
 
-OgVisitor::VisitContinueStmt(ctx *parser.ContinueStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitParameters(ctx *parser.ParametersContext, delegate antlr.ParseTreeVisitor)             : interface{} ->
+    if ctx.ParameterList() == nil
+      return "()"
 
-OgVisitor::VisitGotoStmt(ctx *parser.GotoStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+    return "(" + @VisitChildren(ctx, delegate).(string) + ")"
 
-OgVisitor::VisitFallthroughStmt(ctx *parser.FallthroughStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitParameterList(ctx *parser.ParameterListContext, delegate antlr.ParseTreeVisitor)       : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitParameterDecl(ctx *parser.ParameterDeclContext, delegate antlr.ParseTreeVisitor)       : interface{} -> return @VisitChildren(ctx, delegate).(string) + ","
+  VisitOperand(ctx *parser.OperandContext, delegate antlr.ParseTreeVisitor)                   : interface{} ->
+    if ctx.Expression() != nil
+      return "(" + @VisitChildren(ctx, delegate).(string) + ")"
 
-OgVisitor::VisitDeferStmt(ctx *parser.DeferStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "defer " + this.VisitChildren(ctx, delegate).(string)
+    return @VisitChildren(ctx, delegate)
 
-OgVisitor::VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r := "if "
+  VisitLiteral(ctx *parser.LiteralContext, delegate antlr.ParseTreeVisitor)                   : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitBasicLit(ctx *parser.BasicLitContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return ctx.GetText()
+  VisitOperandName(ctx *parser.OperandNameContext, delegate antlr.ParseTreeVisitor)           : interface{} ->
+    if ctx.IDENTIFIER() != nil
+      return ctx.IDENTIFIER().GetText()
 
-	if ctx.SimpleStmt() != nil
-		r += this.VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(string) + ";"
+    if ctx.QualifiedIdent() != nil || ctx.This_() != nil
+      return @VisitChildren(ctx, delegate)
 
-	r += this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
-	r += this.VisitBlock(ctx.Block(0).(*parser.BlockContext), delegate).(string)
+    return ctx.GetText()
 
-	if ctx.Block(1) != nil
-		r += "else " + this.VisitBlock(ctx.Block(1).(*parser.BlockContext), delegate).(string)
-	else if ctx.IfStmt() != nil
-		r += "else " + this.VisitIfStmt(ctx.IfStmt().(*parser.IfStmtContext), delegate).(string)
+  VisitThis_(ctx *parser.This_Context, delegate antlr.ParseTreeVisitor)                       : interface{} -> return "this"
+  VisitQualifiedIdent(ctx *parser.QualifiedIdentContext, delegate antlr.ParseTreeVisitor)     : interface{} ->
+    if ctx.This_() != nil
+      return "this." + ctx.IDENTIFIER(0).GetText()
 
-	return r
+    return ctx.IDENTIFIER(0).GetText() + "." + ctx.IDENTIFIER(1).GetText()
 
-OgVisitor::VisitSwitchStmt(ctx *parser.SwitchStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitCompositeLit(ctx *parser.CompositeLitContext, delegate antlr.ParseTreeVisitor)         : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitLiteralType(ctx *parser.LiteralTypeContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitLiteralValue(ctx *parser.LiteralValueContext, delegate antlr.ParseTreeVisitor)         : interface{} ->
+    if ctx.ElementList() == nil
+      return "{}"
 
-OgVisitor::VisitExprSwitchStmt(ctx *parser.ExprSwitchStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r := "switch "
+    return "{\n" + @VisitChildren(ctx, delegate).(string) + "\n}"
 
-	if ctx.Expression() != nil
-		r += this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+  VisitElementList(ctx *parser.ElementListContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitKeyedElement(ctx *parser.KeyedElementContext, delegate antlr.ParseTreeVisitor)         : interface{} ->
+    r := ""
+    if ctx.Key() != nil
+      r += @VisitKey(ctx.Key().(*parser.KeyContext), delegate).(string) + ":"
 
-	r += "{\n"
+    r += @VisitElement(ctx.Element().(*parser.ElementContext), delegate).(string) + ",\n"
 
-	for _, c in ctx.AllExprCaseClause()
-		r += this.VisitExprCaseClause(c.(*parser.ExprCaseClauseContext), delegate).(string)
+    return r
 
-	r += "}"
+  VisitKey(ctx *parser.KeyContext, delegate antlr.ParseTreeVisitor)                           : interface{} ->
+    if ctx.IDENTIFIER() != nil
+      return ctx.GetText()
 
-	return r
+    return @VisitChildren(ctx, delegate)
 
-OgVisitor::VisitExprCaseClause(ctx *parser.ExprCaseClauseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	sCase := this.VisitExprSwitchCase(ctx.ExprSwitchCase().(*parser.ExprSwitchCaseContext), delegate).(string)
-	stmts := this.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).(string)
+  VisitElement(ctx *parser.ElementContext, delegate antlr.ParseTreeVisitor)                   : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTreeVisitor)             : interface{} ->
+    idx := ""
+    res := ""
+    methods := ""
 
-	return sCase + ":" + stmts
+    if ctx.IDENTIFIER() != nil
+      idx = ctx.IDENTIFIER().GetText()
 
-OgVisitor::VisitExprSwitchCase(ctx *parser.ExprSwitchCaseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.GetText() == "_"
-		return "default"
+    for _, f in ctx.AllFieldDecl()
+      t := @VisitFieldDecl(f.(*parser.FieldDeclContext), delegate).(string)
 
-	return "case " + this.VisitChildren(ctx, delegate).(string)
+      if t[:5] == "func "
+        methods += "\nfunc (this *" + idx + ") " + t[5:]
+      else
+        res += t
 
-OgVisitor::VisitTypeSwitchStmt(ctx *parser.TypeSwitchStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r := "switch "
+    return  idx + " struct {\n" + res + "}" + methods
 
-	r += this.VisitTypeSwitchGuard(ctx.TypeSwitchGuard().(*parser.TypeSwitchGuardContext), delegate).(string)
+  VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor)               : interface{} ->
+    if ctx.IdentifierList() != nil
+      idList := @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
+      type_ := @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
 
-	r += "{"
+      tag := ""
 
-	for _, c in ctx.AllTypeCaseClause()
-		r += this.VisitTypeCaseClause(c.(*parser.TypeCaseClauseContext), delegate).(string)
+      if ctx.STRING_LIT() != nil
+        tag = ctx.STRING_LIT().GetText()
 
-	r += "}"
+      return idList + type_ + " " + tag + "\n"
+    else if ctx.InlineStructMethod() != nil
+      return  @VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(string)
+    else
+      return ctx.GetText()
 
-	return r
+    return @VisitChildren(ctx, delegate)
 
-OgVisitor::VisitTypeSwitchGuard(ctx *parser.TypeSwitchGuardContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r := ""
+  VisitInlineStructMethod(ctx *parser.InlineStructMethodContext, delegate antlr.ParseTreeVisitor) : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor)     : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitFunctionLit(ctx *parser.FunctionLitContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitPrimaryExpr(ctx *parser.PrimaryExprContext, delegate antlr.ParseTreeVisitor)           : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitSelector(ctx *parser.SelectorContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return "." + ctx.IDENTIFIER().GetText()
+  VisitIndex(ctx *parser.IndexContext, delegate antlr.ParseTreeVisitor)                       : interface{} -> return "[" + @VisitChildren(ctx, delegate).(string) + "]"
+  VisitSlice(ctx *parser.SliceContext, delegate antlr.ParseTreeVisitor)                       : interface{} ->
+    txt := ctx.GetText()
+    splited := strings.Split(txt, ":")
+    res := "["
+    i := 0
 
-	if ctx.IDENTIFIER() != nil
-		r += ctx.IDENTIFIER().GetText() + "="
+    if len(splited) == 2
+      if splited[0] != "["
+        res += @VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
+        i++
+      res += ":"
+      if splited[1] != "]"
+        res += @VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
+        i++
 
-	expr := this.VisitPrimaryExpr(ctx.PrimaryExpr().(*parser.PrimaryExprContext), delegate).(string)
+    if len(splited) == 3
+      if splited[0] != "["
+        res += @VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
+        i++
+      res += ":"
+      if splited[1] != ""
+        res += @VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
+        i++
+      res += ":"
+      if splited[2] != "]"
+        res += @VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
+        i++
 
-	return r + expr + ".(type)"
+    return res + "]"
 
-OgVisitor::VisitTypeCaseClause(ctx *parser.TypeCaseClauseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	sCase := this.VisitTypeSwitchCase(ctx.TypeSwitchCase().(*parser.TypeSwitchCaseContext), delegate).(string)
-	stmts := this.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).(string)
+  VisitTypeAssertion(ctx *parser.TypeAssertionContext, delegate antlr.ParseTreeVisitor)       : interface{} -> return ".(" + @VisitChildren(ctx, delegate).(string) + ")"
+  VisitArguments(ctx *parser.ArgumentsContext, delegate antlr.ParseTreeVisitor)               : interface{} ->
+    if ctx.GetChildCount() == 2
+      return "()"
 
-	return sCase + ":" + stmts
+    return "(" + @VisitChildren(ctx, delegate).(string) + ")"
 
-OgVisitor::VisitTypeSwitchCase(ctx *parser.TypeSwitchCaseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.GetText() == "_"
-		return "default"
+  VisitMethodExpr(ctx *parser.MethodExprContext, delegate antlr.ParseTreeVisitor)             : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitReceiverType(ctx *parser.ReceiverTypeContext, delegate antlr.ParseTreeVisitor)         : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitExpression(ctx *parser.ExpressionContext, delegate antlr.ParseTreeVisitor)             : interface{} ->
+    if ctx.GetChildCount() > 1
+      exp1 := @VisitExpression(ctx.Expression(0).(*parser.ExpressionContext), delegate).(string)
+      op := @VisitBinary_op(ctx.Binary_op().(*parser.Binary_opContext), delegate).(string)
+      exp2 := @VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(string)
 
-	return "case " + this.VisitChildren(ctx, delegate).(string)
+      return exp1 + op + exp2
 
-OgVisitor::VisitTypeList(ctx *parser.TypeListContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+    return @VisitChildren(ctx, delegate)
 
-OgVisitor::VisitSelectStmt(ctx *parser.SelectStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+  VisitUnaryExpr(ctx *parser.UnaryExprContext, delegate antlr.ParseTreeVisitor)               : interface{} -> return @VisitChildren(ctx, delegate)
+  VisitUnary_op(ctx *parser.Unary_opContext, delegate antlr.ParseTreeVisitor)                 : interface{} -> return ctx.GetText()
+  VisitConversion(ctx *parser.ConversionContext, delegate antlr.ParseTreeVisitor)             : interface{} ->
+    t := @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
+    exp := @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 
-OgVisitor::VisitCommClause(ctx *parser.CommClauseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
+    return t + "(" + exp + ")"
 
-OgVisitor::VisitCommCase(ctx *parser.CommCaseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitRecvStmt(ctx *parser.RecvStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "for " + this.VisitChildren(ctx, delegate).(string)
-
-OgVisitor::VisitForClause(ctx *parser.ForClauseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r := ""
-
-	if ctx.IdentifierList() != nil
-		r = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
-	else if ctx.ExpressionList() != nil
-		r = this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
-
-	return r + " := range " + this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
-
-OgVisitor::VisitGoStmt(ctx *parser.GoStmtContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	expr := this.VisitChildren(ctx, delegate).(string)
-
-	if ctx.Function() != nil
-		return "go func " + expr + "()"
-
-	return "go " + expr
-
-OgVisitor::VisitType_(ctx *parser.Type_Context, delegate antlr.ParseTreeVisitor): interface{} ->
-	return " " + this.VisitChildren(ctx, delegate).(string)
-
-OgVisitor::VisitTypeName(ctx *parser.TypeNameContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return ctx.GetText()
-
-OgVisitor::VisitTypeLit(ctx *parser.TypeLitContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitArrayType(ctx *parser.ArrayTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitArrayLength(ctx *parser.ArrayLengthContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitElementType(ctx *parser.ElementTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitPointerType(ctx *parser.PointerTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "*" + this.VisitChildren(ctx, delegate).(string)
-
-OgVisitor::VisitInterfaceType(ctx *parser.InterfaceTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	idx := ""
-	methods := ""
-
-	if ctx.IDENTIFIER() != nil
-		idx = ctx.IDENTIFIER().GetText() + " "
-
-	if len(ctx.AllMethodSpec()) != 0
-		methods = this.VisitChildren(ctx, delegate).(string)
-
-	return  idx + "interface" + "{\n" + methods + "}"
-
-OgVisitor::VisitSliceType(ctx *parser.SliceTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "[]" + this.VisitChildren(ctx, delegate).(string)
-
-OgVisitor::VisitMapType(ctx *parser.MapTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitChannelType(ctx *parser.ChannelTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitMethodSpec(ctx *parser.MethodSpecContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	idx := ""
-
-	if ctx.IDENTIFIER() != nil
-		idx = ctx.IDENTIFIER().GetText()
-
-	return idx + this.VisitChildren(ctx, delegate).(string) + "\n"
-
-OgVisitor::VisitFunctionType(ctx *parser.FunctionTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitSignature(ctx *parser.SignatureContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "(" + ctx.GetText() + ")"
-
-OgVisitor::VisitParameters(ctx *parser.ParametersContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.ParameterList() == nil
-		return "()"
-
-	return "(" + this.VisitChildren(ctx, delegate).(string) + ")"
-
-OgVisitor::VisitParameterList(ctx *parser.ParameterListContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitParameterDecl(ctx *parser.ParameterDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate).(string) + ","
-
-OgVisitor::VisitOperand(ctx *parser.OperandContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.Expression() != nil
-		return "(" + this.VisitChildren(ctx, delegate).(string) + ")"
-
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitLiteral(ctx *parser.LiteralContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitBasicLit(ctx *parser.BasicLitContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return ctx.GetText()
-	// return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitOperandName(ctx *parser.OperandNameContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.IDENTIFIER() != nil
-		return ctx.IDENTIFIER().GetText()
-
-	if ctx.QualifiedIdent() != nil || ctx.This_() != nil
-		return this.VisitChildren(ctx, delegate)
-
-	return ctx.GetText()
-
-OgVisitor::VisitThis_(ctx *parser.This_Context, delegate antlr.ParseTreeVisitor): interface{} ->
-	// return ctx.GetText()
-	return "this"
-
-OgVisitor::VisitQualifiedIdent(ctx *parser.QualifiedIdentContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.This_() != nil
-		return "this." + ctx.IDENTIFIER(0).GetText()
-
-	return ctx.IDENTIFIER(0).GetText() + "." + ctx.IDENTIFIER(1).GetText()
-
-OgVisitor::VisitCompositeLit(ctx *parser.CompositeLitContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitLiteralType(ctx *parser.LiteralTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitLiteralValue(ctx *parser.LiteralValueContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.ElementList() == nil
-		return "{}"
-
-	return "{\n" + this.VisitChildren(ctx, delegate).(string) + "\n}"
-
-OgVisitor::VisitElementList(ctx *parser.ElementListContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitKeyedElement(ctx *parser.KeyedElementContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	r := ""
-	if ctx.Key() != nil
-		r += this.VisitKey(ctx.Key().(*parser.KeyContext), delegate).(string) + ":"
-
-	r += this.VisitElement(ctx.Element().(*parser.ElementContext), delegate).(string) + ",\n"
-
-	return r
-
-OgVisitor::VisitKey(ctx *parser.KeyContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.IDENTIFIER() != nil
-		return ctx.GetText()
-
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitElement(ctx *parser.ElementContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	idx := ""
-	res := ""
-	methods := ""
-
-	if ctx.IDENTIFIER() != nil
-		idx = ctx.IDENTIFIER().GetText()
-
-	for _, f in ctx.AllFieldDecl()
-		t := this.VisitFieldDecl(f.(*parser.FieldDeclContext), delegate).(string)
-
-		if t[:5] == "func "
-			methods += "\nfunc (this *" + idx + ") " + t[5:]
-		else
-			res += t
-
-	return  idx + " struct {\n" + res + "}" + methods
-
-OgVisitor::VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.IdentifierList() != nil
-		idList := this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
-		type_ := this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
-
-		tag := ""
-
-		if ctx.STRING_LIT() != nil
-			tag = ctx.STRING_LIT().GetText()
-
-		return idList + type_ + " " + tag + "\n"
-	else if ctx.InlineStructMethod() != nil
-		return  this.VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(string)
-	else
-		return ctx.GetText()
-
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitInlineStructMethod(ctx *parser.InlineStructMethodContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitFunctionLit(ctx *parser.FunctionLitContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitPrimaryExpr(ctx *parser.PrimaryExprContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitSelector(ctx *parser.SelectorContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "." + ctx.IDENTIFIER().GetText()
-
-OgVisitor::VisitIndex(ctx *parser.IndexContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return "[" + this.VisitChildren(ctx, delegate).(string) + "]"
-
-OgVisitor::VisitSlice(ctx *parser.SliceContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	txt := ctx.GetText()
-	splited := strings.Split(txt, ":")
-	res := "["
-	i := 0
-
-	if len(splited) == 2
-		if splited[0] != "["
-			res += this.VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
-			i++
-		res += ":"
-		if splited[1] != "]"
-			res += this.VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
-			i++
-
-	if len(splited) == 3
-		if splited[0] != "["
-			res += this.VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
-			i++
-		res += ":"
-		if splited[1] != ""
-			res += this.VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
-			i++
-		res += ":"
-		if splited[2] != "]"
-			res += this.VisitExpression(ctx.Expression(i).(*parser.ExpressionContext), delegate).(string)
-			i++
-
-	return res + "]"
-
-OgVisitor::VisitTypeAssertion(ctx *parser.TypeAssertionContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return ".(" + this.VisitChildren(ctx, delegate).(string) + ")"
-
-OgVisitor::VisitArguments(ctx *parser.ArgumentsContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.GetChildCount() == 2
-		return "()"
-
-	return "(" + this.VisitChildren(ctx, delegate).(string) + ")"
-
-OgVisitor::VisitMethodExpr(ctx *parser.MethodExprContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitReceiverType(ctx *parser.ReceiverTypeContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitExpression(ctx *parser.ExpressionContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	if ctx.GetChildCount() > 1
-		exp1 := this.VisitExpression(ctx.Expression(0).(*parser.ExpressionContext), delegate).(string)
-		op := this.VisitBinary_op(ctx.Binary_op().(*parser.Binary_opContext), delegate).(string)
-		exp2 := this.VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(string)
-
-		return exp1 + op + exp2
-
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitUnaryExpr(ctx *parser.UnaryExprContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return this.VisitChildren(ctx, delegate)
-
-OgVisitor::VisitUnary_op(ctx *parser.Unary_opContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	return ctx.GetText()
-
-OgVisitor::VisitConversion(ctx *parser.ConversionContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	t := this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(string)
-	exp := this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
-
-	return t + "(" + exp + ")"
-
-OgVisitor::VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor): interface{} ->
-	// return ctx.GetText()
-	return this.VisitChildren(ctx, delegate)
+  VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor)                           : interface{} -> return @VisitChildren(ctx, delegate)

@@ -1,101 +1,100 @@
 !og
 
 import
-	fmt
-	path
-	strings
-	os
-	"path/filepath"
-	"io/ioutil"
-	"os/exec"
+  fmt
+  path
+  strings
+  os
+  "path/filepath"
+  "io/ioutil"
+  "os/exec"
 
 struct OgConfig
-	Blocks  bool
-	Dirty   bool
-	Print   bool
-	Verbose bool
-	Paths   []string
-	OutPath string
+  Blocks  bool
+  Dirty   bool
+  Print   bool
+  Verbose bool
+  Paths   []string
+  OutPath string
 
 var config OgConfig
 
 Compile(config_ OgConfig) ->
-	config = config_
+  config = config_
 
-	for _, p in config.Paths
-		filepath.Walk(p, walker)
-
+  for _, p in config.Paths
+    filepath.Walk(p, walker)
 
 walker(filePath string, info os.FileInfo, err error): error ->
-	if err != nil
-		return err
+  if err != nil
+    return err
 
-	if info.IsDir() == true
-		return nil
+  if info.IsDir() == true
+    return nil
 
-	if path.Ext(filePath) != ".og"
-		return nil
+  if path.Ext(filePath) != ".og"
+    return nil
 
-	source, err := ioutil.ReadFile(filePath)
+  source, err := ioutil.ReadFile(filePath)
 
-	if err != nil
-		return err
+  if err != nil
+    return err
 
-	res := ProcessFile(filePath, string(source))
+  res := ProcessFile(filePath, string(source))
 
-	finalizeFile(filePath, res)
+  finalizeFile(filePath, res)
 
-	return nil
+  return nil
 
 ProcessFile(filePath string, data string): string ->
-	if config.Verbose == true
-		fmt.Print(filePath)
+  if config.Verbose == true
+    fmt.Print(filePath)
 
-	preprocessed := Preproc(string(data))
+  preprocessed := Preproc(string(data))
 
-	if config.Blocks == true
-		return preprocessed
+  if config.Blocks == true
+    return preprocessed
 
-	res := Parse(string(preprocessed))
+  res := Parse(string(preprocessed))
 
-	if config.Dirty == true
-		return res
+  if config.Dirty == true
+    return res
 
-	final := format(res)
+  final := format(res)
 
-	return final
+  return final
 
 finalizeFile(filePath string, data string) ->
-	if config.Print == true
-		fmt.Println(data)
-	else
-		writeFile(filePath, data)
+  if config.Print == true
+    fmt.Println(data)
+  else
+    writeFile(filePath, data)
 
 writeFile(filePath string, data string) ->
-	if config.OutPath != "./"
-		splited := strings.SplitN(filePath, "/", 2)
-		filePath = splited[1]
+  if config.OutPath != "./"
+    splited := strings.SplitN(filePath, "/", 2)
+    filePath = splited[1]
 
-	newPath := strings.Replace(path.Join(config.OutPath, filePath), ".og", ".go", 1)
+  newPath := strings.Replace(path.Join(config.OutPath, filePath), ".og", ".go", 1)
 
-	os.MkdirAll(filepath.Dir(newPath), os.ModePerm);
+  os.MkdirAll(filepath.Dir(newPath), os.ModePerm);
 
-	ioutil.WriteFile(newPath, []byte(data), os.ModePerm)
+  ioutil.WriteFile(newPath, []byte(data), os.ModePerm)
 
-	if config.Verbose == true
-		fmt.Println("->", newPath)
+  if config.Verbose == true
+    fmt.Println("->", newPath)
 
 
 format(str string): string ->
-	cmd := exec.Command("gofmt")
+  cmd := exec.Command("gofmt")
 
-	stdin, _ := cmd.StdinPipe()
+  stdin, _ := cmd.StdinPipe()
 
-	go ->
-		defer stdin.Close()
+  go ->
+    defer stdin.Close()
 
-		stdin.Write([]byte(str))
+    stdin.Write([]byte(str))
 
-	final, _ := cmd.CombinedOutput()
+  final, _ := cmd.CombinedOutput()
 
-	return string(final)
+  return string(final)

@@ -1,6 +1,6 @@
 Og-Lang
 ===
-### *v0.1.4*
+### *v0.1.5*
 
 <table>
   <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em></td></tr>
@@ -123,7 +123,7 @@ USAGE:
   og [options] Folders|Files
 
 VERSION:
-  0.1.4
+  0.1.5
 
 OPTIONS:
   -o value, --out value  Output directory. If input is recursive folder, the tree is recreated (default: "./")
@@ -196,7 +196,15 @@ og exemples/import.og
 
 # Changelog
 
-## 0.1.4: Current version
+## 0.1.5: Current version
+  - Forced `Go` syntax highlight on `Og` files for `Github`
+  - Rework translator to adapt to new method syntax and `@` alias
+  - No need to specify the `{}` in `interface{}` types
+    ```go
+      fn(a interface): interface -> a
+    ```
+
+## 0.1.4
   - Class-like method declaration (nested into the struct)
     ```go
       struct Foo

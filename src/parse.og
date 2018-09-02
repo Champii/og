@@ -1,33 +1,20 @@
 !og
 
 import
-	"github.com/champii/og/lib/translator"
-	"github.com/champii/og/parser"
-
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+  "github.com/champii/og/lib/translator"
+  "github.com/champii/og/parser"
+  "github.com/antlr/antlr4/runtime/Go/antlr"
 
 Parse(str string): string ->
-	input := antlr.NewInputStream(str)
+  input := antlr.NewInputStream(str)
+  lexer := parser.NewOgLexer(input)
+  stream := antlr.NewCommonTokenStream(lexer, 0)
+  p := parser.NewOgParser(stream)
 
-	lexer := parser.NewOgLexer(input)
+  res := p.SourceFile()
 
-	stream := antlr.NewCommonTokenStream(lexer, 0)
+  t := new(translator.OgVisitor)
 
-	p := parser.NewOgParser(stream)
+  final := t.VisitSourceFile(res.(*parser.SourceFileContext), t)
 
-	// p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-
-	res := p.SourceFile()
-
-	// res.ToStringTree()
-
-	// res.ToStringTree([]string{"sourceFile"})
-
-	t := new(translator.OgVisitor)
-
-	// res.Accept(t)
-	final := t.VisitSourceFile(res.(*parser.SourceFileContext), t)
-
-	// antlr.ParseTreeWalkerDefault.Walk(t, res)
-
-	return final.(string)
+  return final.(string)

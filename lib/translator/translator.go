@@ -10,8 +10,7 @@ type OgVisitor struct {
 	*antlr.BaseParseTreeVisitor
 }
 
-func (this *OgVisitor) Aggregate(resultSoFar, childResult interface {
-}) interface{} {
+func (this *OgVisitor) Aggregate(resultSoFar interface{}, childResult interface{}) interface{} {
 	switch childResult.(type) {
 	default:
 		return resultSoFar
@@ -299,9 +298,9 @@ func (this *OgVisitor) VisitInterfaceType(ctx *parser.InterfaceTypeContext, dele
 		idx = ctx.IDENTIFIER().GetText() + " "
 	}
 	if len(ctx.AllMethodSpec()) != 0 {
-		methods = this.VisitChildren(ctx, delegate).(string)
+		methods = "\n" + this.VisitChildren(ctx, delegate).(string)
 	}
-	return idx + "interface" + "{\n" + methods + "}"
+	return idx + "interface" + "{" + methods + "}"
 }
 func (this *OgVisitor) VisitSliceType(ctx *parser.SliceTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return "[]" + this.VisitChildren(ctx, delegate).(string)

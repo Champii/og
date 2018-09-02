@@ -201,10 +201,8 @@ func main() {
 		// interface.og
 		`package main
 
-type Foo interface {
-}
-type Foo2 interface {
-}
+type Foo interface{}
+type Foo2 interface{}
 type Foo4 interface {
 	Foo(a int) string
 }
