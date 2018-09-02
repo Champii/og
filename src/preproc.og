@@ -24,6 +24,10 @@ Preproc(str string): string ->
   indentSize := 0
 
   for i in lines
+    // if len(lines[i]) == 0
+    //   res = append(res, ";")
+    //   continue
+
     indent := indentCount(lines[i])
 
     if indentSize == 0 && indent != lastIndent

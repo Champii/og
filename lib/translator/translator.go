@@ -154,7 +154,7 @@ func (this *OgVisitor) VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delega
 	return idList + " := " + exprList
 }
 func (this *OgVisitor) VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	return "\n"
 }
 func (this *OgVisitor) VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return ctx.IDENTIFIER().GetText() + ":" + this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(string)
@@ -558,5 +558,8 @@ func (this *OgVisitor) VisitConversion(ctx *parser.ConversionContext, delegate a
 	return t + "(" + exp + ")"
 }
 func (this *OgVisitor) VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	if ctx.EOF() != nil {
+		return ""
+	}
+	return ctx.GetText()
 }

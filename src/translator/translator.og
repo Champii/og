@@ -105,7 +105,7 @@ struct OgVisitor
     exprList := @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
     return idList + " := " + exprList
 
-  VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor)               : interface -> return @VisitChildren(ctx, delegate)
+  VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor)               : interface -> return "\n"
   VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor)           : interface ->
     return ctx.IDENTIFIER().GetText() + ":" + @VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(string)
 
@@ -444,4 +444,8 @@ struct OgVisitor
 
     return t + "(" + exp + ")"
 
-  VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor)                           : interface -> return @VisitChildren(ctx, delegate)
+  VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor)                           : interface ->
+    if ctx.EOF() != nil
+      return ""
+
+    return ctx.GetText()
