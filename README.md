@@ -1,14 +1,32 @@
-Og-Lang v0.1.4
+Og-Lang
 ===
+### v0.1.4
 
-#### `Golang On Steroids` - _Socrates_.
-#### `The world like it should be` - _Mahatma Gandhi_.
-#### `...[Facepalm]...` - _Google_.
+<table>
+  <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em>.</td></tr>
+  <tr><td><b>"The Code like it should be. 5/7"</b></td><td>- <em>Mahatma Gandhi</em>.</td></tr>
+  <tr><td><b>"...[Recursive Facepalm]..."</b></td> <td>- <em>Google</em>.</td></tr>
+</table>
+
+# Index
+
+- [Intro](#intro)
+- [Basics](#basics)
+- [Usage](#usage)
+- [Build](#build)
+- [Changelog](#changelog)
+- [Todo](#todo)
+- [Long term utopia](#long-term-utopia)
+
 
 # Intro
-`Oglang` is an indentation based languagem mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of GoLang (for the moment :D).
 
 To be pronounced `Oh-Jee`.
+
+`Oglang` is an indentation based languagem mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of `GoLang` but aim to be a superset and to be totally backward compatible with it. The goal is for every `Go` file to be a valid `Og` file
+
+## Bootstraped Language
+---
 
 `Oglang` is written in itself. It is said to be a 'Bootstraped' language. In fact, `Oglang` needs the previous release of itself to build itself.
 
@@ -18,23 +36,12 @@ And the [lib](https://github.com/champii/og/tree/master/lib) folder for the comp
 
 Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
 
-# Index
+## Goal
+---
 
-- [Goal](#goal)
-- [Exemple](#exemple)
-- [Usage](#usage)
-- [Build](#build)
-- [Todo](#todo)
-- [Changelog](#changelog)
-- [Long term utopia](#long-term-utopia)
+The main goal is to simplify the syntax, to borrow some concepts from Livescript and other functional languages, to implement Generics and macro processing, as well as some syntaxic sugar to avoid all the boilerplate code Golang forces us into.
 
-# Goal
-
-To provide a superset of `Golang` to be a usable language that compiles to Golang
-
-The main goal is to simplify the syntax, to borrow some concepts from Livescript and other functional languages, to implement Generics and macro processing, as well as some syntaxic sugar to avoid all the boilerplate Golang force us into.
-
-# Exemple
+# Basics
 
 This is an exemple of how `Oglang` looks like actualy. See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder.
 
@@ -123,7 +130,7 @@ OPTIONS:
 
 Here is the procedure to regenerate the parser from the grammar if you want to make changes to it.
 
-If you just want to (re)build the binary, you can call `make build` or just `go build`
+If you just want to (re)build the binary, you can call `make build` or just `go build` (needs a previously generated parser from grammar. See below)
 
 ## Build Antlr
 
@@ -165,13 +172,13 @@ make
 # This will just build the sources (if needed)
 make build
 
-# This needs the previous version of `og` binary at global scope.
+# This needs a previously built version of `og` binary at local scope.
 # To Recompile Og to Go + build + test
 make bootstrap
 
-# Needs the previous version of `og` binary at global scope.
+# Needs the last official `og` binary version at global scope.
 # It recompiles og from the previous global version
-# Handy in case of mistake in the source
+# Handy in case of mistake in the source or for release
 make rebootstrap
 
 # And install
@@ -180,52 +187,6 @@ sudo make install
 # Simple exemple
 og exemples/import.og
 ```
-
-# TODO
-
-- [ ] Make `Oglang` a valid super-set of `Golang`.
-- [ ] Make tests truly executable
-- [ ] Beautyful and meaningful compile error with source context
-- [ ] External type declaration like Haskell: `myFunc :: string -> Foo -> Bar`
-- [ ] OneLiner if/for: `if a => 1`, `for b => b--`
-- [ ] Predicat recapture: `if a => that`
-- [ ] Perfs
-- [ ] Binary operator (`<<`, `>>`, `.`, `|`)
-- [ ] Empty Function body
-- [ ] Struct compostion ("Inheritance")
-- [ ] Auto return for last statement in a block
-- [ ] For with a range (for i in [0..10])
-- [ ] For with a custom variable (for i = 0; i < 10; i++) or (for i < 10)
-- [ ] `pub` visibility instead of capitalizing
-- [ ] Existance test (if toto?) for non-nil value test
-- [ ] Returnable and assignable statements (if, for, ...)
-- [ ] Generics
-- [ ] Error bubbling
-- [ ] `map` Type
-- [ ] `chan` Type
-- [ ] `const` declaration
-- [ ] Send statement `a <- b`
-- [ ] Incrementation everywhere
-- [ ] Send statement `a <- b`
-- [ ] Empty statement (need to avoid skiping empty lines in preproc)
-- [ ] Labels
-- [ ] `break`
-- [ ] `goto`
-- [ ] `continue`
-- [ ] `fallthrough`
-- [ ] `select`
-- [ ] Rest params `...`
-- [ ] Recever type in methodExpr
-- [ ] Function literal (assignable)
-- [ ] Proper Anonymous field in structs
-- [ ] Method receiver pointer type
-- [ ] Auto add `default` to switch ?
-- [ ] Pattern matching
-- [ ] Function currying
-- [ ] Function shorthand `(+ 10)`
-- [ ] Import renaming and pattern matching
-- [ ] Adapt Golang tooling like `gofmt` or `golint`
-- [ ] VSCode extension
 
 # Changelog
 
@@ -278,7 +239,7 @@ og exemples/import.og
     ```bash
       og -o lib src
     ```
-  - External class declaration
+  - External method declaration
     ```go
       struct Foo
       Foo::bar -> doSomething()
@@ -286,6 +247,54 @@ og exemples/import.og
 
 ## 0.1.0
   - Initial release
+
+
+# TODO
+
+## Golang superset goal
+- [ ] `const` declaration
+- [ ] `map` Type
+- [ ] `chan` Type
+- [ ] Labels
+- [ ] `break`
+- [ ] `goto`
+- [ ] `continue`
+- [ ] `fallthrough`
+- [ ] `select`
+- [ ] For with a custom variable (for i = 0; i < 10; i++)
+- [ ] Method receiver pointer type
+- [ ] Function literal (assignable)
+- [ ] Rest params `...`
+- [ ] Recever type in methodExpr
+- [ ] Send statement `a <- b`
+- [ ] Binary operator (`<<`, `>>`, `.`, `|`)
+- [ ] Import renaming and pattern matching
+- [ ] Proper Anonymous field in structs
+- [ ] Incrementation everywhere
+- [ ] Make tests truly executable
+- [ ] Beautyful and meaningful compile error with source context
+- [ ] VSCode extension
+- [ ] Adapt Golang tooling like `gofmt` or `golint`
+
+## Syntaxic Sugar Goal
+- [ ] Empty statement (need to avoid skiping empty lines in preproc)
+- [ ] Empty Function body
+- [ ] OneLiner if/for: `if a => 1`, `for b => b--`
+- [ ] Returnable and assignable statements (if, for, ...)
+- [ ] Auto return for last statement in a block
+- [ ] Predicat recapture: `if a => that`
+- [ ] External type declaration like Haskell: `myFunc :: string -> Foo -> Bar`
+- [ ] Struct compostion ("Inheritance")
+- [ ] Existance test (if toto?) for non-nil value test
+- [ ] Auto add `default` to switch ?
+- [ ] `pub` visibility instead of capitalizing
+- [ ] For with a range (for i in [0..10])
+- [ ] Error bubbling
+- [ ] Pattern matching
+- [ ] Function currying
+- [ ] Function shorthand `(+ 10)`
+- [ ] Perfs
+- [ ] Generics
 
 # Long term utopia
 

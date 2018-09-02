@@ -1,7 +1,6 @@
 package translator
 
 import (
-	"fmt"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/champii/og/parser"
 	"strings"
@@ -412,7 +411,6 @@ func (this *OgVisitor) VisitStructType(ctx *parser.StructTypeContext, delegate a
 	}
 	for _, f := range ctx.AllFieldDecl() {
 		t := this.VisitFieldDecl(f.(*parser.FieldDeclContext), delegate).(string)
-		fmt.Println("TEST", t[:5])
 		if t[:5] == "func " {
 			methods += "\nfunc (this *" + idx + ") " + t[5:]
 		} else {
@@ -431,9 +429,7 @@ func (this *OgVisitor) VisitFieldDecl(ctx *parser.FieldDeclContext, delegate ant
 		}
 		return idList + type_ + " " + tag + "\n"
 	} else if ctx.InlineStructMethod() != nil {
-		r := this.VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(string)
-		fmt.Println("HUH ?!", r)
-		return r
+		return this.VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(string)
 	} else {
 		return ctx.GetText()
 	}

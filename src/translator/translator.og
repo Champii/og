@@ -1,7 +1,6 @@
 !translator
 
 import
-	fmt
 	strings
 	"github.com/champii/og/parser"
 
@@ -433,7 +432,6 @@ OgVisitor::VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTr
 
 	for _, f in ctx.AllFieldDecl()
 		t := this.VisitFieldDecl(f.(*parser.FieldDeclContext), delegate).(string)
-		fmt.Println("TEST", t[:5])
 
 		if t[:5] == "func "
 			methods += "\nfunc (this *" + idx + ") " + t[5:]
@@ -454,9 +452,7 @@ OgVisitor::VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTree
 
 		return idList + type_ + " " + tag + "\n"
 	else if ctx.InlineStructMethod() != nil
-		r := this.VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(string)
-		fmt.Println("HUH ?!", r)
-		return r
+		return  this.VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(string)
 	else
 		return ctx.GetText()
 
