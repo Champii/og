@@ -242,8 +242,8 @@ type Test struct {
 	i int
 }
 
-func (this *Test) f() *Test { return this }
-func (this *Test) g() int   { return this.i }
+func (this Test) f() Test { return this }
+func (this *Test) g() int { return this.i }
 `,
 		// internal_method.og
 		`package main
@@ -252,7 +252,8 @@ type Foo struct {
 	a int
 }
 
-func (this *Foo) f() { fmt.Println(this.a) }
+func (this Foo) f()  { fmt.Println(this.a) }
+func (this *Foo) g() { fmt.Println(this.a) }
 func main() {
 	foo := Foo{}
 	foo.f()
@@ -341,6 +342,15 @@ func main() {
 	}
 }
 `,
+		// func_literal.og
+		`package main
+
+func main() {
+	a := func() { return 1 }
+	b := func(a int) { fmt.Println(a) }
+	c := func(a int) int { return a }
+}
+`,
 	}
 
 	paths := []string{
@@ -369,6 +379,7 @@ func main() {
 		`loop_flow`,
 		`anonymous`,
 		`select`,
+		`func_literal`,
 	}
 
 	for i, p := range paths {

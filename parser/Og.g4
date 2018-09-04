@@ -260,7 +260,7 @@ methodDecl
     ;
 
 receiver
-    : IDENTIFIER '::' IDENTIFIER
+    : IDENTIFIER '::' '*'? IDENTIFIER
     ;
 
 //VarDecl     = "var" ( VarSpec | "(" { VarSpec ";" } ")" ) .
@@ -488,7 +488,7 @@ rangeClause
 
 //GoStmt = "go" Expression .
 goStmt
-    : 'go' ( expression | function )
+    : 'go' (function | expression)
     ;
 
 //Type      = TypeName | TypeLit | "(" Type ")" .
@@ -710,7 +710,7 @@ fieldDecl
     ;
 
 inlineStructMethod
-    : functionDecl
+    : '*'? functionDecl
     ;
 
 anonymousField
@@ -719,7 +719,7 @@ anonymousField
 
 //FunctionLit = "func" Function .
 functionLit
-    : 'func' function
+    : function
     ;
 
 //PrimaryExpr =

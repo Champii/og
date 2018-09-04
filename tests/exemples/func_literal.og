@@ -1,0 +1,6 @@
+!main
+
+main ->
+  a := -> return 1
+  b := (a int) -> fmt.Println(a)
+  c := (a int): int -> return a

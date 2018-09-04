@@ -2,7 +2,8 @@
 
 class Foo
 	a int
-	f -> fmt.Println(@a)
+	f  -> fmt.Println(@a)
+	*g -> fmt.Println(@a)
 
 main ->
 	foo := Foo{}

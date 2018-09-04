@@ -68,7 +68,11 @@ struct OgVisitor
   VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor)                 : interface ->
     c := ctx.IDENTIFIER(0).GetText()
     method := ctx.IDENTIFIER(1).GetText()
-    return "(this *" + c + ") " + method
+
+    if strings.Contains(ctx.GetText(), "*")
+      c = "*" + c
+
+    return "(this " + c + ") " + method
 
   VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.ParseTreeVisitor)                   : interface -> return "var " + @VisitChildren(ctx, delegate).(string)
   VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.ParseTreeVisitor)                   : interface ->
@@ -389,7 +393,9 @@ struct OgVisitor
       t := @VisitFieldDecl(f.(*parser.FieldDeclContext), delegate).(string)
 
       if t[:5] == "func "
-        methods += "\nfunc (this *" + idx + ") " + t[5:]
+        methods += "\nfunc (this " + idx + ") " + t[5:]
+      else if t[:6] == "*func "
+        methods += "\nfunc (this *" + idx + ") " + t[6:]
       else
         res += t
 
@@ -415,14 +421,22 @@ struct OgVisitor
 
     return @VisitChildren(ctx, delegate)
 
-  VisitInlineStructMethod(ctx *parser.InlineStructMethodContext, delegate antlr.ParseTreeVisitor) : interface -> return @VisitChildren(ctx, delegate)
+  VisitInlineStructMethod(ctx *parser.InlineStructMethodContext, delegate antlr.ParseTreeVisitor) : interface ->
+    res := ""
+
+    if ctx.GetText()[0] == '*'
+      res += "*"
+
+    return res + @VisitChildren(ctx, delegate).(string)
+
   VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor)     : interface ->
     res := ""
 
     if strings.Contains(ctx.GetText(), "*")
       res += "*"
     return res + @VisitChildren(ctx, delegate).(string) + "\n"
-  VisitFunctionLit(ctx *parser.FunctionLitContext, delegate antlr.ParseTreeVisitor)           : interface -> return @VisitChildren(ctx, delegate)
+
+  VisitFunctionLit(ctx *parser.FunctionLitContext, delegate antlr.ParseTreeVisitor)           : interface -> return "func " + @VisitChildren(ctx, delegate).(string)
   VisitPrimaryExpr(ctx *parser.PrimaryExprContext, delegate antlr.ParseTreeVisitor)           : interface -> return @VisitChildren(ctx, delegate)
   VisitSelector(ctx *parser.SelectorContext, delegate antlr.ParseTreeVisitor)                 : interface -> return "." + ctx.IDENTIFIER().GetText()
   VisitIndex(ctx *parser.IndexContext, delegate antlr.ParseTreeVisitor)                       : interface -> return "[" + @VisitChildren(ctx, delegate).(string) + "]"
