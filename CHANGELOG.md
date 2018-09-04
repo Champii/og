@@ -36,6 +36,11 @@
       Foo::*pointerReceiver2 : int -> return 1
     ```
   - External CHANGELOG
+  - Function literal
+    ```go
+      a := -> fmt.Println(1)
+      a := (a int) -> fmt.Println(a)
+    ```
 
 ## v0.1.9
   - `break`, `goto`, `continue`, `fallthrough`, `labels`

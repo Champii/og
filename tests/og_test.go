@@ -346,7 +346,8 @@ func main() {
 		`package main
 
 func main() {
-	a := func() { return 1 }
+	a := func() { fmt.Println(1) }
+	a := func() int { return 1 }
 	b := func(a int) { fmt.Println(a) }
 	c := func(a int) int { return a }
 }
