@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.1.10: Current version
+## v0.1.11: Current version
+
+## v0.1.10
   - Better `Makefile` that cares about whether a file has changed or not before applying rules
   - Proper Anonymous field in structs
     ```go
