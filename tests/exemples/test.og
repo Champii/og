@@ -1,57 +1,5 @@
-!main // package shorthand
-
-// No parenthesis and single word can omit quotes
-import
-  fmt
-  strings
-  "some/repo"
-
-// Alias for `type Foo struct`
-struct Foo
-  // Classical property declaration
-  bar int
-
-  // Inline method declaration
-  // with no arguments that returns `this.bar`
-  getBar : int -> return @bar
-
-// External Foo method declaration
-Foo::inc(foo int) -> @bar = @bar + foo
-
-// Alias for `type Bar interface`
-interface Bar
-  Foo()
-  Bar(i int): SomeType
-
-// Alias for struct
-class Test
-
-// Classical top-level function declaration
-otherFunc(a string): string -> return a
+!main
 
 main ->
-  test := Foo{}
-
-  test.inc(42)
-
-  if test.getBar() == 42
-    answerTheUltimateQuestion()
-  else
-    enterTheVoid()
-
-  someArr := []string
-    "value1"
-    "value2"
-
-  for i, v in someArray
-    fmt.Println(i, v)
-
-  switch test.getBar()
-    42 => doSomething()
-    _  => doDefault()
-
-  go someFunc()
-
-  // Auto executed closure when in goroutines
-  // No need to add the extra `()`
   go -> doSomething()
+  go doSomething()

@@ -83,10 +83,8 @@ func writeFile(filePath string, data string) {
 func format(str string) string {
 	cmd := exec.Command("gofmt")
 	stdin, _ := cmd.StdinPipe()
-	go func() {
-		defer stdin.Close()
-		stdin.Write([]byte(str))
-	}()
+	stdin.Write([]byte(str))
+	stdin.Close()
 	final, _ := cmd.CombinedOutput()
 	return string(final)
 }

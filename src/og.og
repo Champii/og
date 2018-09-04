@@ -92,10 +92,10 @@ format(str string): string ->
 
   stdin, _ := cmd.StdinPipe()
 
-  go ->
-    defer stdin.Close()
+  // go ->
 
-    stdin.Write([]byte(str))
+  stdin.Write([]byte(str))
+  stdin.Close()
 
   final, _ := cmd.CombinedOutput()
 

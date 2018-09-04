@@ -1,9 +1,6 @@
 # Changelog
 
-## v0.1.11: Current version
-
-## v0.1.10
-  - ## *Warning*: This version cannot be rebuilt from 0.1.9 as this is introducing a grammar breaking change.
+## v0.1.10: Current version
   - Better `Makefile` that cares about whether a file has changed or not before applying rules
   - Proper Anonymous field in structs
     ```go
@@ -39,7 +36,7 @@
       Foo::*pointerReceiver2 : int -> return 1
     ```
   - External CHANGELOG
-  - Function literal
+  - Function literal (Big performance issue cause by the grammar that keeps increasing in complexity, so disabled until next release)
     ```go
       a := -> fmt.Println(1)
       a := (a int) -> fmt.Println(a)

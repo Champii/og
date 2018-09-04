@@ -342,16 +342,16 @@ func main() {
 	}
 }
 `,
-		// func_literal.og
-		`package main
+		// 		// func_literal.og
+		// 		`package main
 
-func main() {
-	a := func() { fmt.Println(1) }
-	a := func() int { return 1 }
-	b := func(a int) { fmt.Println(a) }
-	c := func(a int) int { return a }
-}
-`,
+		// func main() {
+		// 	a := func() { fmt.Println(1) }
+		// 	a := func() int { return 1 }
+		// 	b := func(a int) { fmt.Println(a) }
+		// 	c := func(a int) int { return a }
+		// }
+		// `,
 	}
 
 	paths := []string{

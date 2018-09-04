@@ -356,7 +356,6 @@ assign_op
     : ('+' | '-' | '|' | '^' | '*' | '/' | '%' | '<<' | '>>' | '&' | '&^')? '='
     ;
 
-
 //ShortVarDecl = IdentifierList ":=" ExpressionList .
 shortVarDecl
     : identifierList ':=' expressionList
