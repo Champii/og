@@ -380,7 +380,7 @@ func main() {
 		`loop_flow`,
 		`anonymous`,
 		`select`,
-		`func_literal`,
+		// `func_literal`,
 	}
 
 	for i, p := range paths {

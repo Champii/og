@@ -719,7 +719,7 @@ anonymousField
 
 //FunctionLit = "func" Function .
 functionLit
-    : function
+    : 'func' function
     ;
 
 //PrimaryExpr =
