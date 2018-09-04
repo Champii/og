@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.1.10: Current version
+## v0.1.11: Current version
+
+## v0.1.10
   - ## *Warning*: This version cannot be rebuilt from 0.1.9 as this is introducing a grammar breaking change.
   - Better `Makefile` that cares about whether a file has changed or not before applying rules
   - Proper Anonymous field in structs
