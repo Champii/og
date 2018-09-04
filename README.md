@@ -23,7 +23,7 @@ Og-Lang
 
 To be pronounced `Oh-Jee`.
 
-`Oglang` is an indentation based language mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of `GoLang` but aim to be a superset and to be totally backward compatible with it. The goal is for every `Go` file to be a valid `Og` file
+`Oglang` is an indentation based language mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of `GoLang`.
 
 ### Bootstraped Language
 
@@ -169,6 +169,28 @@ og exemples/import.og
 
 ## v0.1.10: Current version
   - Better `Makefile` that cares about whether a file has changed or not before applying rules
+  - Proper Anonymous field in structs
+    ```go
+      struct Foo
+        *SomeClass
+        a int
+    ```
+  - Channel Send and Receive
+    ```go
+      c := make(chan int)
+      c <- 1
+      x := <-c
+    ```
+  - Select statement
+    ```go
+      select
+        <-c1      => something()
+        x := <-c1 => something()
+        c1 <- 1   =>
+          something()
+          somethingElse()
+        _         => defaultCase()
+    ```
 
 ## v0.1.9
   - `break`, `goto`, `continue`, `fallthrough`, `labels`
@@ -255,16 +277,13 @@ og exemples/import.og
 
 # TODO
 
-## Golang superset goal
-- [ ] Proper Anonymous field in structs
-- [ ] `select`
+## Golang basics
 - [ ] Method receiver pointer type
 - [ ] Recever type in methodExpr
 - [ ] Function literal (assignable)
 - [ ] `const` and `var` multiple consecutive declaration
 - [ ] Rest params `...`
 - [ ] Send statement `a <- b`
-- [ ] `make`, `append`, ...
 - [ ] Allow parenthesis for `import`
 - [ ] For with a custom variable (for i = 0; i < 10; i++)
 - [ ] Binary operator (`<<`, `>>`, `.`, `|`)
@@ -275,7 +294,7 @@ og exemples/import.og
 - [ ] VSCode extension
 - [ ] Adapt Golang tooling like `gofmt` or `golint`
 
-## Syntaxic Sugar Goal
+## Syntaxic Sugar
 - [ ] Empty statement (need to avoid skiping empty lines in preproc)
 - [ ] Empty Function body
 - [ ] OneLiner if/for: `if a => 1`, `for b => b--`

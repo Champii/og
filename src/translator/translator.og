@@ -90,7 +90,12 @@ struct OgVisitor
   VisitStatementNoBlock(ctx *parser.StatementNoBlockContext, delegate antlr.ParseTreeVisitor) : interface -> return "{" + @VisitChildren(ctx, delegate).(string) + "}"
   VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate antlr.ParseTreeVisitor)             : interface -> return @VisitChildren(ctx, delegate)
   VisitExpressionStmt(ctx *parser.ExpressionStmtContext, delegate antlr.ParseTreeVisitor)     : interface -> return @VisitChildren(ctx, delegate)
-  VisitSendStmt(ctx *parser.SendStmtContext, delegate antlr.ParseTreeVisitor)                 : interface -> return @VisitChildren(ctx, delegate)
+  VisitSendStmt(ctx *parser.SendStmtContext, delegate antlr.ParseTreeVisitor)                 : interface ->
+    exp1 := @VisitExpression(ctx.Expression(0).(*parser.ExpressionContext), delegate).(string)
+    exp2 := @VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(string)
+
+    return exp1 + "<-" + exp2
+
   VisitIncDecStmt(ctx *parser.IncDecStmtContext, delegate antlr.ParseTreeVisitor)             : interface -> return ctx.GetText()
   VisitAssignment(ctx *parser.AssignmentContext, delegate antlr.ParseTreeVisitor)             : interface -> return @VisitChildren(ctx, delegate)
   VisitAssign_op(ctx *parser.Assign_opContext, delegate antlr.ParseTreeVisitor)               : interface ->
@@ -216,10 +221,37 @@ struct OgVisitor
     return "case " + @VisitChildren(ctx, delegate).(string)
 
   VisitTypeList(ctx *parser.TypeListContext, delegate antlr.ParseTreeVisitor)                 : interface -> return @VisitChildren(ctx, delegate)
-  VisitSelectStmt(ctx *parser.SelectStmtContext, delegate antlr.ParseTreeVisitor)             : interface -> return @VisitChildren(ctx, delegate)
-  VisitCommClause(ctx *parser.CommClauseContext, delegate antlr.ParseTreeVisitor)             : interface -> return @VisitChildren(ctx, delegate)
-  VisitCommCase(ctx *parser.CommCaseContext, delegate antlr.ParseTreeVisitor)                 : interface -> return @VisitChildren(ctx, delegate)
-  VisitRecvStmt(ctx *parser.RecvStmtContext, delegate antlr.ParseTreeVisitor)                 : interface -> return @VisitChildren(ctx, delegate)
+  VisitSelectStmt(ctx *parser.SelectStmtContext, delegate antlr.ParseTreeVisitor)             : interface -> return "select {\n" + @VisitChildren(ctx, delegate).(string) + "}"
+  VisitCommClause(ctx *parser.CommClauseContext, delegate antlr.ParseTreeVisitor)             : interface ->
+    res := @VisitCommCase(ctx.CommCase().(*parser.CommCaseContext), delegate).(string) + ":\n"
+
+    if ctx.StatementNoBlock() != nil
+      stmt := @VisitStatementNoBlock(ctx.StatementNoBlock().(*parser.StatementNoBlockContext), delegate).(string)
+      res += stmt[1:len(stmt)-1]
+
+    if ctx.Block() != nil
+      block := @VisitBlock(ctx.Block().(*parser.BlockContext), delegate).(string)
+      res += block[2:len(block)-2]
+
+    return res + "\n"
+
+  VisitCommCase(ctx *parser.CommCaseContext, delegate antlr.ParseTreeVisitor)                 : interface ->
+    if ctx.GetText() == "_"
+      return "default"
+
+    return "case " + @VisitChildren(ctx, delegate).(string)
+
+  VisitRecvStmt(ctx *parser.RecvStmtContext, delegate antlr.ParseTreeVisitor)                 : interface ->
+    res := ""
+
+    if ctx.ExpressionList() != nil
+      res += @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string) + "="
+
+    if ctx.IdentifierList() != nil
+      res += @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string) + ":="
+
+    return res + @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+
   VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.ParseTreeVisitor)                   : interface -> return "for " + @VisitChildren(ctx, delegate).(string)
   VisitForClause(ctx *parser.ForClauseContext, delegate antlr.ParseTreeVisitor)               : interface -> return @VisitChildren(ctx, delegate)
   VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.ParseTreeVisitor)           : interface ->
@@ -376,13 +408,20 @@ struct OgVisitor
       return idList + type_ + " " + tag + "\n"
     else if ctx.InlineStructMethod() != nil
       return  @VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(string)
+    else if ctx.AnonymousField() != nil
+      return  @VisitAnonymousField(ctx.AnonymousField().(*parser.AnonymousFieldContext), delegate).(string)
     else
       return ctx.GetText()
 
     return @VisitChildren(ctx, delegate)
 
   VisitInlineStructMethod(ctx *parser.InlineStructMethodContext, delegate antlr.ParseTreeVisitor) : interface -> return @VisitChildren(ctx, delegate)
-  VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor)     : interface -> return @VisitChildren(ctx, delegate)
+  VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor)     : interface ->
+    res := ""
+
+    if strings.Contains(ctx.GetText(), "*")
+      res += "*"
+    return res + @VisitChildren(ctx, delegate).(string) + "\n"
   VisitFunctionLit(ctx *parser.FunctionLitContext, delegate antlr.ParseTreeVisitor)           : interface -> return @VisitChildren(ctx, delegate)
   VisitPrimaryExpr(ctx *parser.PrimaryExprContext, delegate antlr.ParseTreeVisitor)           : interface -> return @VisitChildren(ctx, delegate)
   VisitSelector(ctx *parser.SelectorContext, delegate antlr.ParseTreeVisitor)                 : interface -> return "." + ctx.IDENTIFIER().GetText()

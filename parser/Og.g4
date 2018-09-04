@@ -458,10 +458,10 @@ selectStmt
     : 'select' '{' commClause* '}'
     ;
 commClause
-    : commCase ':' statementList
+    : commCase '=>' (statementNoBlock | block)
     ;
 commCase
-    : 'case' ( sendStmt | recvStmt ) | 'default'
+    : ( sendStmt | recvStmt ) | '_'
     ;
 recvStmt
     : ( expressionList '=' | identifierList ':=' )? expression

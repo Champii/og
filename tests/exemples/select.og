@@ -1,0 +1,14 @@
+!main
+
+main ->
+  c1 := make(chan int)
+  c2 := make(chan int)
+
+  select
+    <-c1      => fmt.Println("Yeah")
+    x := <-c2 => fmt.Println("Yeah", x)
+    x := <-c2 =>
+      fmt.Println("Yeah", x)
+      fmt.Println("Yeah2", x)
+    c2 <- 1   => fmt.Println("Yeah", x)
+    _         => fmt.Println("Default")

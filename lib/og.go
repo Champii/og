@@ -74,7 +74,6 @@ func writeFile(filePath string, data string) {
 	}
 	newPath := strings.Replace(path.Join(config.OutPath, filePath), ".og", ".go", 1)
 	os.MkdirAll(filepath.Dir(newPath), os.ModePerm)
-
 	ioutil.WriteFile(newPath, []byte(data), os.ModePerm)
 	if config.Verbose == true {
 		fmt.Println("->", newPath)

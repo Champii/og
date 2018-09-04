@@ -1,0 +1,11 @@
+!main
+
+struct Foo
+  *SomeClass
+
+struct Foo
+  SomeClass
+
+struct Foo
+  SomeClass
+  *SomeClass2

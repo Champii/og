@@ -18,7 +18,7 @@ endef
 
 define run_and_test
 	printf "%b" "- $(OBJ_COLOR)$(2)$(NO_COLOR)\r"; \
-	$(1) > /dev/null 2> $@.log; \
+	$(1) 2> $@.log; \
 	RESULT=$$?; \
 	if [ $$RESULT -ne 0 ]; then \
 		printf '%-60b%b' '- $(OBJ_COLOR)$(2)' '$(ERROR_COLOR)$(ERROR_STRING)$(NO_COLOR)\n'; \
@@ -64,7 +64,7 @@ re_: grammar
 	@$(call section_title,Rebuilding with new og version)
 	@make clean all --no-print-directory
 
-test:
+test: all
 	@$(call run_and_test,go test og/tests,Testing)
 
 clean:

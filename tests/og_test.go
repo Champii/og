@@ -306,6 +306,41 @@ here:
 	}
 }
 `,
+		// anonymous.og
+		`package main
+
+type Foo struct {
+	*SomeClass
+}
+type Foo struct {
+	SomeClass
+}
+type Foo struct {
+	SomeClass
+	*SomeClass2
+}
+`,
+		// select.og
+		`package main
+
+func main() {
+	c1 := make(chan int)
+	c2 := make(chan int)
+	select {
+	case <-c1:
+		fmt.Println("Yeah")
+	case x := <-c2:
+		fmt.Println("Yeah", x)
+	case x := <-c2:
+		fmt.Println("Yeah", x)
+		fmt.Println("Yeah2", x)
+	case c2 <- 1:
+		fmt.Println("Yeah", x)
+	default:
+		fmt.Println("Default")
+	}
+}
+`,
 	}
 
 	paths := []string{
@@ -332,6 +367,8 @@ here:
 		`map`,
 		`chan`,
 		`loop_flow`,
+		`anonymous`,
+		`select`,
 	}
 
 	for i, p := range paths {

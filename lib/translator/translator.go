@@ -131,7 +131,9 @@ func (this *OgVisitor) VisitExpressionStmt(ctx *parser.ExpressionStmtContext, de
 	return this.VisitChildren(ctx, delegate)
 }
 func (this *OgVisitor) VisitSendStmt(ctx *parser.SendStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	exp1 := this.VisitExpression(ctx.Expression(0).(*parser.ExpressionContext), delegate).(string)
+	exp2 := this.VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(string)
+	return exp1 + "<-" + exp2
 }
 func (this *OgVisitor) VisitIncDecStmt(ctx *parser.IncDecStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return ctx.GetText()
@@ -263,16 +265,35 @@ func (this *OgVisitor) VisitTypeList(ctx *parser.TypeListContext, delegate antlr
 	return this.VisitChildren(ctx, delegate)
 }
 func (this *OgVisitor) VisitSelectStmt(ctx *parser.SelectStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	return "select {\n" + this.VisitChildren(ctx, delegate).(string) + "}"
 }
 func (this *OgVisitor) VisitCommClause(ctx *parser.CommClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	res := this.VisitCommCase(ctx.CommCase().(*parser.CommCaseContext), delegate).(string) + ":\n"
+	if ctx.StatementNoBlock() != nil {
+		stmt := this.VisitStatementNoBlock(ctx.StatementNoBlock().(*parser.StatementNoBlockContext), delegate).(string)
+		res += stmt[1 : len(stmt)-1]
+	}
+	if ctx.Block() != nil {
+		block := this.VisitBlock(ctx.Block().(*parser.BlockContext), delegate).(string)
+		res += block[2 : len(block)-2]
+	}
+	return res + "\n"
 }
 func (this *OgVisitor) VisitCommCase(ctx *parser.CommCaseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	if ctx.GetText() == "_" {
+		return "default"
+	}
+	return "case " + this.VisitChildren(ctx, delegate).(string)
 }
 func (this *OgVisitor) VisitRecvStmt(ctx *parser.RecvStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	res := ""
+	if ctx.ExpressionList() != nil {
+		res += this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string) + "="
+	}
+	if ctx.IdentifierList() != nil {
+		res += this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string) + ":="
+	}
+	return res + this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 }
 func (this *OgVisitor) VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return "for " + this.VisitChildren(ctx, delegate).(string)
@@ -465,6 +486,8 @@ func (this *OgVisitor) VisitFieldDecl(ctx *parser.FieldDeclContext, delegate ant
 		return idList + type_ + " " + tag + "\n"
 	} else if ctx.InlineStructMethod() != nil {
 		return this.VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(string)
+	} else if ctx.AnonymousField() != nil {
+		return this.VisitAnonymousField(ctx.AnonymousField().(*parser.AnonymousFieldContext), delegate).(string)
 	} else {
 		return ctx.GetText()
 	}
@@ -474,7 +497,11 @@ func (this *OgVisitor) VisitInlineStructMethod(ctx *parser.InlineStructMethodCon
 	return this.VisitChildren(ctx, delegate)
 }
 func (this *OgVisitor) VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	res := ""
+	if strings.Contains(ctx.GetText(), "*") {
+		res += "*"
+	}
+	return res + this.VisitChildren(ctx, delegate).(string) + "\n"
 }
 func (this *OgVisitor) VisitFunctionLit(ctx *parser.FunctionLitContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return this.VisitChildren(ctx, delegate)
