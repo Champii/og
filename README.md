@@ -173,20 +173,14 @@ og exemples/import.og
 # TODO
 
 ## Golang basics
-- [ ] `const` and `var` multiple consecutive declaration
-- [ ] Rest params `...`
-- [ ] Send statement `a <- b`
-- [ ] Allow parenthesis for `import`
-- [ ] For with a custom variable (for i = 0; i < 10; i++)
-- [ ] Binary operator (`<<`, `>>`, `.`, `|`)
-- [ ] Import renaming and pattern matching
-- [ ] Incrementation everywhere
 - [ ] Make tests truly executable
 - [ ] Beautyful and meaningful compile error with source context
 - [ ] VSCode extension
 - [ ] Adapt Golang tooling like `gofmt` or `golint`
 
 ## Syntaxic Sugar
+- [ ] Auto setup package name with folder name if not specified
+- [ ] `const` and `var` multiple consecutive declaration
 - [ ] Empty statement (need to avoid skiping empty lines in preproc)
 - [ ] Empty Function body
 - [ ] OneLiner if/for: `if a => 1`, `for b => b--`
@@ -205,6 +199,7 @@ og exemples/import.og
 - [ ] Function shorthand `(+ 10)`
 - [ ] Perfs
 - [ ] Generics
+- [ ] Import pattern matching
 
 # Long term utopia
 

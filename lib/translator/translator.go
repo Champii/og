@@ -35,8 +35,19 @@ func (this OgVisitor) VisitPackageClause(ctx *parser.PackageClauseContext, deleg
 func (this OgVisitor) VisitImportDecl(ctx *parser.ImportDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return "import (\n" + this.VisitChildren(ctx, delegate).(string) + ")\n"
 }
+func (this OgVisitor) VisitImportBody(ctx *parser.ImportBodyContext, delegate antlr.ParseTreeVisitor) interface{} {
+	return this.VisitChildren(ctx, delegate).(string)
+}
 func (this OgVisitor) VisitImportSpec(ctx *parser.ImportSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	res := ""
+	if strings.Contains(ctx.GetText(), ":") {
+		if ctx.IDENTIFIER() != nil {
+			res += ctx.IDENTIFIER().GetText() + " "
+		} else {
+			res += ". "
+		}
+	}
+	return res + this.VisitChildren(ctx, delegate).(string)
 }
 func (this OgVisitor) VisitImportPath(ctx *parser.ImportPathContext, delegate antlr.ParseTreeVisitor) interface{} {
 	txt := ctx.GetText()
@@ -303,7 +314,19 @@ func (this OgVisitor) VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.Pa
 	return "for " + this.VisitChildren(ctx, delegate).(string)
 }
 func (this OgVisitor) VisitForClause(ctx *parser.ForClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	res := ""
+	if ctx.SimpleStmt(0) != nil {
+		res += this.VisitSimpleStmt(ctx.SimpleStmt(0).(*parser.SimpleStmtContext), delegate).(string)
+	}
+	res += ";"
+	if ctx.Expression() != nil {
+		res += this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+	}
+	res += ";"
+	if ctx.SimpleStmt(1) != nil {
+		res += this.VisitSimpleStmt(ctx.SimpleStmt(1).(*parser.SimpleStmtContext), delegate).(string)
+	}
+	return res
 }
 func (this OgVisitor) VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
 	r := ""
@@ -399,6 +422,9 @@ func (this OgVisitor) VisitParameterList(ctx *parser.ParameterListContext, deleg
 }
 func (this OgVisitor) VisitParameterDecl(ctx *parser.ParameterDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return this.VisitChildren(ctx, delegate).(string) + ","
+}
+func (this OgVisitor) VisitRestOp(ctx *parser.RestOpContext, delegate antlr.ParseTreeVisitor) interface{} {
+	return ctx.GetText()
 }
 func (this OgVisitor) VisitOperand(ctx *parser.OperandContext, delegate antlr.ParseTreeVisitor) interface{} {
 	if ctx.Expression() != nil {

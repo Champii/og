@@ -20,6 +20,16 @@ func TestMain(*testing.T) {
 		`package main
 
 import (
+	. "another/repo"
+	"fmt"
+	otherName "some/repo"
+	"strings"
+)
+`,
+		// import_parenthesis.og
+		`package main
+
+import (
 	"fmt"
 	"strings"
 )
@@ -119,6 +129,12 @@ import (
 
 func main() {
 	for _, i := range a {
+		fmt.Println(i)
+	}
+	for i < 10 {
+		fmt.Println(i)
+	}
+	for i := 0; i < 10; i++ {
 		fmt.Println(i)
 	}
 }
@@ -362,12 +378,41 @@ func main() {
 	a(func() int { 2 })
 }
 `,
+		// rest.og
+		`package main
+
+func someFunc(a int, b ...int) {
+	fmt.Println(a, b)
+}
+func main() {
+	a := []int{
+		1,
+		2,
+		3,
+	}
+	someFunc(a...)
+}
+`,
+		// bitwise.og
+		`package main
+
+func main() {
+	x := 0xAC
+	x = x & 0xF0
+	x = x | 0xF0
+	x = x ^ 0xF0
+	x = x &^ 0xF0
+	x = x >> 0xF0
+	x = x << 0xF0
+}
+`,
 	}
 
 	paths := []string{
 		`package`,
 		`package_short`,
 		`import`,
+		`import_parenthesis`,
 		`struct`,
 		`top_fn`,
 		`if`,
@@ -392,6 +437,8 @@ func main() {
 		`select`,
 		`func_literal`,
 		`func_type`,
+		`rest`,
+		`bitwise`,
 	}
 
 	for i, p := range paths {

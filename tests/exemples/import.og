@@ -3,3 +3,5 @@ package main
 import
   fmt
   strings
+  "some/repo": otherName
+  "another/repo": .

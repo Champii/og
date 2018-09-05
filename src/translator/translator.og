@@ -32,7 +32,18 @@ struct OgVisitor
   VisitSourceFile(ctx *parser.SourceFileContext, delegate antlr.ParseTreeVisitor)             : interface -> return @VisitChildren(ctx, delegate)
   VisitPackageClause(ctx *parser.PackageClauseContext, delegate antlr.ParseTreeVisitor)       : interface -> return "package " + ctx.IDENTIFIER().GetText() + "\n"
   VisitImportDecl(ctx *parser.ImportDeclContext, delegate antlr.ParseTreeVisitor)             : interface -> return "import (\n" + @VisitChildren(ctx, delegate).(string) + ")\n"
-  VisitImportSpec(ctx *parser.ImportSpecContext, delegate antlr.ParseTreeVisitor)             : interface -> return @VisitChildren(ctx, delegate)
+  VisitImportBody(ctx *parser.ImportBodyContext, delegate antlr.ParseTreeVisitor)             : interface -> return @VisitChildren(ctx, delegate).(string)
+  VisitImportSpec(ctx *parser.ImportSpecContext, delegate antlr.ParseTreeVisitor)             : interface ->
+    res := ""
+
+    if strings.Contains(ctx.GetText(), ":")
+      if ctx.IDENTIFIER() != nil
+        res += ctx.IDENTIFIER().GetText() + " "
+      else
+        res += ". "
+
+    return res + @VisitChildren(ctx, delegate).(string)
+
   VisitImportPath(ctx *parser.ImportPathContext, delegate antlr.ParseTreeVisitor)             : interface ->
     txt := ctx.GetText()
 
@@ -272,7 +283,24 @@ struct OgVisitor
     return res + @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
 
   VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.ParseTreeVisitor)                   : interface -> return "for " + @VisitChildren(ctx, delegate).(string)
-  VisitForClause(ctx *parser.ForClauseContext, delegate antlr.ParseTreeVisitor)               : interface -> return @VisitChildren(ctx, delegate)
+  VisitForClause(ctx *parser.ForClauseContext, delegate antlr.ParseTreeVisitor)               : interface ->
+    res := ""
+
+    if ctx.SimpleStmt(0) != nil
+      res += @VisitSimpleStmt(ctx.SimpleStmt(0).(*parser.SimpleStmtContext), delegate).(string)
+
+    res += ";"
+
+    if ctx.Expression() != nil
+      res += @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+
+    res += ";"
+
+    if ctx.SimpleStmt(1) != nil
+      res += @VisitSimpleStmt(ctx.SimpleStmt(1).(*parser.SimpleStmtContext), delegate).(string)
+
+    return res
+
   VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.ParseTreeVisitor)           : interface ->
     r := ""
 
@@ -347,6 +375,7 @@ struct OgVisitor
 
   VisitParameterList(ctx *parser.ParameterListContext, delegate antlr.ParseTreeVisitor)       : interface -> return @VisitChildren(ctx, delegate)
   VisitParameterDecl(ctx *parser.ParameterDeclContext, delegate antlr.ParseTreeVisitor)       : interface -> return @VisitChildren(ctx, delegate).(string) + ","
+  VisitRestOp(ctx *parser.RestOpContext, delegate antlr.ParseTreeVisitor)                     : interface -> return ctx.GetText()
   VisitOperand(ctx *parser.OperandContext, delegate antlr.ParseTreeVisitor)                   : interface ->
     if ctx.Expression() != nil
       return "(" + @VisitChildren(ctx, delegate).(string) + ")"

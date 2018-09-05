@@ -1,0 +1,10 @@
+!main
+
+main ->
+  x := 0xAC
+  x = x & 0xF0
+  x = x | 0xF0
+  x = x ^ 0xF0
+  x = x &^ 0xF0
+  x = x >> 0xF0
+  x = x << 0xF0

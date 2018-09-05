@@ -1,6 +1,34 @@
 # Changelog
 
 ## DEV: Current version
+  - Variadic arguments
+    ```go
+      someFunc(a ...int) -> fmt.Println(a)
+      main -> someFunc([]int{1, 2, 3}...)
+    ```
+  - Parenthesis allowed for import declaration
+    ```go
+      import (
+        fmt
+        strings
+      )
+    ```
+  - For statement with 3 flavors
+    ```go
+      for _, i in a
+      for i < 10
+      for i := 0; i < 10; i++
+    ```
+  - Bitwise operators `&`, `|`, `^`, `&^`, `<<`, `>>`
+  - Import renaming
+    ```go
+      import
+        fmt
+        strings
+        "some/repo": otherName
+        "another/repo": .
+    ```
+
 ## v0.1.11
   - Function literal but with a mandatory desambiguation symbol `fn`
     ```go

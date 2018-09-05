@@ -66,7 +66,7 @@ re_: grammar
 	@make clean --no-print-directory
 	@$(call title,Recompiling sources from og `og -V`)
 	@make CC='og' build --no-print-directory
-	@$(call title,Rebuilding with new og version `./og -V`)
+	@$(call title,Rebuilding with new og `./og -V`)
 	@make clean all --no-print-directory
 
 test: all

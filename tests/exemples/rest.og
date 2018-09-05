@@ -1,0 +1,8 @@
+!main
+
+someFunc(a int, b ...int) ->
+  fmt.Println(a, b)
+
+main ->
+  a := []int{1, 2, 3}
+  someFunc(a...)

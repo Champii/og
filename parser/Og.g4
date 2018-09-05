@@ -203,9 +203,12 @@ packageClause
     ;
 
 importDecl
-    : 'import' ( importSpec | '{' ( importSpec eos )* '}' )
+    : 'import' ( importBody | ( '(' importBody ')' ) )
     ;
 
+importBody
+    : importSpec | '{' ( importSpec eos )* '}'
+    ;
 importSpec
     : importPath ( ':' ('.' | IDENTIFIER ))?
     ;
@@ -622,7 +625,11 @@ parameterList
     ;
 
 parameterDecl
-    : identifierList? '...'? type_
+    : identifierList? restOp? type_
+    ;
+
+restOp
+    : '...'
     ;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -787,7 +794,7 @@ typeAssertion
     ;
 
 arguments
-    : '(' ( ( expressionList | type_ ( ',' expressionList )? ) '...'? ','? )? ')'
+    : '(' ( ( expressionList | type_ ( ',' expressionList )? ) restOp? ','? )? ')'
     ;
 
 //MethodExpr    = ReceiverType "." MethodName .
