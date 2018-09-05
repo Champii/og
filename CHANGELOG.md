@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.11: Current version
+## DEV: Current version
   - Function literal but with a mandatory desambiguation symbol `fn`
     ```go
       a := fn              -> fmt.Println(1)
