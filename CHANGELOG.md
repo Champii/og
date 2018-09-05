@@ -1,6 +1,7 @@
 # Changelog
 
-## v0.2.0: Current version
+## DEV: Current version
+## v0.2.0
   - Variadic arguments
     ```go
       someFunc(a ...int) -> fmt.Println(a)
