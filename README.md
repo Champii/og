@@ -1,6 +1,6 @@
 Og-Lang
 ===
-### *v0.1.11*
+### *v0.1.11* ([CHANGELOG](https://github.com/champii/og/tree/master/CHANGELOG.md))
 
 <table>
   <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em></td></tr>
@@ -15,7 +15,6 @@ Og-Lang
 1. [Basics](#basics)
 1. [Usage](#usage)
 1. [Build](#build)
-1. [Changelog](#changelog)
 1. [Todo](#todo)
 1. [Long term utopia](#long-term-utopia)
 
@@ -109,11 +108,14 @@ main ->
     42 => doSomething()
     _  => doDefault()
 
+  // Function literal with the keywork `fn`
+  callback := fn (arg int): int -> return arg + 1
+
   go someFunc()
 
   // Auto executed closure when in goroutines
   // No need to add the extra `()`
-  go -> doSomething()
+  go fn -> doSomething()
 ```
 
 # Usage
@@ -167,10 +169,6 @@ make re
 # Simple exemple
 og exemples/import.og
 ```
-
-# Changelog
-
-See [CHANGELOG](https://github.com/champii/og/tree/master/src)
 
 # TODO
 

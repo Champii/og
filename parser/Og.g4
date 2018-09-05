@@ -103,6 +103,29 @@ grammar Og;
         return true
     }
 
+    func (this *OgParser) lookAhead(token int) bool {
+        possibleIndexEosToken := this.BaseParser.GetCurrentToken().GetTokenIndex() - 1
+
+        ahead := this.BaseParser.GetTokenStream().Get(possibleIndexEosToken)
+
+        return ahead.GetTokenType() == token
+    }
+
+    func (this *OgParser) lookAheadN(token int, n int) bool {
+        possibleIndexEosToken := this.BaseParser.GetCurrentToken().GetTokenIndex() - n
+
+        ahead := this.BaseParser.GetTokenStream().Get(possibleIndexEosToken)
+
+        if ahead.GetTokenType() == OgLexerWS {
+            // Get the token ahead of the current whitespaces.
+            possibleIndexEosToken = this.BaseParser.GetCurrentToken().GetTokenIndex() - (n + 1)
+
+            ahead = this.BaseParser.GetTokenStream().Get(possibleIndexEosToken)
+        }
+
+        return ahead.GetTokenType() == token
+    }
+
      /**
      * Returns {@code true} if no line terminator exists after any encounterd
      * parameters beyond the specified token offset and the next on the
@@ -223,7 +246,7 @@ identifierList
 
 //ExpressionList = Expression { "," Expression } .
 expressionList
-    : expression ( ',' expressionList )?
+    : expression ( ',' expression )*
     ;
 
 //TypeDecl     = "type" ( TypeSpec | "(" { TypeSpec ";" } ")" ) .
@@ -250,7 +273,7 @@ functionDecl
     ;
 
 function
-    : signature  '->' ( block | statementNoBlock)
+    : signature '->' ( block | statementNoBlock )
     ;
 
 //MethodDecl   = "func" Receiver MethodName ( Function | Signature ) .
@@ -457,7 +480,7 @@ selectStmt
     : 'select' '{' commClause* '}'
     ;
 commClause
-    : commCase '=>' (statementNoBlock | block)
+    : commCase '=>' ( block | statementNoBlock )
     ;
 commCase
     : ( sendStmt | recvStmt ) | '_'
@@ -577,7 +600,7 @@ methodSpec
 //ParameterList  = ParameterDecl { "," ParameterDecl } .
 //ParameterDecl  = [ IdentifierList ] [ "..." ] Type .
 functionType
-    : 'func' signature
+    : 'fn' signature
     ;
 
 signature
@@ -620,7 +643,6 @@ operand
 literal
     : basicLit
     | compositeLit
-    | functionLit
     ;
 
 basicLit
@@ -718,7 +740,7 @@ anonymousField
 
 //FunctionLit = "func" Function .
 functionLit
-    : 'func' function
+    : 'fn' function
     ;
 
 //PrimaryExpr =
@@ -785,6 +807,7 @@ receiverType
 
 expression
     : unaryExpr
+    | functionLit
     // | expression BINARY_OP expression
     | expression binary_op expression
     ;
@@ -908,6 +931,9 @@ fragment UNARY_OP
     | '<-'
     ;
 
+FUNC
+    : '->'
+    ;
 
 // Integer literals
 

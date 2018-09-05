@@ -4,4 +4,4 @@ main ->
   go ->
     fmt.Println("test")
 
-  go some.fn()
+  go some.lol()

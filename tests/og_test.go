@@ -137,7 +137,7 @@ func main() {
 	go func() {
 		fmt.Println("test")
 	}()
-	go some.fn()
+	go some.lol()
 }
 `,
 		// operation.og
@@ -275,7 +275,7 @@ var foo string = "bar"
 		// map.og
 		`package main
 
-func fn(m map[string]string) map[string]string { return m }
+func someFunc(m map[string]string) map[string]string { return m }
 func main() {
 	m := map[string]string{}
 }
@@ -283,7 +283,7 @@ func main() {
 		// chan.og
 		`package main
 
-func fn(c1 chan<- int, c2 <-chan int) chan int { 0 }
+func someFunc(c1 chan<- int, c2 <-chan int) chan int { 0 }
 func main() {
 	c := make(chan string)
 	c := make(chan<- string)
@@ -342,16 +342,26 @@ func main() {
 	}
 }
 `,
-		// 		// func_literal.og
-		// 		`package main
+		// func_literal.og
+		`package main
 
-		// func main() {
-		// 	a := func() { fmt.Println(1) }
-		// 	a := func() int { return 1 }
-		// 	b := func(a int) { fmt.Println(a) }
-		// 	c := func(a int) int { return a }
-		// }
-		// `,
+func main() {
+	a := func() { fmt.Println(1) }
+	a := func() int { return 1 }
+	b := func(a int) { fmt.Println(a) }
+	c := func(a int) int { return a }
+}
+`,
+		// func_type.og
+		`package main
+
+func a(arg func() int) {
+	arg()
+}
+func main() {
+	a(func() int { 2 })
+}
+`,
 	}
 
 	paths := []string{
@@ -380,7 +390,8 @@ func main() {
 		`loop_flow`,
 		`anonymous`,
 		`select`,
-		// `func_literal`,
+		`func_literal`,
+		`func_type`,
 	}
 
 	for i, p := range paths {

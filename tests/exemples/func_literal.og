@@ -1,7 +1,7 @@
 !main
 
 main ->
-  a := -> fmt.Println(1)
-  a := :int -> return 1
-  b := (a int) -> fmt.Println(a)
-  c := (a int): int -> return a
+  a := fn -> fmt.Println(1)
+  a := fn :int -> return 1
+  b := fn (a int) -> fmt.Println(a)
+  c := fn (a int): int -> return a

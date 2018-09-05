@@ -1,0 +1,7 @@
+!main
+
+a(arg fn:int) ->
+  arg()
+
+main ->
+  a(fn:int->2)

@@ -5,6 +5,14 @@ import
   "github.com/champii/og/parser"
   "github.com/antlr/antlr4/runtime/Go/antlr"
 
+// type Scope map[string]string
+
+// struct Stack
+//   scopes []Scope
+//   *newScope                -> @scopes = append([]Scope{Scope{}}, @scopes...)
+//   *popScope                -> @scopes = @scopes[1:]
+//   *add(v string, t string) -> @scopes[0][v] = t
+
 struct OgVisitor
   *antlr.BaseParseTreeVisitor
 
@@ -53,12 +61,19 @@ struct OgVisitor
 
   VisitIdentifierList(ctx *parser.IdentifierListContext, delegate antlr.ParseTreeVisitor)     : interface -> return ctx.GetText()
   VisitExpressionList(ctx *parser.ExpressionListContext, delegate antlr.ParseTreeVisitor)     : interface ->
-    r := @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+    res := ""
+    for _, e in ctx.AllExpression()
+      res += @VisitExpression(e.(*parser.ExpressionContext), delegate).(string) + ","
 
-    if ctx.GetChildCount() > 1
-      r += "," + @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+    res = res[:len(res)-1]
 
-    return r
+
+    // r := @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
+
+    // if ctx.GetChildCount() > 1
+    //   r += "," + @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+
+    return res
 
   VisitTypeDecl(ctx *parser.TypeDeclContext, delegate antlr.ParseTreeVisitor)                 : interface -> return "type " + @VisitChildren(ctx, delegate).(string)
   VisitTypeSpec(ctx *parser.TypeSpecContext, delegate antlr.ParseTreeVisitor)                 : interface -> return ctx.IDENTIFIER().GetText() + " " + @VisitChildren(ctx, delegate).(string)
@@ -314,7 +329,7 @@ struct OgVisitor
 
     return idx + @VisitChildren(ctx, delegate).(string) + "\n"
 
-  VisitFunctionType(ctx *parser.FunctionTypeContext, delegate antlr.ParseTreeVisitor)         : interface -> return @VisitChildren(ctx, delegate)
+  VisitFunctionType(ctx *parser.FunctionTypeContext, delegate antlr.ParseTreeVisitor)         : interface -> return "func" + @VisitChildren(ctx, delegate).(string)
   VisitSignature(ctx *parser.SignatureContext, delegate antlr.ParseTreeVisitor)               : interface -> return @VisitChildren(ctx, delegate)
   VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor)                     : interface ->
     res := ""

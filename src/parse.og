@@ -8,9 +8,12 @@ import
 Parse(str string): string ->
   input := antlr.NewInputStream(str)
   lexer := parser.NewOgLexer(input)
+
   stream := antlr.NewCommonTokenStream(lexer, 0)
+
   p := parser.NewOgParser(stream)
 
+  // p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
   res := p.SourceFile()
 
   t := new(translator.OgVisitor)

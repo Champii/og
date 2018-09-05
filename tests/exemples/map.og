@@ -1,5 +1,5 @@
 !main
 
-fn(m map[string]string): map[string]string -> return m
+someFunc(m map[string]string): map[string]string -> return m
 main ->
   m := map[string]string{}

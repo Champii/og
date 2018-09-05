@@ -1,5 +1,9 @@
 !main
 
+import fmt
+
+a(arg fn:int) ->
+  fmt.Println(arg())
+
 main ->
-  go -> doSomething()
-  go doSomething()
+  a(fn:int-> return 2)

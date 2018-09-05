@@ -1,6 +1,18 @@
 # Changelog
 
 ## v0.1.11: Current version
+  - Function literal but with a mandatory desambiguation symbol `fn`
+    ```go
+      a := fn              -> fmt.Println(1)
+      b := fn (a int)      -> fmt.Println(a)
+      c := fn (a int) :int -> return a
+      a := fn         :int -> return 1
+    ```
+  - Function Type with the same mandatory `fn`
+    ```go
+      a(arg fn: int) -> fmt.Println(arg())
+      main          -> a(fn: int -> return 2)
+    ```
 
 ## v0.1.10
   - Better `Makefile` that cares about whether a file has changed or not before applying rules
@@ -38,7 +50,7 @@
       Foo::*pointerReceiver2 : int -> return 1
     ```
   - External CHANGELOG
-  - Function literal (Big performance issue cause by the grammar that keeps increasing in complexity, so disabled until next release)
+  - Function literal (Big performance issue caused by the grammar that keeps increasing in complexity, disabled until it's sorted out)
     ```go
       a := -> fmt.Println(1)
       a := (a int) -> fmt.Println(a)

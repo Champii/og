@@ -72,11 +72,12 @@ func (this OgVisitor) VisitIdentifierList(ctx *parser.IdentifierListContext, del
 	return ctx.GetText()
 }
 func (this OgVisitor) VisitExpressionList(ctx *parser.ExpressionListContext, delegate antlr.ParseTreeVisitor) interface{} {
-	r := this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
-	if ctx.GetChildCount() > 1 {
-		r += "," + this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+	res := ""
+	for _, e := range ctx.AllExpression() {
+		res += this.VisitExpression(e.(*parser.ExpressionContext), delegate).(string) + ","
 	}
-	return r
+	res = res[:len(res)-1]
+	return res
 }
 func (this OgVisitor) VisitTypeDecl(ctx *parser.TypeDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return "type " + this.VisitChildren(ctx, delegate).(string)
@@ -375,7 +376,7 @@ func (this OgVisitor) VisitMethodSpec(ctx *parser.MethodSpecContext, delegate an
 	return idx + this.VisitChildren(ctx, delegate).(string) + "\n"
 }
 func (this OgVisitor) VisitFunctionType(ctx *parser.FunctionTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitChildren(ctx, delegate)
+	return "func" + this.VisitChildren(ctx, delegate).(string)
 }
 func (this OgVisitor) VisitSignature(ctx *parser.SignatureContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return this.VisitChildren(ctx, delegate)
