@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.3.0: Current version
+## DEV: Current version
+
+## v0.3.0
   - Allow single line If statement
     ```go
       if b == 0 => 0
