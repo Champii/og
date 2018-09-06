@@ -1,6 +1,12 @@
 # Changelog
 
 ## DEV: Current version
+  - Allow single line If statement
+    ```go
+      if b == 0 => 0
+      else      => 1
+    ```
+
 ## v0.2.0
   - Variadic arguments
     ```go

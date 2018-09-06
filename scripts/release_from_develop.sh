@@ -69,7 +69,7 @@ echo "Release of $NEW_TAG OK"
 
 echo "Restoring DEV tag in develop"
 
-sed -i -e "s/$NEW_TAG: Current version/DEV: Current version\\n## $NEW_TAG/g" CHANGELOG.md
+sed -i -e "s/$NEW_TAG: Current version/DEV: Current version\\n\\n## $NEW_TAG/g" CHANGELOG.md
 
 sed -i -e "s/$NEW_TAG/DEV/g" README.md
 

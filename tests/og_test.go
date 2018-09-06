@@ -117,6 +117,10 @@ func main() {
 	}
 	if a != a {
 		fmt.Println(a)
+	} else if b != b {
+		fmt.Println(a)
+	} else {
+		fmt.Println(a)
 	}
 }
 `,

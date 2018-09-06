@@ -5,6 +5,7 @@ main ->
 
   if a == 2
     fmt.Println(a)
+
   if a == 2
     fmt.Println(a)
   else
@@ -24,6 +25,7 @@ main ->
   else
     fmt.Println(a)
 
-  if a != a
-    fmt.Println(a)
+  if a != a      => fmt.Println(a)
+  else if b != b => fmt.Println(a)
+  else           => fmt.Println(a)
 

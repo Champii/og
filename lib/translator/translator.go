@@ -166,9 +166,14 @@ func (this OgVisitor) VisitBinary_op(ctx *parser.Binary_opContext, delegate antl
 	return ctx.GetText()
 }
 func (this OgVisitor) VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
-	idList := this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
-	exprList := this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
-	return idList + " := " + exprList
+	res := ""
+	res += this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string) + ":="
+	if ctx.ExpressionList() != nil {
+		res += this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+	} else if ctx.StatementNoBlock() != nil {
+		res += this.VisitStatementNoBlock(ctx.StatementNoBlock().(*parser.StatementNoBlockContext), delegate).(string)
+	}
+	return res
 }
 func (this OgVisitor) VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return "\n"
@@ -213,11 +218,17 @@ func (this OgVisitor) VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.Pars
 		r += this.VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(string) + ";"
 	}
 	r += this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
-	r += this.VisitBlock(ctx.Block(0).(*parser.BlockContext), delegate).(string)
+	if ctx.Block(0) != nil {
+		r += this.VisitBlock(ctx.Block(0).(*parser.BlockContext), delegate).(string)
+	} else if ctx.StatementNoBlock(0) != nil {
+		r += this.VisitStatementNoBlock(ctx.StatementNoBlock(0).(*parser.StatementNoBlockContext), delegate).(string)
+	}
 	if ctx.Block(1) != nil {
 		r += "else " + this.VisitBlock(ctx.Block(1).(*parser.BlockContext), delegate).(string)
 	} else if ctx.IfStmt() != nil {
 		r += "else " + this.VisitIfStmt(ctx.IfStmt().(*parser.IfStmtContext), delegate).(string)
+	} else if ctx.StatementNoBlock(1) != nil {
+		r += "else " + this.VisitStatementNoBlock(ctx.StatementNoBlock(1).(*parser.StatementNoBlockContext), delegate).(string)
 	}
 	return r
 }

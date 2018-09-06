@@ -136,9 +136,16 @@ struct OgVisitor
 
   VisitBinary_op(ctx *parser.Binary_opContext, delegate antlr.ParseTreeVisitor)               : interface -> return ctx.GetText()
   VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delegate antlr.ParseTreeVisitor)         : interface ->
-    idList := @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string)
-    exprList := @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
-    return idList + " := " + exprList
+    res := ""
+
+    res += @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(string) + ":="
+
+    if ctx.ExpressionList() != nil
+      res += @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(string)
+    else if ctx.StatementNoBlock() != nil
+      res += @VisitStatementNoBlock(ctx.StatementNoBlock().(*parser.StatementNoBlockContext), delegate).(string)
+
+    return res
 
   VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor)               : interface -> return "\n"
   VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor)           : interface ->
@@ -177,12 +184,18 @@ struct OgVisitor
       r += @VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(string) + ";"
 
     r += @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(string)
-    r += @VisitBlock(ctx.Block(0).(*parser.BlockContext), delegate).(string)
+
+    if ctx.Block(0) != nil
+      r += @VisitBlock(ctx.Block(0).(*parser.BlockContext), delegate).(string)
+    else if ctx.StatementNoBlock(0) != nil
+      r += @VisitStatementNoBlock(ctx.StatementNoBlock(0).(*parser.StatementNoBlockContext), delegate).(string)
 
     if ctx.Block(1) != nil
       r += "else " + @VisitBlock(ctx.Block(1).(*parser.BlockContext), delegate).(string)
     else if ctx.IfStmt() != nil
       r += "else " + @VisitIfStmt(ctx.IfStmt().(*parser.IfStmtContext), delegate).(string)
+    else if ctx.StatementNoBlock(1) != nil
+      r += "else " + @VisitStatementNoBlock(ctx.StatementNoBlock(1).(*parser.StatementNoBlockContext), delegate).(string)
 
     return r
 

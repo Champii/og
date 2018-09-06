@@ -384,7 +384,7 @@ assign_op
 
 //ShortVarDecl = IdentifierList ":=" ExpressionList .
 shortVarDecl
-    : identifierList ':=' expressionList
+    : identifierList ':=' ( expressionList | statementNoBlock )
     ;
 
 emptyStmt
@@ -429,7 +429,7 @@ deferStmt
 
 //IfStmt = "if" [ SimpleStmt ";" ] Expression Block [ "else" ( IfStmt | Block ) ] .
 ifStmt
-    : 'if' (simpleStmt ';')? expression block ( 'else' ( ifStmt | block ) )?
+    : 'if' (simpleStmt ';')? expression ( block | '=>' statementNoBlock ) ( 'else' ( ifStmt | ( block | '=>' statementNoBlock ) ) )?
     ;
 
 //SwitchStmt = ExprSwitchStmt | TypeSwitchStmt .

@@ -97,6 +97,10 @@ main ->
   else
     enterTheVoid()
 
+  // One-liners
+  if test.getBar() == 42 => answerTheUltimateQuestion()
+  else                   => enterTheVoid()
+
   someArr := []string
     "value1"
     "value2"
@@ -173,6 +177,7 @@ og exemples/import.og
 # TODO
 
 ## Golang basics
+- [ ] Ternary expression
 - [ ] Make tests truly executable
 - [ ] Beautyful and meaningful compile error with source context
 - [ ] VSCode extension
