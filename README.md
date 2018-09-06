@@ -179,9 +179,9 @@ og exemples/import.og
 ## Golang basics
 - [ ] Ternary expression
 - [ ] Make tests truly executable
-- [ ] Beautyful and meaningful compile error with source context
 - [ ] VSCode extension
 - [ ] Adapt Golang tooling like `gofmt` or `golint`
+- [ ] Better error context
 
 ## Syntaxic Sugar
 - [ ] Auto setup package name with folder name if not specified

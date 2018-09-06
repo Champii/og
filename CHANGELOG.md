@@ -6,6 +6,12 @@
       if b == 0 => 0
       else      => 1
     ```
+  - Pretty error display (but trivial for some cases)
+    ```bash
+      path/file.og (8:6): Unexpected 'foo'
+        bar foo
+            ^
+    ```
 
 ## v0.2.0
   - Variadic arguments

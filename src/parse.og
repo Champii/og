@@ -1,9 +1,60 @@
 !og
 
 import
+  os
+  fmt
+  strings
+  strconv
   "github.com/champii/og/lib/translator"
   "github.com/champii/og/parser"
   "github.com/antlr/antlr4/runtime/Go/antlr"
+  "github.com/fatih/color"
+
+var yellow = color.New(color.FgHiYellow).SprintFunc()
+var red = color.New(color.FgHiRed).SprintFunc()
+var cyan = color.New(color.FgCyan).SprintFunc()
+var magenta = color.New(color.Bold, color.FgHiMagenta).SprintFunc()
+var blue = color.New(color.Bold, color.FgHiBlue).SprintfFunc()
+var green = color.New(color.FgHiGreen).SprintfFunc()
+
+struct ErrorHandler
+  *antlr.DefaultErrorStrategy
+
+  Recover(p antlr.Parser, r antlr.RecognitionException) ->
+    // tok := p.GetCurrentToken().GetText()
+
+    // fmt.Print("TOK: '", tok, "'\n")
+
+    // if tok == "(" || tok == ")" || tok == "{" || tok == "}"
+    //   p.Consume()
+    //   @DefaultErrorStrategy.Recover(p, r)
+    //   // fmt.Println("KIK")
+    // else
+    os.Exit(1)
+
+
+NewErrorHandler: *ErrorHandler ->
+  return &ErrorHandler
+    DefaultErrorStrategy: antlr.NewDefaultErrorStrategy()
+
+struct ErrorListener
+  *antlr.DefaultErrorListener
+  source []string
+
+  *SyntaxError(rec antlr.Recognizer, offendingSymbol interface, line, column int, msg string, e antlr.RecognitionException) ->
+    fileInfo := fmt.Sprintf("%s (%s:%s)", green("path/file.og"), yellow(line), yellow(column))
+    badToken := offendingSymbol.(antlr.Token).GetText()
+    fmt.Printf("%s: %s '%s'\n", fileInfo, red("Unexpected"), magenta(badToken))
+    badLine := @source[line-1]
+    badLine = cyan(badLine[:column]) + magenta(badToken) + cyan(badLine[column+len(badToken):])
+    fmt.Println(badLine)
+    fmt.Print(blue("%"+strconv.Itoa(column+1)+"s\n","^"))
+
+
+NewErrorListener(source string): *ErrorListener ->
+  return &ErrorListener
+    DefaultErrorListener: antlr.NewDefaultErrorListener()
+    source: strings.Split(source, "\n")
 
 Parse(str string): string ->
   input := antlr.NewInputStream(str)
@@ -14,6 +65,9 @@ Parse(str string): string ->
   p := parser.NewOgParser(stream)
 
   // p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+  p.RemoveErrorListeners()
+  p.AddErrorListener(NewErrorListener(str))
+  p.SetErrorHandler(NewErrorHandler())
   res := p.SourceFile()
 
   t := new(translator.OgVisitor)

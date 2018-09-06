@@ -1,0 +1,5 @@
+!main
+
+main ->
+  if b == 0 => 0
+  else => 1

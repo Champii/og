@@ -6,4 +6,5 @@ a(arg fn:int) ->
   fmt.Println(arg())
 
 main ->
-  a(fn:int-> return 2)
+  a(fn:int-> return 2 3)
+  lol mdr tata
