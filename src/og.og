@@ -20,12 +20,16 @@ struct OgConfig
 
 var config OgConfig
 
-Compile(config_ OgConfig) ->
+Compile(config_ OgConfig): error ->
   config = config_
 
   for _, p in config.Paths
-    filepath.Walk(p, walker)
+    if err := filepath.Walk(p, walker); err != nil
+      fmt.Println("Error", err)
 
+      return err
+
+  return nil
 
 walker(filePath string, info os.FileInfo, err error): error ->
   if err != nil
@@ -42,29 +46,30 @@ walker(filePath string, info os.FileInfo, err error): error ->
   if err != nil
     return err
 
-  res := ProcessFile(filePath, string(source))
+  res, err := ProcessFile(filePath, string(source))
+
+  if err != nil
+    return err
 
   finalizeFile(filePath, res)
 
   return nil
 
-ProcessFile(filePath string, data string): string ->
+ProcessFile(filePath string, data string): string, error ->
   if config.Verbose == true
     fmt.Print(filePath)
 
   preprocessed := Preproc(string(data))
 
   if config.Blocks == true
-    return preprocessed
+    return preprocessed, nil
 
-  res := Parse(string(preprocessed))
+  res := Parse(filePath, string(preprocessed))
 
   if config.Dirty == true
-    return res
+    return res, nil
 
-  final := format(res)
-
-  return final
+  return format(res)
 
 finalizeFile(filePath string, data string) ->
   if config.Print == true
@@ -87,16 +92,17 @@ writeFile(filePath string, data string) ->
     fmt.Println("->", newPath)
 
 
-format(str string): string ->
+format(str string): string, error ->
   cmd := exec.Command("gofmt")
 
   stdin, _ := cmd.StdinPipe()
 
-  // go ->
-
   stdin.Write([]byte(str))
   stdin.Close()
 
-  final, _ := cmd.CombinedOutput()
+  final, err := cmd.CombinedOutput()
 
-  return string(final)
+  if err != nil
+    return "", err
+
+  return string(final), nil

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	og "github.com/champii/og/lib"
 )
 
@@ -8,7 +10,9 @@ import (
 //go:generate ./scripts/fix_parser_imports.sh
 func main() {
 	parseArgs(func(options og.OgConfig) {
-		og.Compile(options)
+		if err := og.Compile(options); err != nil {
+			fmt.Println(err)
+		}
 	})
 
 }

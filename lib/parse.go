@@ -33,31 +33,33 @@ func NewErrorHandler() *ErrorHandler {
 
 type ErrorListener struct {
 	*antlr.DefaultErrorListener
-	source []string
+	filePath string
+	source   []string
 }
 
 func (this *ErrorListener) SyntaxError(rec antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, e antlr.RecognitionException) {
-	fileInfo := fmt.Sprintf("%s (%s:%s)", green("path/file.og"), yellow(line), yellow(column))
+	fileInfo := fmt.Sprintf("%s (%s:%s)", green(this.filePath), yellow(line), yellow(column))
 	badToken := offendingSymbol.(antlr.Token).GetText()
 	fmt.Printf("%s: %s '%s'\n", fileInfo, red("Unexpected"), magenta(badToken))
 	badLine := this.source[line-1]
 	badLine = cyan(badLine[:column]) + magenta(badToken) + cyan(badLine[column+len(badToken):])
 	fmt.Println(badLine)
-	fmt.Print(blue("%"+strconv.Itoa(column+1)+"s\n", "^"))
+	fmt.Print(blue("%"+strconv.Itoa(column+1)+"s\n\n", "^"))
 }
-func NewErrorListener(source string) *ErrorListener {
+func NewErrorListener(filePath, source string) *ErrorListener {
 	return &ErrorListener{
 		DefaultErrorListener: antlr.NewDefaultErrorListener(),
+		filePath:             filePath,
 		source:               strings.Split(source, "\n"),
 	}
 }
-func Parse(str string) string {
+func Parse(filePath, str string) string {
 	input := antlr.NewInputStream(str)
 	lexer := parser.NewOgLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
 	p := parser.NewOgParser(stream)
 	p.RemoveErrorListeners()
-	p.AddErrorListener(NewErrorListener(str))
+	p.AddErrorListener(NewErrorListener(filePath, str))
 	p.SetErrorHandler(NewErrorHandler())
 	res := p.SourceFile()
 	t := new(translator.OgVisitor)

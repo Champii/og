@@ -39,24 +39,26 @@ NewErrorHandler: *ErrorHandler ->
 
 struct ErrorListener
   *antlr.DefaultErrorListener
+  filePath string
   source []string
 
   *SyntaxError(rec antlr.Recognizer, offendingSymbol interface, line, column int, msg string, e antlr.RecognitionException) ->
-    fileInfo := fmt.Sprintf("%s (%s:%s)", green("path/file.og"), yellow(line), yellow(column))
+    fileInfo := fmt.Sprintf("%s (%s:%s)", green(@filePath), yellow(line), yellow(column))
     badToken := offendingSymbol.(antlr.Token).GetText()
     fmt.Printf("%s: %s '%s'\n", fileInfo, red("Unexpected"), magenta(badToken))
     badLine := @source[line-1]
     badLine = cyan(badLine[:column]) + magenta(badToken) + cyan(badLine[column+len(badToken):])
     fmt.Println(badLine)
-    fmt.Print(blue("%"+strconv.Itoa(column+1)+"s\n","^"))
+    fmt.Print(blue("%"+strconv.Itoa(column+1)+"s\n\n","^"))
 
 
-NewErrorListener(source string): *ErrorListener ->
+NewErrorListener(filePath, source string): *ErrorListener ->
   return &ErrorListener
     DefaultErrorListener: antlr.NewDefaultErrorListener()
+    filePath: filePath
     source: strings.Split(source, "\n")
 
-Parse(str string): string ->
+Parse(filePath, str string): string ->
   input := antlr.NewInputStream(str)
   lexer := parser.NewOgLexer(input)
 
@@ -66,7 +68,7 @@ Parse(str string): string ->
 
   // p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
   p.RemoveErrorListeners()
-  p.AddErrorListener(NewErrorListener(str))
+  p.AddErrorListener(NewErrorListener(filePath, str))
   p.SetErrorHandler(NewErrorHandler())
   res := p.SourceFile()
 
