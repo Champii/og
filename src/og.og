@@ -5,6 +5,7 @@ import
   path
   strings
   os
+  bufio
   "path/filepath"
   "io/ioutil"
   "os/exec"
@@ -91,7 +92,6 @@ writeFile(filePath string, data string) ->
   if config.Verbose == true
     fmt.Println("->", newPath)
 
-
 format(str string): string, error ->
   cmd := exec.Command("gofmt")
 
@@ -106,3 +106,22 @@ format(str string): string, error ->
     return "", err
 
   return string(final), nil
+
+Interpreter ->
+  running := true
+  scanner := bufio.NewScanner(os.Stdin)
+  scanner.Split(bufio.ScanLines)
+
+  for running
+    fmt.Print("> ")
+
+    // if !scanner.Scan()
+    //   return
+
+    ln := scanner.Text()
+
+    str, err := ProcessFile("STDIN", ln)
+    if err != nil
+      fmt.Println(err)
+    else
+      fmt.Println(str)

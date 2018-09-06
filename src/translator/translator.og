@@ -152,11 +152,13 @@ struct OgVisitor
     return ctx.IDENTIFIER().GetText() + ":" + @VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(string)
 
   VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate antlr.ParseTreeVisitor)             : interface ->
-    if ctx.GetChildCount() == 0 {
+    childs := @VisitChildren(ctx, delegate)
+
+    if ctx.GetChildCount() == 0 || childs == nil {
       return "return"
     }
 
-    return "return " + @VisitChildren(ctx, delegate).(string)
+    return "return " + childs.(string)
 
   VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor)               : interface ->
     res := "break "

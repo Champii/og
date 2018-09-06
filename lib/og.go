@@ -1,6 +1,7 @@
 package og
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -96,4 +97,22 @@ func format(str string) (string, error) {
 		return "", err
 	}
 	return string(final), nil
+}
+func Interpreter() {
+	running := true
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Split(bufio.ScanLines)
+	for running {
+		fmt.Print("> ")
+		if !scanner.Scan() {
+			return
+		}
+		ln := scanner.Text()
+		str, err := ProcessFile("STDIN", ln)
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(str)
+		}
+	}
 }

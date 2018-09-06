@@ -182,12 +182,13 @@ func (this OgVisitor) VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate 
 	return ctx.IDENTIFIER().GetText() + ":" + this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(string)
 }
 func (this OgVisitor) VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	if ctx.GetChildCount() == 0 {
+	childs := this.VisitChildren(ctx, delegate)
+	if ctx.GetChildCount() == 0 || childs == nil {
 		{
 			return "return"
 		}
 	}
-	return "return " + this.VisitChildren(ctx, delegate).(string)
+	return "return " + childs.(string)
 }
 func (this OgVisitor) VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	res := "break "
