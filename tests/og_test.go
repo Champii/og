@@ -452,7 +452,7 @@ func main() {
 			panic(err)
 		}
 
-		res, err := og.ProcessFile(fmt.Sprint("./exemples/", p, ".og"), string(data))
+		res, err := og.ProcessFile(fmt.Sprint("./exemples/", p, ".og"), string(data), false)
 
 		if err != nil {
 			panic(err)

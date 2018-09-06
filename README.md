@@ -11,12 +11,15 @@ Og-Lang
 # Index
 
 1. [Intro](#intro)
-1. [Install](#install)
-1. [Basics](#basics)
-1. [Usage](#usage)
-1. [Build](#build)
-1. [Todo](#todo)
-1. [Long term utopia](#long-term-utopia)
+2. [Install](#install)
+3. [Basics](#basics)
+4. [Usage](#usage)
+    1. [Interpreter (ALPHA)](#interpreter-alpha)
+    2. [Basic file compilation](#basic-file-compilation)
+    3. [Debug](#debug)
+5. [Build](#build)
+6. [Todo](#todo)
+7. [Long term utopia](#long-term-utopia)
 
 # Intro
 
@@ -129,7 +132,9 @@ NAME:
   Oglang - Golang on steroids
 
 USAGE:
-  og [options] Folders|Files
+  og [options] [folders...|files...]
+
+  If run without any arguments, a small interpreter is spawn
 
 VERSION:
   DEV
@@ -143,6 +148,47 @@ OPTIONS:
   -h, --help             Print help
   -V, --version          Print version
 ```
+
+### Interpreter (ALPHA)
+
+Og embed a small interpreter that in fact compiles the given string into a `/tmp/main.go` skelton and run it. A better implementation will come.
+
+```bash
+./og
+> 1+1
+2
+```
+
+### Basic file compilation
+
+With just a file name, the compiler will produce a `.go` file inside the same directory
+
+```bash
+./og file.og
+```
+
+You can give multiple files and folder that will be walked recursively
+
+```bash
+./og file.og folder/ anotherFile.og
+```
+
+The output flag `-o` will save the files into another folder. The folder hierarchy is recreated. 
+
+```bash
+./og -o lib src/file.og
+```
+
+### Debug
+
+You can also print the file without affecting the fs with `-p`
+```bash
+./og -p src/file.og
+```
+
+The `-d` (`--dirty`) option shows you the bare generated file from the parser, without formating with `go fmt`. This is useful to check if the generated syntax is valid.
+
+The `-b` (`--block`) option prints the output of the preprocessor who's in charge to create the blocks from indentation. No compilation is done.
 
 # Build
 

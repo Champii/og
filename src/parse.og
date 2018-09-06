@@ -58,7 +58,7 @@ NewErrorListener(filePath, source string): *ErrorListener ->
     filePath: filePath
     source: strings.Split(source, "\n")
 
-Parse(filePath, str string): string ->
+parserInit(filePath, str string): *parser.OgParser ->
   input := antlr.NewInputStream(str)
   lexer := parser.NewOgLexer(input)
 
@@ -70,10 +70,27 @@ Parse(filePath, str string): string ->
   p.RemoveErrorListeners()
   p.AddErrorListener(NewErrorListener(filePath, str))
   p.SetErrorHandler(NewErrorHandler())
+
+  return p
+
+Parse(filePath, str string): string ->
+  p := parserInit(filePath, str)
+
   res := p.SourceFile()
 
   t := new(translator.OgVisitor)
 
   final := t.VisitSourceFile(res.(*parser.SourceFileContext), t)
+
+  return final.(string)
+
+ParseInterpret(filePath, str string): string ->
+  p := parserInit(filePath, str)
+
+  res := p.Interp()
+
+  t := new(translator.OgVisitor)
+
+  final := t.VisitInterp(res.(*parser.InterpContext), t)
 
   return final.(string)

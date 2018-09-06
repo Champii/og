@@ -561,3 +561,5 @@ struct OgVisitor
       return "\n"
 
     return ""
+
+  VisitInterp(ctx *parser.InterpContext, delegate antlr.ParseTreeVisitor)             : interface -> return @VisitChildren(ctx, delegate)

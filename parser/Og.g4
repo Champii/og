@@ -196,6 +196,10 @@ sourceFile
     : packageClause eos ( importDecl eos )* ( topLevelDecl eos )* EOF
     ;
 
+interp
+    : (topLevelDecl | statement) EOF
+    ;
+
 //PackageClause  = "package" PackageName .
 //PackageName    = identifier .
 packageClause

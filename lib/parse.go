@@ -53,7 +53,7 @@ func NewErrorListener(filePath, source string) *ErrorListener {
 		source:               strings.Split(source, "\n"),
 	}
 }
-func Parse(filePath, str string) string {
+func parserInit(filePath, str string) *parser.OgParser {
 	input := antlr.NewInputStream(str)
 	lexer := parser.NewOgLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
@@ -61,8 +61,19 @@ func Parse(filePath, str string) string {
 	p.RemoveErrorListeners()
 	p.AddErrorListener(NewErrorListener(filePath, str))
 	p.SetErrorHandler(NewErrorHandler())
+	return p
+}
+func Parse(filePath, str string) string {
+	p := parserInit(filePath, str)
 	res := p.SourceFile()
 	t := new(translator.OgVisitor)
 	final := t.VisitSourceFile(res.(*parser.SourceFileContext), t)
+	return final.(string)
+}
+func ParseInterpret(filePath, str string) string {
+	p := parserInit(filePath, str)
+	res := p.Interp()
+	t := new(translator.OgVisitor)
+	final := t.VisitInterp(res.(*parser.InterpContext), t)
 	return final.(string)
 }

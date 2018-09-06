@@ -35,7 +35,9 @@ func setupCli() *cli.App {
 	{{.Name}} - {{.Usage}}
 
 USAGE:
-	{{if .VisibleFlags}}{{.HelpName}} [options] Folders|Files{{end}}
+	{{if .VisibleFlags}}{{.HelpName}} [options] [folders...|files...]
+
+	If run without any arguments, a small interpreter is spawn{{end}}
 	{{if len .Authors}}
 AUTHOR:
 	{{range .Authors}}{{ . }}{{end}}

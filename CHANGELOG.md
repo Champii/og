@@ -13,6 +13,7 @@
             ^
     ```
   - Allow empty Return statement
+  - Small and dirty interpreter that allow only a few expressions
 
 ## v0.2.0
   - Variadic arguments

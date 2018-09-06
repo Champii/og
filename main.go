@@ -11,7 +11,7 @@ import (
 func main() {
 	parseArgs(func(options og.OgConfig) {
 		if len(options.Paths) == 0 {
-			og.Interpreter()
+			og.RunInterpreter()
 		}
 		if err := og.Compile(options); err != nil {
 			fmt.Println(err)

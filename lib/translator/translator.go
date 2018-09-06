@@ -638,3 +638,6 @@ func (this OgVisitor) VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeV
 	}
 	return ""
 }
+func (this OgVisitor) VisitInterp(ctx *parser.InterpContext, delegate antlr.ParseTreeVisitor) interface{} {
+	return this.VisitChildren(ctx, delegate)
+}

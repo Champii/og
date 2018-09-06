@@ -46,14 +46,14 @@ func walker(filePath string, info os.FileInfo, err error) error {
 	if err != nil {
 		return err
 	}
-	res, err := ProcessFile(filePath, string(source))
+	res, err := ProcessFile(filePath, string(source), false)
 	if err != nil {
 		return err
 	}
 	finalizeFile(filePath, res)
 	return nil
 }
-func ProcessFile(filePath string, data string) (string, error) {
+func ProcessFile(filePath string, data string, isInterpret bool) (string, error) {
 	if config.Verbose == true {
 		fmt.Print(filePath)
 	}
@@ -61,7 +61,12 @@ func ProcessFile(filePath string, data string) (string, error) {
 	if config.Blocks == true {
 		return preprocessed, nil
 	}
-	res := Parse(filePath, string(preprocessed))
+	res := ""
+	if !isInterpret {
+		res = Parse(filePath, string(preprocessed))
+	} else {
+		res = ParseInterpret(filePath, string(preprocessed))
+	}
 	if config.Dirty == true {
 		return res, nil
 	}
@@ -98,7 +103,7 @@ func format(str string) (string, error) {
 	}
 	return string(final), nil
 }
-func Interpreter() {
+func RunInterpreter() {
 	running := true
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(bufio.ScanLines)
@@ -108,11 +113,31 @@ func Interpreter() {
 			return
 		}
 		ln := scanner.Text()
-		str, err := ProcessFile("STDIN", ln)
+		if len(ln) == 0 {
+			continue
+		}
+		str, err := ProcessFile("STDIN", ln, true)
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			fmt.Println(str)
+			execCode(str)
 		}
 	}
+}
+func execCode(str string) {
+	skelton := `package main
+  import "fmt"
+  func main() {
+  fmt.Print(` + str[:len(str)-1] + `)
+  }`
+	ioutil.WriteFile("/tmp/file.go", []byte(skelton), os.ModePerm)
+	cmd := exec.Command("go", "run", "/tmp/file.go")
+	stdin, _ := cmd.StdinPipe()
+	stdin.Write([]byte(str))
+	stdin.Close()
+	final, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(final))
 }
