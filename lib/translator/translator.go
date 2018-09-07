@@ -191,8 +191,9 @@ func (this *OgVisitor) VisitFunction(ctx *parser.FunctionContext, delegate antlr
 	if ctx.Block() != nil {
 		node.Block = this.VisitBlock(ctx.Block().(*parser.BlockContext), delegate).(*Block)
 	}
-	if ctx.StatementNoBlock() != nil {
-		node.Block = this.VisitStatementNoBlock(ctx.StatementNoBlock().(*parser.StatementNoBlockContext), delegate).(*Block)
+	if ctx.Statement() != nil {
+		node.Block = &Block{Statements: []*Statement{this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)},
+		}
 	}
 	return node
 }
@@ -300,51 +301,6 @@ func (this *OgVisitor) VisitStatement(ctx *parser.StatementContext, delegate ant
 	}
 	return node
 }
-func (this *OgVisitor) VisitStatementNoBlock(ctx *parser.StatementNoBlockContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Block{Node: NewNode(ctx)}
-	res := &Statement{}
-	if ctx.SimpleStmt() != nil {
-		res.SimpleStmt = this.VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(*SimpleStmt)
-	}
-	if ctx.LabeledStmt() != nil {
-		res.LabeledStmt = this.VisitLabeledStmt(ctx.LabeledStmt().(*parser.LabeledStmtContext), delegate).(*LabeledStmt)
-	}
-	if ctx.GoStmt() != nil {
-		res.GoStmt = this.VisitGoStmt(ctx.GoStmt().(*parser.GoStmtContext), delegate).(*GoStmt)
-	}
-	if ctx.ReturnStmt() != nil {
-		res.ReturnStmt = this.VisitReturnStmt(ctx.ReturnStmt().(*parser.ReturnStmtContext), delegate).(*ReturnStmt)
-	}
-	if ctx.BreakStmt() != nil {
-		res.BreakStmt = this.VisitBreakStmt(ctx.BreakStmt().(*parser.BreakStmtContext), delegate).(*BreakStmt)
-	}
-	if ctx.ContinueStmt() != nil {
-		res.ContinueStmt = this.VisitContinueStmt(ctx.ContinueStmt().(*parser.ContinueStmtContext), delegate).(*ContinueStmt)
-	}
-	if ctx.GotoStmt() != nil {
-		res.GotoStmt = this.VisitGotoStmt(ctx.GotoStmt().(*parser.GotoStmtContext), delegate).(*GotoStmt)
-	}
-	if ctx.FallthroughStmt() != nil {
-		res.FallthroughStmt = this.VisitFallthroughStmt(ctx.FallthroughStmt().(*parser.FallthroughStmtContext), delegate).(*FallthroughStmt)
-	}
-	if ctx.IfStmt() != nil {
-		res.IfStmt = this.VisitIfStmt(ctx.IfStmt().(*parser.IfStmtContext), delegate).(*IfStmt)
-	}
-	if ctx.SwitchStmt() != nil {
-		res.SwitchStmt = this.VisitSwitchStmt(ctx.SwitchStmt().(*parser.SwitchStmtContext), delegate).(*SwitchStmt)
-	}
-	if ctx.SelectStmt() != nil {
-		res.SelectStmt = this.VisitSelectStmt(ctx.SelectStmt().(*parser.SelectStmtContext), delegate).(*SelectStmt)
-	}
-	if ctx.ForStmt() != nil {
-		res.ForStmt = this.VisitForStmt(ctx.ForStmt().(*parser.ForStmtContext), delegate).(*ForStmt)
-	}
-	if ctx.DeferStmt() != nil {
-		res.DeferStmt = this.VisitDeferStmt(ctx.DeferStmt().(*parser.DeferStmtContext), delegate).(*DeferStmt)
-	}
-	node.Statements = []*Statement{res}
-	return node
-}
 func (this *OgVisitor) VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &SimpleStmt{Node: NewNode(ctx)}
 	if ctx.SendStmt() != nil {
@@ -388,7 +344,7 @@ func (this *OgVisitor) VisitAssignment(ctx *parser.AssignmentContext, delegate a
 	return &Assignment{
 		Node:  NewNode(ctx),
 		Left:  this.VisitExpressionList(ctx.ExpressionList(0).(*parser.ExpressionListContext), delegate).(*ExpressionList),
-		Op:    this.VisitAssign_op(ctx.Assign_op().(*parser.Assign_opContext), delegate).(string),
+		Op:    ctx.Assign_op().GetText(),
 		Right: this.VisitExpressionList(ctx.ExpressionList(1).(*parser.ExpressionListContext), delegate).(*ExpressionList),
 	}
 }
@@ -398,9 +354,6 @@ func (this *OgVisitor) VisitAssign_op(ctx *parser.Assign_opContext, delegate ant
 	}
 	return ctx.GetText()
 }
-func (this *OgVisitor) VisitBinary_op(ctx *parser.Binary_opContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return ctx.GetText()
-}
 func (this *OgVisitor) VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &ShortVarDecl{
 		Node:        NewNode(ctx),
@@ -408,8 +361,6 @@ func (this *OgVisitor) VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delega
 	}
 	if ctx.ExpressionList() != nil {
 		node.Expressions = this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
-	} else if ctx.StatementNoBlock() != nil {
-		node.Statement = this.VisitStatementNoBlock(ctx.StatementNoBlock().(*parser.StatementNoBlockContext), delegate).(*Block).Statements[0]
 	}
 	return node
 }
@@ -467,13 +418,15 @@ func (this *OgVisitor) VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.Par
 	node.Expression = this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 	if ctx.Block(0) != nil {
 		node.Block = this.VisitBlock(ctx.Block(0).(*parser.BlockContext), delegate).(*Block)
-	} else if ctx.StatementNoBlock(0) != nil {
-		node.Block = this.VisitStatementNoBlock(ctx.StatementNoBlock(0).(*parser.StatementNoBlockContext), delegate).(*Block)
+	} else if ctx.Statement(0) != nil {
+		node.Block = &Block{Statements: []*Statement{this.VisitStatement(ctx.Statement(0).(*parser.StatementContext), delegate).(*Statement)},
+		}
 	}
 	if ctx.Block(1) != nil {
 		node.BlockElse = this.VisitBlock(ctx.Block(1).(*parser.BlockContext), delegate).(*Block)
-	} else if ctx.StatementNoBlock(1) != nil {
-		node.BlockElse = this.VisitStatementNoBlock(ctx.StatementNoBlock(1).(*parser.StatementNoBlockContext), delegate).(*Block)
+	} else if ctx.Statement(1) != nil {
+		node.BlockElse = &Block{Statements: []*Statement{this.VisitStatement(ctx.Statement(1).(*parser.StatementContext), delegate).(*Statement)},
+		}
 	} else if ctx.IfStmt() != nil {
 		node.IfStmt = this.VisitIfStmt(ctx.IfStmt().(*parser.IfStmtContext), delegate).(*IfStmt)
 	}
@@ -588,8 +541,9 @@ func (this *OgVisitor) VisitCommClause(ctx *parser.CommClauseContext, delegate a
 	}
 	if ctx.Block() != nil {
 		node.Block = this.VisitBlock(ctx.Block().(*parser.BlockContext), delegate).(*Block)
-	} else if ctx.StatementNoBlock() != nil {
-		node.Block = this.VisitStatementNoBlock(ctx.StatementNoBlock().(*parser.StatementNoBlockContext), delegate).(*Block)
+	} else if ctx.Statement() != nil {
+		node.Block = &Block{Statements: []*Statement{this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)},
+		}
 	}
 	return node
 }
@@ -653,9 +607,6 @@ func (this *OgVisitor) VisitRangeClause(ctx *parser.RangeClauseContext, delegate
 	node := &RangeClause{
 		Node:       NewNode(ctx),
 		Expression: this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression),
-	}
-	if ctx.ExpressionList() != nil {
-		node.Expressions = this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
 	}
 	if ctx.IdentifierList() != nil {
 		node.Identifiers = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
@@ -862,6 +813,9 @@ func (this *OgVisitor) VisitLiteral(ctx *parser.LiteralContext, delegate antlr.P
 	if ctx.CompositeLit() != nil {
 		node.Composite = this.VisitCompositeLit(ctx.CompositeLit().(*parser.CompositeLitContext), delegate).(*CompositeLit)
 	}
+	if ctx.FunctionLit() != nil {
+		node.FunctionLit = this.VisitFunctionLit(ctx.FunctionLit().(*parser.FunctionLitContext), delegate).(*FunctionLit)
+	}
 	return node
 }
 func (this *OgVisitor) VisitBasicLit(ctx *parser.BasicLitContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -1026,7 +980,12 @@ func (this *OgVisitor) VisitPrimaryExpr(ctx *parser.PrimaryExprContext, delegate
 	}
 	if ctx.PrimaryExpr() != nil {
 		node.PrimaryExpr = this.VisitPrimaryExpr(ctx.PrimaryExpr().(*parser.PrimaryExprContext), delegate).(*PrimaryExpr)
+		node.SecondaryExpr = this.VisitSecondaryExpr(ctx.SecondaryExpr().(*parser.SecondaryExprContext), delegate).(*SecondaryExpr)
 	}
+	return node
+}
+func (this *OgVisitor) VisitSecondaryExpr(ctx *parser.SecondaryExprContext, delegate antlr.ParseTreeVisitor) interface{} {
+	node := &SecondaryExpr{Node: NewNode(ctx)}
 	if ctx.Selector() != nil {
 		node.Selector = this.VisitSelector(ctx.Selector().(*parser.SelectorContext), delegate).(string)
 	}
@@ -1127,16 +1086,9 @@ func (this *OgVisitor) VisitExpression(ctx *parser.ExpressionContext, delegate a
 	if ctx.UnaryExpr() != nil {
 		node.UnaryExpr = this.VisitUnaryExpr(ctx.UnaryExpr().(*parser.UnaryExprContext), delegate).(*UnaryExpr)
 	}
-	if ctx.FunctionLit() != nil {
-		node.FunctionLit = this.VisitFunctionLit(ctx.FunctionLit().(*parser.FunctionLitContext), delegate).(*FunctionLit)
-	}
 	if ctx.Expression(0) != nil {
 		node.LeftExpression = this.VisitExpression(ctx.Expression(0).(*parser.ExpressionContext), delegate).(*Expression)
-	}
-	if ctx.Binary_op() != nil {
-		node.Op = ctx.Binary_op().GetText()
-	}
-	if ctx.Expression(1) != nil {
+		node.Op = ctx.GetChild(1).GetPayload().(*antlr.CommonToken).GetText()
 		node.RightExpression = this.VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(*Expression)
 	}
 	return node
@@ -1146,16 +1098,11 @@ func (this *OgVisitor) VisitUnaryExpr(ctx *parser.UnaryExprContext, delegate ant
 	if ctx.PrimaryExpr() != nil {
 		node.PrimaryExpr = this.VisitPrimaryExpr(ctx.PrimaryExpr().(*parser.PrimaryExprContext), delegate).(*PrimaryExpr)
 	}
-	if ctx.Unary_op() != nil {
-		node.Op = ctx.Unary_op().GetText()
-	}
 	if ctx.UnaryExpr() != nil {
+		node.Op = ctx.GetChild(0).GetPayload().(*antlr.CommonToken).GetText()
 		node.UnaryExpr = this.VisitUnaryExpr(ctx.UnaryExpr().(*parser.UnaryExprContext), delegate).(*UnaryExpr)
 	}
 	return node
-}
-func (this *OgVisitor) VisitUnary_op(ctx *parser.Unary_opContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return ctx.GetText()
 }
 func (this *OgVisitor) VisitConversion(ctx *parser.ConversionContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &Conversion{

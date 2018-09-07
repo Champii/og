@@ -1,7 +1,7 @@
 !main
 
 main ->
-  here: toto()
+  ~here: toto()
   for i in foo
     continue
     continue label

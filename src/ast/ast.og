@@ -305,12 +305,12 @@ struct ShortVarDecl
 	*Node
 	Identifiers []string
 	Expressions *ExpressionList
-	Statement   *Statement
+	// Statement   *Statement
 	Eval: string ->
 		res := ""
 		res += strings.Join(@Identifiers, ",") + ":="
 		if @Expressions != nil => res += @Expressions.Eval()
-		if @Statement   != nil => res += @Statement.Eval()
+		// if @Statement   != nil => res += @Statement.Eval()
 		return res
 
 struct LabeledStmt
@@ -534,14 +534,14 @@ struct ForClause
 
 struct RangeClause
 	*Node
-	Expressions *ExpressionList
+	// Expressions *ExpressionList
 	Identifiers []string
 	Expression  *Expression
 	Eval: string ->
 		res := ""
-		if @Expressions != nil => res += @Expressions.Eval() + "="
+		// if @Expressions != nil => res += @Expressions.Eval()
 		res += strings.Join(@Identifiers, ",")
-		if len(@Identifiers) > 0 => res += ":= "
+		res += ":= "
 		return res + "range " +  @Expression.Eval()
 
 struct GoStmt
@@ -700,8 +700,10 @@ struct Literal
 	*Node
 	Basic     string
 	Composite *CompositeLit
+	FunctionLit     *FunctionLit
 	Eval: string ->
 		if @Composite != nil => return @Composite.Eval()
+		if @FunctionLit != nil => return @FunctionLit.Eval()
 		return @Basic
 
 struct OperandName
@@ -829,21 +831,26 @@ struct PrimaryExpr
 	Operand       *Operand
 	Conversion    *Conversion
 	PrimaryExpr   *PrimaryExpr
+	SecondaryExpr *SecondaryExpr
+	Eval: string ->
+		if @Operand       != nil => return @Operand.Eval()
+		if @Conversion    != nil => return @Conversion.Eval()
+		if @PrimaryExpr   != nil => return @PrimaryExpr.Eval() + @SecondaryExpr.Eval()
+		return ""
+
+struct SecondaryExpr
+	*Node
 	Selector      string
 	Index         *Index
 	Slice         *Slice
 	TypeAssertion *TypeAssertion
 	Arguments     *Arguments
 	Eval: string ->
-		if @Operand       != nil => return @Operand.Eval()
-		if @Conversion    != nil => return @Conversion.Eval()
-		if @PrimaryExpr   != nil
-			res := @PrimaryExpr.Eval()
-			if len(@Selector) > 0        => return res + @Selector
-			if @Index             != nil => return res + @Index.Eval()
-			if @Slice             != nil => return res + @Slice.Eval()
-			if @TypeAssertion     != nil => return res + @TypeAssertion.Eval()
-			if @Arguments         != nil => return res + @Arguments.Eval()
+		if len(@Selector) > 0        => return @Selector
+		if @Index             != nil => return @Index.Eval()
+		if @Slice             != nil => return @Slice.Eval()
+		if @TypeAssertion     != nil => return @TypeAssertion.Eval()
+		if @Arguments         != nil => return @Arguments.Eval()
 		return ""
 
 struct Index
@@ -908,13 +915,13 @@ struct ReceiverType
 struct Expression
 	*Node
 	UnaryExpr       *UnaryExpr
-	FunctionLit     *FunctionLit
+	// FunctionLit     *FunctionLit
 	LeftExpression  *Expression
 	Op              string
 	RightExpression *Expression
 	Eval: string ->
 		if @UnaryExpr   != nil => return @UnaryExpr.Eval()
-		if @FunctionLit != nil => return @FunctionLit.Eval()
+		// if @FunctionLit != nil => return @FunctionLit.Eval()
 		return @LeftExpression.Eval() + @Op + @RightExpression.Eval()
 
 struct UnaryExpr

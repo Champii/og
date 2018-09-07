@@ -67,8 +67,10 @@ parserInit(filePath, str string): *parser.OgParser ->
 
   p := parser.NewOgParser(stream)
 
-  // p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-  p.RemoveErrorListeners()
+  p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
+
+  p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+  // p.RemoveErrorListeners()
   p.AddErrorListener(NewErrorListener(filePath, str))
   p.SetErrorHandler(NewErrorHandler())
 
@@ -76,6 +78,7 @@ parserInit(filePath, str string): *parser.OgParser ->
 
 Parse(filePath, str string): string ->
   p := parserInit(filePath, str)
+
 
   res := p.SourceFile()
 

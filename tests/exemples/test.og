@@ -1,10 +1,7 @@
-!main
-
-import fmt
-
-a(arg fn:int) ->
-  fmt.Println(arg())
+!og
 
 main ->
-  a(fn:int-> return 2)
-  lol mdr tata
+  for _, v in a
+    1
+  for _, v in 1
+    2

@@ -25,11 +25,14 @@ func Preproc(str string) string {
 	indentSize := 0
 	for i := range lines {
 		indent := indentCount(lines[i])
+		if len(lines[i]) > indent+4 && lines[i][indent:indent+4] == "for " {
+			lines[i] += ";"
+		}
 		if indentSize == 0 && indent != lastIndent {
 			indentSize = indent
 		}
 		if indent > lastIndent {
-			res[len(res)-1] = res[len(res)-1] + "{"
+			res[len(res)-1] = res[len(res)-1] + " {"
 		} else if indent < lastIndent {
 			indentBuff := lastIndent - indent
 			for indentBuff > 0 {

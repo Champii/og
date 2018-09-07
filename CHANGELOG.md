@@ -1,6 +1,15 @@
 # Changelog
 
 ## DEV: Current version
+  - New AST system for more flexibility
+  - Switched to SLL prediction mode to greatly improve performances
+  - Multiline `type`, `const` and `var` declaration
+    ```go
+      var (
+        foo string
+        bar = 2
+      )
+    ```
 
 ## v0.3.0
   - Allow single line If statement

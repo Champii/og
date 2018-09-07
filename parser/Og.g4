@@ -108,6 +108,14 @@ grammar Og;
 
         ahead := this.BaseParser.GetTokenStream().Get(possibleIndexEosToken)
 
+        if ahead.GetTokenType() == OgLexerWS {
+            possibleIndexEosToken = this.BaseParser.GetCurrentToken().GetTokenIndex()
+
+            ahead = this.BaseParser.GetTokenStream().Get(possibleIndexEosToken)
+        }
+
+        fmt.Println("TOKEN AHEAD", ahead)
+
         return ahead.GetTokenType() == token
     }
 
@@ -259,6 +267,7 @@ expressionList
 //TypeDecl     = "type" ( TypeSpec | "(" { TypeSpec ";" } ")" ) .
 typeDecl
     : ('type' ( typeSpec | '(' ( typeSpec eos )* ')' ))
+    // Probable perf problem here
     | structType
     | interfaceType
     ;
@@ -280,7 +289,7 @@ functionDecl
     ;
 
 function
-    : signature '->' ( block | statementNoBlock )
+    : signature '->' (block | statement)     // Probable perf problem here
     ;
 
 //MethodDecl   = "func" Receiver MethodName ( Function | Signature ) .
@@ -315,27 +324,9 @@ statementList
     : ( statement eos )*
     ;
 
-statementNoBlock
-    : declaration
-    | labeledStmt
-    | simpleStmt
-    | goStmt
-    | returnStmt
-    | breakStmt
-    | continueStmt
-    | gotoStmt
-    | fallthroughStmt
-    | ifStmt
-    | switchStmt
-    | selectStmt
-    | forStmt
-    | deferStmt
-	;
-
 statement
-    : declaration
+    : forStmt
     | simpleStmt
-    | labeledStmt
     | goStmt
     | returnStmt
     | breakStmt
@@ -345,18 +336,19 @@ statement
     | ifStmt
     | switchStmt
     | selectStmt
-    | forStmt
-    | block
     | deferStmt
+    | labeledStmt
+    | block
+    | declaration
 	;
 
 //SimpleStmt = EmptyStmt | ExpressionStmt | SendStmt | IncDecStmt | Assignment | ShortVarDecl .
 simpleStmt
     : sendStmt
-    | expressionStmt
     | incDecStmt
     | shortVarDecl
     | assignment
+    | expressionStmt
     | emptyStmt
     ;
 
@@ -388,7 +380,8 @@ assign_op
 
 //ShortVarDecl = IdentifierList ":=" ExpressionList .
 shortVarDecl
-    : identifierList ':=' ( expressionList | statementNoBlock )
+    // : identifierList ':=' ( expressionList | statement )
+    : identifierList ':=' expressionList
     ;
 
 emptyStmt
@@ -398,7 +391,7 @@ emptyStmt
 //LabeledStmt = Label ":" Statement .
 //Label       = identifier .
 labeledStmt
-    : IDENTIFIER ':' statement
+    : '~' IDENTIFIER ':' statement
     ;
 
 //ReturnStmt = "return" [ ExpressionList ] .
@@ -433,7 +426,8 @@ deferStmt
 
 //IfStmt = "if" [ SimpleStmt ";" ] Expression Block [ "else" ( IfStmt | Block ) ] .
 ifStmt
-    : 'if' (simpleStmt ';')? expression ( block | '=>' statementNoBlock ) ( 'else' ( ifStmt | ( block | '=>' statementNoBlock ) ) )?
+    // Probable perf problem here
+    : 'if' (simpleStmt ';')? expression ( ('=>' statement eos) | block) ( 'else' ( ifStmt | ( ('=>' statement eos) | block ) ) )?
     ;
 
 //SwitchStmt = ExprSwitchStmt | TypeSwitchStmt .
@@ -477,7 +471,6 @@ typeList
     : type_ ( ',' type_ )*
     ;
 
-
 //SelectStmt = "select" "{" { CommClause } "}" .
 //CommClause = CommCase ":" StatementList .
 //CommCase   = "case" ( SendStmt | RecvStmt ) | "default" .
@@ -487,7 +480,7 @@ selectStmt
     : 'select' '{' commClause* '}'
     ;
 commClause
-    : commCase '=>' ( block | statementNoBlock )
+    : commCase '=>' ( block | statement )
     ;
 commCase
     : ( sendStmt | recvStmt ) | '_'
@@ -499,7 +492,7 @@ recvStmt
 //ForStmt = "for" [ Condition | ForClause | RangeClause ] Block .
 //Condition = Expression .
 forStmt
-    : 'for' ( expression | forClause | rangeClause )? block
+    : 'for' ( expression | rangeClause | forClause )? ';' block
     ;
 
 //ForClause = [ InitStmt ] ";" [ Condition ] ";" [ PostStmt ] .
@@ -512,7 +505,7 @@ forClause
 
 //RangeClause = [ ExpressionList "=" | IdentifierList ":=" ] "range" Expression .
 rangeClause
-    : (identifierList | expressionList ) 'in' expression
+    : (identifierList | expressionList) 'in' expression
     ;
 
 //GoStmt = "go" Expression .
@@ -529,8 +522,8 @@ type_
 
 //TypeName  = identifier | QualifiedIdent .
 typeName
-    : IDENTIFIER
-    | qualifiedIdent
+    : qualifiedIdent
+    | IDENTIFIER
     ;
 
 //TypeLit   = ArrayType | StructType | PointerType | FunctionType | InterfaceType |
@@ -610,13 +603,12 @@ functionType
     ;
 
 signature
-    : ({p.noTerminatorAfterParams(1)}? parameters ':' result
-    | parameters)
+    : {p.noTerminatorAfterParams(1)}? parameters ':' result
+    | parameters
     ;
 
 result
     : type_ ( ',' type_)*
-    // | type_
     ;
 
 parameters
@@ -653,6 +645,7 @@ operand
 literal
     : basicLit
     | compositeLit
+    | functionLit
     ;
 
 basicLit
@@ -666,7 +659,7 @@ basicLit
     ;
 
 operandName
-    : '_' | IDENTIFIER
+    : IDENTIFIER
     | qualifiedIdent
     | this_
     ;
@@ -736,7 +729,7 @@ structType
     ;
 
 fieldDecl
-    : (({p.noTerminatorBetween(2)}? identifierList type_ | anonymousField) STRING_LIT?)
+    : ({p.noTerminatorBetween(2)}? identifierList type_ | anonymousField) STRING_LIT?
     | inlineStructMethod
     ;
 
@@ -773,11 +766,15 @@ functionLit
 primaryExpr
     : operand
     | conversion
-    | primaryExpr selector
-    | primaryExpr index
-    | primaryExpr slice
-    | primaryExpr typeAssertion
-	| primaryExpr arguments
+    | primaryExpr secondaryExpr
+    ;
+
+secondaryExpr
+    : selector
+    | index
+    | slice
+    | typeAssertion
+    | arguments
     ;
 
 selector
@@ -817,22 +814,12 @@ receiverType
 
 expression
     : unaryExpr
-    | functionLit
-    // | expression BINARY_OP expression
-    | expression binary_op expression
-    ;
-
-binary_op
-    : ('||' | '&&' | '==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '|' | '^' | '*' | '/' | '%' | '<<' | '>>' | '&' | '&^')
+    | expression ('||' | '&&' | '==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '|' | '^' | '*' | '/' | '%' | '<<' | '>>' | '&' | '&^') expression
     ;
 
 unaryExpr
     : primaryExpr
-    | unary_op unaryExpr
-    ;
-
-unary_op
-    : ('+'|'-'|'!'|'^'|'*'|'&'|'<-')
+    | ('+'|'-'|'!'|'^'|'*'|'&'|'<-') unaryExpr
     ;
 
 //Conversion = Type "(" Expression [ "," ] ")" .
@@ -1070,8 +1057,9 @@ fragment INTERPRETED_STRING_LIT
 
 //letter        = unicode_letter | "_" .
 fragment LETTER
-    : UNICODE_LETTER
-    | '_'
+    : '_'
+    // | [a-zA-Z]
+    | UNICODE_LETTER
     ;
 
 //decimal_digit = "0" … "9" .
@@ -1401,7 +1389,10 @@ TERMINATOR
 	: [\r\n]+ -> channel(HIDDEN)
 	;
 
-
 LINE_COMMENT
     :   '//' ~[\r\n]* -> skip
     ;
+
+// ErrorChar
+//     : .
+//     ;

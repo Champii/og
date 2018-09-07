@@ -48,6 +48,7 @@ grammar: parser/*.go
 parser/*.go: parser/Og.g4
 	@$(call section_title,Grammar)
 	@$(call run_and_test,go generate,Generating parser from $<)
+	@$(call run_and_test,go build,Building go source)
 
 build:
 	@$(call section_title,Oglang to Golang Compilation)

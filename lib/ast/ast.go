@@ -473,7 +473,6 @@ type ShortVarDecl struct {
 	*Node
 	Identifiers []string
 	Expressions *ExpressionList
-	Statement   *Statement
 }
 
 func (this ShortVarDecl) Eval() string {
@@ -481,9 +480,6 @@ func (this ShortVarDecl) Eval() string {
 	res += strings.Join(this.Identifiers, ",") + ":="
 	if this.Expressions != nil {
 		res += this.Expressions.Eval()
-	}
-	if this.Statement != nil {
-		res += this.Statement.Eval()
 	}
 	return res
 }
@@ -831,20 +827,14 @@ func (this ForClause) Eval() string {
 
 type RangeClause struct {
 	*Node
-	Expressions *ExpressionList
 	Identifiers []string
 	Expression  *Expression
 }
 
 func (this RangeClause) Eval() string {
 	res := ""
-	if this.Expressions != nil {
-		res += this.Expressions.Eval() + "="
-	}
 	res += strings.Join(this.Identifiers, ",")
-	if len(this.Identifiers) > 0 {
-		res += ":= "
-	}
+	res += ":= "
 	return res + "range " + this.Expression.Eval()
 }
 
@@ -1094,13 +1084,17 @@ func (this Operand) Eval() string {
 
 type Literal struct {
 	*Node
-	Basic     string
-	Composite *CompositeLit
+	Basic       string
+	Composite   *CompositeLit
+	FunctionLit *FunctionLit
 }
 
 func (this Literal) Eval() string {
 	if this.Composite != nil {
 		return this.Composite.Eval()
+	}
+	if this.FunctionLit != nil {
+		return this.FunctionLit.Eval()
 	}
 	return this.Basic
 }
@@ -1300,11 +1294,7 @@ type PrimaryExpr struct {
 	Operand       *Operand
 	Conversion    *Conversion
 	PrimaryExpr   *PrimaryExpr
-	Selector      string
-	Index         *Index
-	Slice         *Slice
-	TypeAssertion *TypeAssertion
-	Arguments     *Arguments
+	SecondaryExpr *SecondaryExpr
 }
 
 func (this PrimaryExpr) Eval() string {
@@ -1315,22 +1305,35 @@ func (this PrimaryExpr) Eval() string {
 		return this.Conversion.Eval()
 	}
 	if this.PrimaryExpr != nil {
-		res := this.PrimaryExpr.Eval()
-		if len(this.Selector) > 0 {
-			return res + this.Selector
-		}
-		if this.Index != nil {
-			return res + this.Index.Eval()
-		}
-		if this.Slice != nil {
-			return res + this.Slice.Eval()
-		}
-		if this.TypeAssertion != nil {
-			return res + this.TypeAssertion.Eval()
-		}
-		if this.Arguments != nil {
-			return res + this.Arguments.Eval()
-		}
+		return this.PrimaryExpr.Eval() + this.SecondaryExpr.Eval()
+	}
+	return ""
+}
+
+type SecondaryExpr struct {
+	*Node
+	Selector      string
+	Index         *Index
+	Slice         *Slice
+	TypeAssertion *TypeAssertion
+	Arguments     *Arguments
+}
+
+func (this SecondaryExpr) Eval() string {
+	if len(this.Selector) > 0 {
+		return this.Selector
+	}
+	if this.Index != nil {
+		return this.Index.Eval()
+	}
+	if this.Slice != nil {
+		return this.Slice.Eval()
+	}
+	if this.TypeAssertion != nil {
+		return this.TypeAssertion.Eval()
+	}
+	if this.Arguments != nil {
+		return this.Arguments.Eval()
 	}
 	return ""
 }
@@ -1431,7 +1434,6 @@ func (this *ReceiverType) Eval() string {
 type Expression struct {
 	*Node
 	UnaryExpr       *UnaryExpr
-	FunctionLit     *FunctionLit
 	LeftExpression  *Expression
 	Op              string
 	RightExpression *Expression
@@ -1440,9 +1442,6 @@ type Expression struct {
 func (this Expression) Eval() string {
 	if this.UnaryExpr != nil {
 		return this.UnaryExpr.Eval()
-	}
-	if this.FunctionLit != nil {
-		return this.FunctionLit.Eval()
 	}
 	return this.LeftExpression.Eval() + this.Op + this.RightExpression.Eval()
 }
