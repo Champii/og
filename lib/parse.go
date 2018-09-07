@@ -3,6 +3,7 @@ package og
 import (
 	"fmt"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/translator"
 	"github.com/champii/og/parser"
 	"github.com/fatih/color"
@@ -11,12 +12,24 @@ import (
 	"strings"
 )
 
-var yellow = color.New(color.FgHiYellow).SprintFunc()
-var red = color.New(color.FgHiRed).SprintFunc()
-var cyan = color.New(color.FgCyan).SprintFunc()
-var magenta = color.New(color.Bold, color.FgHiMagenta).SprintFunc()
-var blue = color.New(color.Bold, color.FgHiBlue).SprintfFunc()
-var green = color.New(color.FgHiGreen).SprintfFunc()
+var (
+	yellow = color.New(color.FgHiYellow).SprintFunc()
+)
+var (
+	red = color.New(color.FgHiRed).SprintFunc()
+)
+var (
+	cyan = color.New(color.FgCyan).SprintFunc()
+)
+var (
+	magenta = color.New(color.Bold, color.FgHiMagenta).SprintFunc()
+)
+var (
+	blue = color.New(color.Bold, color.FgHiBlue).SprintfFunc()
+)
+var (
+	green = color.New(color.FgHiGreen).SprintfFunc()
+)
 
 type ErrorHandler struct {
 	*antlr.DefaultErrorStrategy
@@ -26,9 +39,7 @@ func (this ErrorHandler) Recover(p antlr.Parser, r antlr.RecognitionException) {
 	os.Exit(1)
 }
 func NewErrorHandler() *ErrorHandler {
-	return &ErrorHandler{
-		DefaultErrorStrategy: antlr.NewDefaultErrorStrategy(),
-	}
+	return &ErrorHandler{DefaultErrorStrategy: antlr.NewDefaultErrorStrategy()}
 }
 
 type ErrorListener struct {
@@ -67,13 +78,13 @@ func Parse(filePath, str string) string {
 	p := parserInit(filePath, str)
 	res := p.SourceFile()
 	t := new(translator.OgVisitor)
-	final := t.VisitSourceFile(res.(*parser.SourceFileContext), t)
-	return final.(string)
+	final := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile).Eval()
+	return final
 }
 func ParseInterpret(filePath, str string) string {
 	p := parserInit(filePath, str)
 	res := p.Interp()
 	t := new(translator.OgVisitor)
-	final := t.VisitInterp(res.(*parser.InterpContext), t)
-	return final.(string)
+	final := t.VisitInterp(res.(*parser.InterpContext), t).(*ast.Interpret).Eval()
+	return final
 }

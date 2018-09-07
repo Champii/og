@@ -1,0 +1,943 @@
+!ast
+
+import
+	strings
+	"github.com/antlr/antlr4/runtime/Go/antlr"
+
+interface INode
+	IsNode: bool
+
+struct Node
+	start    int
+	stop     int
+
+	Text     string
+	out      string
+
+	parent   *Node
+	children []*Node
+	ctx      antlr.RuleContext
+
+	// VisitChildren ->
+	IsNode: bool -> return true
+	Eval: string -> return ""
+
+
+NewNode(ctx antlr.RuleContext): *Node ->
+	return &Node
+		Text: ctx.GetText()
+
+struct SourceFile
+	*Node
+	Package  *Package
+	Import   *Import
+	TopLevels []*TopLevel
+	Eval: string ->
+		res := ""
+		if @Package != nil => res += @Package.Eval() + "\n"
+		if @Import  != nil => res += @Import.Eval() + "\n"
+		for _, t in @TopLevels
+			res += t.Eval() + "\n"
+		return res
+
+struct Package
+	*Node
+	Name string
+	Eval: string ->
+		return "package " + @Name
+
+struct Import
+	*Node
+	Items []*ImportSpec
+	Eval: string ->
+		res := "import (\n"
+		for _, i in @Items
+			res += i.Eval()
+		return res + "\n)\n"
+
+struct ImportSpec
+	*Node
+	Path  string
+	Alias string
+	Eval: string ->
+		res := ""
+		if len(@Alias) > 0 => res += @Alias + " "
+		res += @Path
+		return res
+
+struct TopLevel
+	*Node
+	Declaration  *Declaration
+	FunctionDecl *FunctionDecl
+	MethodDecl   *MethodDecl
+	Eval: string ->
+		if @Declaration  != nil => return @Declaration.Eval()
+		if @FunctionDecl != nil => return @FunctionDecl.Eval()
+		if @MethodDecl   != nil => return @MethodDecl.Eval()
+		return ""
+
+struct Declaration
+	*Node
+	ConstDecl *ConstDecl
+	TypeDecl  *TypeDecl
+	VarDecl   *VarDecl
+	Eval: string ->
+		if @ConstDecl != nil => return @ConstDecl.Eval()
+		if @TypeDecl  != nil => return @TypeDecl.Eval()
+		if @VarDecl   != nil => return @VarDecl.Eval()
+		return ""
+
+struct ConstDecl
+	*Node
+	ConstSpecs []*ConstSpec
+	Eval: string ->
+		res := "const ("
+		for _, spec in @ConstSpecs
+			res += spec.Eval() + "\n"
+		return res + ")"
+
+struct ConstSpec
+	*Node
+	IdentifierList []string
+	Type           *Type
+	ExpressionList *ExpressionList
+	Eval: string ->
+		res := strings.Join(@IdentifierList, ",")
+		if @Type           != nil => res += " " + @Type.Eval()
+		if @ExpressionList != nil => res += " = " + @ExpressionList.Eval()
+		return res
+
+struct ExpressionList
+	*Node
+	Expressions []*Expression
+	Eval: string ->
+		res := ""
+		for _, expr in @Expressions
+			res += expr.Eval() + ","
+		if len(@Expressions) > 0
+			res = res[:len(res)-1]
+		return res
+
+struct Parameters
+	*Node
+	List []*Parameter
+	Eval: string ->
+		res := "("
+		for _, expr in @List
+			res += expr.Eval() + ","
+		if len(@List) > 0
+			res = res[:len(res)-1]
+		res += ")"
+		return res
+
+struct TypeDecl
+	*Node
+	TypeSpecs     []*TypeSpec
+	StructType    *StructType
+	InterfaceType *InterfaceType
+	Eval: string ->
+		res := "type "
+		if len(@TypeSpecs) > 1
+			res += "("
+		for _, spec in @TypeSpecs
+			res += spec.Eval() + "\n"
+		if len(@TypeSpecs) > 0
+			res = res[:len(res)-1]
+		if len(@TypeSpecs) > 1
+			res += ")"
+		if @StructType         != nil => res += @StructType.Eval()
+		else if @InterfaceType != nil => res += @InterfaceType.Eval()
+		return res
+
+struct TypeSpec
+	*Node
+	Name string
+	Type *Type
+	Eval: string ->
+		return @Name + " " + @Type.Eval()
+
+struct FunctionDecl
+	*Node
+	Name      string
+	Function  *Function
+	Signature *Signature
+	Eval: string ->
+		res := "func " + @Name
+		if @Function  != nil => res += @Function.Eval()
+		if @Signature != nil => res += @Signature.Eval()
+		return res
+
+struct Function
+	*Node
+	Signature        *Signature
+	Block            *Block
+	Eval: string ->
+		return @Signature.Eval() + @Block.Eval()
+
+struct MethodDecl
+	*Node
+	Receiver *Receiver
+	Function  *Function
+	Signature *Signature
+	Eval: string ->
+		res := "func " + @Receiver.Eval()
+		if @Function  != nil => res += @Function.Eval()
+		if @Signature != nil => res += @Signature.Eval()
+		return res
+
+struct Receiver
+	*Node
+	Package           string
+	IsPointerReceiver bool
+	Method            string
+	Eval: string ->
+		res := "(this "
+		if @IsPointerReceiver => res += "*"
+		res += @Package + ")"
+		res += @Method
+		return res
+
+struct VarDecl
+	*Node
+	VarSpecs []*VarSpec
+	Eval: string ->
+		res := "var ("
+		for _, spec in @VarSpecs
+			res += spec.Eval() + "\n"
+		return res + ")"
+
+struct VarSpec
+	*Node
+	IdentifierList []string
+	Type           *Type
+	ExpressionList *ExpressionList
+	Eval: string ->
+		res := strings.Join(@IdentifierList, ",")
+		if @Type           != nil => res += " " + @Type.Eval()
+		if @ExpressionList != nil => res += "=" + @ExpressionList.Eval()
+		return res
+
+struct Block
+	*Node
+	Statements []*Statement
+	Eval: string ->
+		res := "{\n"
+		for _, spec in @Statements
+			res += spec.Eval() + "\n"
+		return res + "}"
+
+struct Statement
+	*Node
+	SimpleStmt      *SimpleStmt
+	LabeledStmt     *LabeledStmt
+	GoStmt          *GoStmt
+	ReturnStmt      *ReturnStmt
+	BreakStmt       *BreakStmt
+	ContinueStmt    *ContinueStmt
+	GotoStmt        *GotoStmt
+	FallthroughStmt *FallthroughStmt
+	IfStmt          *IfStmt
+	SwitchStmt      *SwitchStmt
+	SelectStmt      *SelectStmt
+	ForStmt         *ForStmt
+	Block           *Block
+	DeferStmt       *DeferStmt
+	Eval: string ->
+		if @SimpleStmt      != nil => return @SimpleStmt.Eval()
+		if @LabeledStmt     != nil => return @LabeledStmt.Eval()
+		if @GoStmt          != nil => return @GoStmt.Eval()
+		if @ReturnStmt      != nil => return @ReturnStmt.Eval()
+		if @BreakStmt       != nil => return @BreakStmt.Eval()
+		if @ContinueStmt    != nil => return @ContinueStmt.Eval()
+		if @GotoStmt        != nil => return @GotoStmt.Eval()
+		if @FallthroughStmt != nil => return @FallthroughStmt.Eval()
+		if @IfStmt          != nil => return @IfStmt.Eval()
+		if @SwitchStmt      != nil => return @SwitchStmt.Eval()
+		if @SelectStmt      != nil => return @SelectStmt.Eval()
+		if @ForStmt         != nil => return @ForStmt.Eval()
+		if @Block           != nil => return @Block.Eval()
+		if @DeferStmt       != nil => return @DeferStmt.Eval()
+		return ""
+
+struct SimpleStmt
+	*Node
+	SendStmt       *SendStmt
+	Expression     *Expression
+	IncDecStmt     *IncDecStmt
+	ShortVarDecl   *ShortVarDecl
+	Assignment     *Assignment
+	EmptyStmt      bool
+	Eval: string ->
+		if @SendStmt     != nil => return @SendStmt.Eval()
+		if @Expression   != nil => return @Expression.Eval()
+		if @IncDecStmt   != nil => return @IncDecStmt.Eval()
+		if @ShortVarDecl != nil => return @ShortVarDecl.Eval()
+		if @Assignment   != nil => return @Assignment.Eval()
+		if @EmptyStmt           => return "\n"
+		return ""
+
+struct SendStmt
+	*Node
+	Left  *Expression
+	Right *Expression
+	Eval: string ->
+		return @Left.Eval() + "<-" + @Right.Eval()
+
+struct IncDecStmt
+	*Node
+	Expression *Expression
+	IsInc      bool
+	Eval: string ->
+		res := @Expression.Eval()
+		if @IsInc => res += "++"
+		else      => res += "--"
+		return res
+
+struct Assignment
+	*Node
+	Left  *ExpressionList
+	Op    string
+	Right *ExpressionList
+	Eval: string ->
+		return @Left.Eval() + @Op + @Right.Eval()
+
+struct ShortVarDecl
+	*Node
+	Identifiers []string
+	Expressions *ExpressionList
+	Statement   *Statement
+	Eval: string ->
+		res := ""
+		res += strings.Join(@Identifiers, ",") + ":="
+		if @Expressions != nil => res += @Expressions.Eval()
+		if @Statement   != nil => res += @Statement.Eval()
+		return res
+
+struct LabeledStmt
+	*Node
+	Name      string
+	Statement *Statement
+	Eval: string ->
+		return @Name + ": " + @Statement.Eval()
+
+struct ReturnStmt
+	*Node
+	Expressions *ExpressionList
+	Eval: string ->
+		res := "return "
+		if @Expressions != nil => res += @Expressions.Eval()
+		return res
+
+struct BreakStmt
+	*Node
+	Name string
+	Eval: string ->
+		return "break " + @Name
+
+struct ContinueStmt
+	*Node
+	Name string
+	Eval: string ->
+		return "continue " + @Name
+
+struct GotoStmt
+	*Node
+	Name string
+	Eval: string ->
+		return "goto " + @Name
+
+struct FallthroughStmt
+	*Node
+	Eval: string ->
+		return "fallthrough"
+
+struct DeferStmt
+	*Node
+	Expression *Expression
+	Eval: string ->
+		return "defer " + @Expression.Eval()
+
+struct IfStmt
+	*Node
+	SimpleStmt *SimpleStmt
+	Expression *Expression
+	Block      *Block
+	IfStmt     *IfStmt
+	BlockElse  *Block
+	Eval: string ->
+		res := "if "
+		if @SimpleStmt != nil => res += @SimpleStmt.Eval() + ";"
+		res += @Expression.Eval()
+		if @Block      != nil => res += @Block.Eval()
+		if @BlockElse  != nil => res += "else " + @BlockElse.Eval()
+		if @IfStmt     != nil => res += "else " + @IfStmt.Eval()
+		return res
+
+struct SwitchStmt
+	*Node
+	ExprSwitchStmt *ExprSwitchStmt
+	TypeSwitchStmt *TypeSwitchStmt
+	Eval: string ->
+		if @ExprSwitchStmt != nil => return @ExprSwitchStmt.Eval()
+		if @TypeSwitchStmt != nil => return @TypeSwitchStmt.Eval()
+		return ""
+
+struct ExprSwitchStmt
+	*Node
+	SimpleStmt      *SimpleStmt
+	Expression      *Expression
+	ExprCaseClauses []*ExprCaseClause
+	Eval: string ->
+		res := "switch "
+		if @SimpleStmt != nil => res += @SimpleStmt.Eval() + ";"
+		if @Expression != nil => res += @Expression.Eval()
+		res += "{\n"
+		for _, spec in @ExprCaseClauses
+			res += spec.Eval() + "\n"
+		return res + "}"
+
+struct ExprCaseClause
+	*Node
+	ExprSwitchCase *ExprSwitchCase
+	Statements     []*Statement
+	Eval: string ->
+		res := ""
+		res += @ExprSwitchCase.Eval() + ":"
+		for _, spec in @Statements
+			res += spec.Eval() + "\n"
+		if len(@Statements) > 0
+			res = res[:len(res)-1]
+		return res
+
+struct ExprSwitchCase
+	*Node
+	Expressions *ExpressionList
+	IsDefault   bool
+	Eval: string ->
+		if @IsDefault => return "default"
+		return "case " + @Expressions.Eval()
+
+struct TypeSwitchStmt
+	*Node
+	SimpleStmt       *SimpleStmt
+	TypeSwitchGuard  *TypeSwitchGuard
+	TypeCaseClauses  []*TypeCaseClause
+	Eval: string ->
+		res := "switch "
+		if @SimpleStmt != nil => res += @SimpleStmt.Eval() + ";"
+		res += @TypeSwitchGuard.Eval()
+		res += "{\n"
+		for _, spec in @TypeCaseClauses
+			res += spec.Eval() + "\n"
+		return res + "}"
+
+struct TypeSwitchGuard
+	*Node
+	Name        string
+	PrimaryExpr *PrimaryExpr
+	Eval: string ->
+		res := ""
+		if len(@Name) > 0 => res += @Name + "="
+		return res + @PrimaryExpr.Eval() + ".(type)"
+
+struct TypeCaseClause
+	*Node
+	TypeSwitchCase *TypeSwitchCase
+	Statements     []*Statement
+	Eval: string ->
+		res := @TypeSwitchCase.Eval() + ":"
+		for _, spec in @Statements
+			res += spec.Eval() + "\n"
+		if len(@Statements) > 0
+			res = res[:len(res)-1]
+		return res
+
+struct TypeSwitchCase
+	*Node
+	Types []*Type
+	Eval: string ->
+		res := ""
+		if len(@Types) == 0 => return "default"
+		res += "case "
+		for _, spec in @Types
+			res += spec.Eval() + ","
+		res = res[:len(res)-1]
+		return res
+
+struct SelectStmt
+	*Node
+	CommClauses []*CommClause
+	Eval: string ->
+		res := "select {\n"
+		for _, spec in @CommClauses
+			res += spec.Eval()
+		return res + "}"
+
+struct CommClause
+	*Node
+	CommCase *CommCase
+	Block *Block
+	Eval: string ->
+		block := @Block.Eval()
+		return @CommCase.Eval() + ":" + block[1:len(block)-1]
+
+struct CommCase
+	*Node
+	SendStmt *SendStmt
+	RecvStmt *RecvStmt
+	IsDefault bool
+	Eval: string ->
+		if @IsDefault       => return "default"
+		if @SendStmt != nil => return "case " + @SendStmt.Eval()
+		if @RecvStmt != nil => return "case " + @RecvStmt.Eval()
+		return ""
+
+struct RecvStmt
+	*Node
+	Expressions *ExpressionList
+	Identifiers []string
+	Expression  *Expression
+	Eval: string ->
+		res := ""
+		if @Expressions != nil => res += @Expressions.Eval() + "="
+		res += strings.Join(@Identifiers, ",")
+		if len(@Identifiers) > 0 => res += ":="
+		res += @Expression.Eval()
+		return res
+
+struct ForStmt
+	*Node
+	Expression  *Expression
+	ForClause   *ForClause
+	RangeClause *RangeClause
+	Block       *Block
+	Eval: string ->
+		res := "for "
+		if @Expression  != nil => res += @Expression.Eval()
+		if @ForClause   != nil => res += @ForClause.Eval()
+		if @RangeClause != nil => res += @RangeClause.Eval()
+		return res + @Block.Eval()
+
+struct ForClause
+	*Node
+	LeftSimpleStmt  *SimpleStmt
+	Expression      *Expression
+	RightSimpleStmt *SimpleStmt
+	Eval: string ->
+		res := ""
+		if @LeftSimpleStmt  != nil => res += @LeftSimpleStmt.Eval()
+		res += ";"
+		if @Expression      != nil => res += @Expression.Eval()
+		res += ";"
+		if @RightSimpleStmt != nil => res += @RightSimpleStmt.Eval()
+		return res
+
+struct RangeClause
+	*Node
+	Expressions *ExpressionList
+	Identifiers []string
+	Expression  *Expression
+	Eval: string ->
+		res := ""
+		if @Expressions != nil => res += @Expressions.Eval() + "="
+		res += strings.Join(@Identifiers, ",")
+		if len(@Identifiers) > 0 => res += ":= "
+		return res + "range " +  @Expression.Eval()
+
+struct GoStmt
+	*Node
+	Function   *Function
+	Expression *Expression
+	Eval: string ->
+		if @Function   != nil => return "go func " + @Function.Eval() + "()"
+		if @Expression != nil => return "go " + @Expression.Eval()
+		return ""
+
+struct Type
+	*Node
+	TypeName string
+	TypeLit  *TypeLit
+	Type     *Type
+	Eval: string ->
+		if @TypeLit != nil => return @TypeLit.Eval()
+		if @Type    != nil => return "(" + @Type.Eval() + ")"
+		return @TypeName
+
+struct TypeLit
+	*Node
+	ArrayType     *ArrayType
+	StructType    *StructType
+	PointerType   *PointerType
+	FunctionType  *FunctionType
+	InterfaceType *InterfaceType
+	SliceType     *SliceType
+	MapType       *MapType
+	ChannelType   *ChannelType
+	Eval: string ->
+		if @ArrayType     != nil => return @ArrayType.Eval()
+		if @StructType    != nil => return @StructType.Eval()
+		if @PointerType   != nil => return @PointerType.Eval()
+		if @FunctionType  != nil => return @FunctionType.Eval()
+		if @InterfaceType != nil => return @InterfaceType.Eval()
+		if @SliceType     != nil => return @SliceType.Eval()
+		if @MapType       != nil => return @MapType.Eval()
+		if @ChannelType   != nil => return @ChannelType.Eval()
+		return ""
+
+struct ArrayType
+	*Node
+	Length      *Expression
+	ElementType *Type
+	Eval: string ->
+		return "[" + @Length.Eval() + "]" + @ElementType.Eval()
+
+struct PointerType
+	*Node
+	Type *Type
+	Eval: string ->
+		return "*" + @Type.Eval()
+
+struct InterfaceType
+	*Node
+	Name string
+	MethodSpecs []*MethodSpec
+	Eval: string ->
+		res := ""
+		if len(@MethodSpecs) > 0
+			res += "\n"
+		for _, spec in @MethodSpecs
+			res += spec.Eval() + "\n"
+		return @Name + " interface {" + res  + "}"
+
+struct SliceType
+	*Node
+	Type *Type
+	Eval: string ->
+		return "[]" + @Type.Eval()
+
+struct MapType
+	*Node
+	InnerType *Type
+	OuterType *Type
+	Eval: string ->
+		return "map[" + @InnerType.Eval() + "]" + @OuterType.Eval()
+
+struct ChannelType
+	*Node
+	ChannelDecl string
+	Type        *Type
+	Eval: string ->
+		return @ChannelDecl + " " + @Type.Eval()
+
+struct MethodSpec
+	*Node
+	Name string
+	Parameters *Parameters
+	Result     *Result
+	Type       string
+	Eval: string ->
+		res := @Name
+		if @Parameters != nil => res += @Parameters.Eval()
+		if @Result     != nil => res += @Result.Eval()
+		res += @Type
+		return res
+
+struct FunctionType
+	*Node
+	Signature *Signature
+	Eval: string->
+		return "func " + @Signature.Eval()
+
+struct Signature
+	*Node
+	Parameters *Parameters
+	Result     *Result
+	Eval: string ->
+		res := ""
+		if @Parameters != nil => res += @Parameters.Eval()
+		if @Result != nil => res += @Result.Eval()
+		return res
+
+struct Result
+	*Node
+	Types []*Type
+	Eval: string ->
+		res := "("
+		for _, spec in @Types
+			res += spec.Eval() + ","
+		res += ")"
+		return res
+
+struct Parameter
+	*Node
+	Names      []string
+	Type       *Type
+	IsVariadic bool
+	Eval: string ->
+		res := ""
+		for _, spec in @Names
+			res += spec + ","
+		if len(@Names) > 0
+			res = res[:len(res)-1]
+		res += " "
+		if @IsVariadic => res += "..."
+		return res + @Type.Eval()
+
+struct Operand
+	*Node
+	Literal     *Literal
+	OperandName *OperandName
+	MethodExpr  *MethodExpr
+	Expression  *Expression
+	Eval: string ->
+		if @Literal     != nil => return @Literal.Eval()
+		if @OperandName != nil => return @OperandName.Eval()
+		if @MethodExpr  != nil => return @MethodExpr.Eval()
+		if @Expression  != nil => return "(" + @Expression.Eval() + ")"
+		return ""
+
+struct Literal
+	*Node
+	Basic     string
+	Composite *CompositeLit
+	Eval: string ->
+		if @Composite != nil => return @Composite.Eval()
+		return @Basic
+
+struct OperandName
+	*Node
+	Name string
+	Eval: string ->
+		return @Name
+
+struct CompositeLit
+	*Node
+	LiteralType  *LiteralType
+	LiteralValue *LiteralValue
+	Eval: string ->
+		return @LiteralType.Eval() + @LiteralValue.Eval()
+
+struct LiteralType
+	*Node
+	Struct   *StructType
+	Array    *ArrayType
+	Element  *Type
+	Slice    *SliceType
+	Map      *MapType
+	Type     string
+	Eval: string ->
+		if @Struct  != nil => return @Struct.Eval()
+		if @Array   != nil => return @Array.Eval()
+		if @Element != nil => return "[...]" + @Element.Eval()
+		if @Slice   != nil => return @Slice.Eval()
+		if @Map     != nil => return @Map.Eval()
+		return @Type
+
+struct LiteralValue
+	*Node
+	Elements []*KeyedElement
+	Eval: string ->
+		res := "{"
+		if len(@Elements) > 1
+			res += "\n"
+		for _, spec in @Elements
+			res += spec.Eval() + ",\n"
+		return res + "}"
+
+struct KeyedElement
+	*Node
+	Key     *Key
+	Element *Element
+	Eval: string ->
+		res := ""
+		if @Key != nil => res += @Key.Eval() + ":"
+		return res + @Element.Eval()
+
+struct Key
+	*Node
+	Name         string
+	Expression   *Expression
+	LiteralValue *LiteralValue
+	Eval: string ->
+		if @Expression   != nil => return @Expression.Eval()
+		if @LiteralValue != nil => return @LiteralValue.Eval()
+		return @Name
+
+struct Element
+	*Node
+	Expression   *Expression
+	LiteralValue *LiteralValue
+	Eval: string ->
+		if @Expression   != nil => return @Expression.Eval()
+		if @LiteralValue != nil => return @LiteralValue.Eval()
+		return ""
+
+struct StructType
+	*Node
+	Name string
+	Fields []*FieldDecl
+	Eval: string ->
+		res := @Name + " struct {\n"
+		methods := ""
+		for _, spec in @Fields
+			if spec.InlineStructMethod != nil
+				receiver := @Name
+				if spec.InlineStructMethod.IsPointerReceiver => receiver = "*" + receiver
+				methods += "\nfunc (this " + receiver + ")" + spec.InlineStructMethod.Eval()
+			else
+				res += spec.Eval() + "\n"
+		return res + "}" + methods
+
+struct FieldDecl
+	*Node
+	Identifiers []string
+	Type        *Type
+	Anonymous   *AnonymousField
+	Tag         string
+	InlineStructMethod *InlineStructMethod
+	Eval: string ->
+		if @InlineStructMethod != nil => return @InlineStructMethod.Eval()
+		res := strings.Join(@Identifiers, ",")
+		if @Type != nil => res += " " + @Type.Eval()
+		if @Anonymous != nil => res += @Anonymous.Eval()
+		return res + " " + @Tag
+
+struct InlineStructMethod
+	*Node
+	IsPointerReceiver bool
+	FunctionDecl      *FunctionDecl
+	Eval: string ->
+		return @FunctionDecl.Eval()[4:]
+
+struct AnonymousField
+	*Node
+	IsPointerReceiver bool
+	Type              string
+	Eval: string ->
+		res := @Type
+		if @IsPointerReceiver => res = "*" + res
+		return res
+
+struct FunctionLit
+	*Node
+	Function *Function
+	Eval: string ->
+		return "func " + @Function.Eval()
+
+struct PrimaryExpr
+	*Node
+	Operand       *Operand
+	Conversion    *Conversion
+	PrimaryExpr   *PrimaryExpr
+	Selector      string
+	Index         *Index
+	Slice         *Slice
+	TypeAssertion *TypeAssertion
+	Arguments     *Arguments
+	Eval: string ->
+		if @Operand       != nil => return @Operand.Eval()
+		if @Conversion    != nil => return @Conversion.Eval()
+		if @PrimaryExpr   != nil
+			res := @PrimaryExpr.Eval()
+			if len(@Selector) > 0        => return res + @Selector
+			if @Index             != nil => return res + @Index.Eval()
+			if @Slice             != nil => return res + @Slice.Eval()
+			if @TypeAssertion     != nil => return res + @TypeAssertion.Eval()
+			if @Arguments         != nil => return res + @Arguments.Eval()
+		return ""
+
+struct Index
+	*Node
+	Expression *Expression
+	Eval: string ->
+		return "[" + @Expression.Eval() + "]"
+
+struct Slice
+	*Node
+	LeftExpr   *Expression
+	MiddleExpr *Expression
+	RightExpr  *Expression
+	Eval: string ->
+		res := "["
+		if @LeftExpr != nil => res += @LeftExpr.Eval()
+		res += ":"
+		if @MiddleExpr != nil => res += @MiddleExpr.Eval()
+		if @RightExpr != nil => res += ":" + @RightExpr.Eval()
+		return res + "]"
+
+struct TypeAssertion
+	*Node
+	Type *Type
+	Eval: string ->
+		return ".(" + @Type.Eval() + ")"
+
+struct Arguments
+	*Node
+	Expressions *ExpressionList
+	Type        *Type
+	IsVariadic  bool
+	Eval: string ->
+		res := "("
+		if @Type != nil
+			res += @Type.Eval()
+			if @Expressions != nil
+				res += ","
+		if @Expressions != nil => res += @Expressions.Eval()
+		if @IsVariadic         => res += "..."
+		return res + ")"
+
+struct MethodExpr
+	*Node
+	ReceiverType *ReceiverType
+	Name         string
+	Eval: string ->
+		return @ReceiverType.Eval() + "." + @Name
+
+struct ReceiverType
+	*Node
+	Type         string
+	IsPointer    bool
+	ReceiverType *ReceiverType
+	Eval: string ->
+		res := ""
+		if @ReceiverType != nil => return "(" + @ReceiverType.Eval() + ")"
+		res += @Type
+		if @IsPointer => res = "(*" + res + ")"
+		return res
+
+struct Expression
+	*Node
+	UnaryExpr       *UnaryExpr
+	FunctionLit     *FunctionLit
+	LeftExpression  *Expression
+	Op              string
+	RightExpression *Expression
+	Eval: string ->
+		if @UnaryExpr   != nil => return @UnaryExpr.Eval()
+		if @FunctionLit != nil => return @FunctionLit.Eval()
+		return @LeftExpression.Eval() + @Op + @RightExpression.Eval()
+
+struct UnaryExpr
+	*Node
+	PrimaryExpr *PrimaryExpr
+	Op          string
+	UnaryExpr   *UnaryExpr
+	Eval: string ->
+		if @PrimaryExpr != nil => return @PrimaryExpr.Eval()
+		return @Op + @UnaryExpr.Eval()
+
+struct Conversion
+	*Node
+	Type       *Type
+	Expression *Expression
+	Eval: string ->
+		return @Type.Eval() + "(" + @Expression.Eval() + ")"
+
+struct Interpret
+	*Node
+	Statement *Statement
+	TopLevel  *TopLevel
+	Eval: string ->
+		if @Statement != nil => return @Statement.Eval()
+		if @TopLevel != nil => return @TopLevel.Eval()
+		return ""

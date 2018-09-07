@@ -60,7 +60,9 @@ type FooTag struct {
 		// top_fn.og
 		`package main
 
-func oneLiner() { fmt.Println("a") }
+func oneLiner() {
+	fmt.Println("a")
+}
 func testBody() {
 	fmt.Println("a")
 }
@@ -262,8 +264,12 @@ type Test struct {
 	i int
 }
 
-func (this Test) f() Test { return this }
-func (this *Test) g() int { return this.i }
+func (this Test) f() Test {
+	return this
+}
+func (this *Test) g() int {
+	return this.i
+}
 `,
 		// internal_method.og
 		`package main
@@ -272,8 +278,12 @@ type Foo struct {
 	a int
 }
 
-func (this Foo) f()  { fmt.Println(this.a) }
-func (this *Foo) g() { fmt.Println(this.a) }
+func (this Foo) f() {
+	fmt.Println(this.a)
+}
+func (this *Foo) g() {
+	fmt.Println(this.a)
+}
 func main() {
 	foo := Foo{}
 	foo.f()
@@ -282,20 +292,32 @@ func main() {
 		// const.og
 		`package main
 
-const foo = "bar"
-const foo string = "bar"
+const (
+	foo = "bar"
+)
+const (
+	foo string = "bar"
+)
 `,
 		// var.og
 		`package main
 
-var foo string
-var foo = "bar"
-var foo string = "bar"
+var (
+	foo string
+)
+var (
+	foo = "bar"
+)
+var (
+	foo string = "bar"
+)
 `,
 		// map.og
 		`package main
 
-func someFunc(m map[string]string) map[string]string { return m }
+func someFunc(m map[string]string) map[string]string {
+	return m
+}
 func main() {
 	m := map[string]string{}
 }
@@ -303,7 +325,9 @@ func main() {
 		// chan.og
 		`package main
 
-func someFunc(c1 chan<- int, c2 <-chan int) chan int { 0 }
+func someFunc(c1 chan<- int, c2 <-chan int) chan int {
+	0
+}
 func main() {
 	c := make(chan string)
 	c := make(chan<- string)
@@ -316,7 +340,6 @@ func main() {
 func main() {
 here:
 	toto()
-
 	for i := range foo {
 		continue
 		continue label
@@ -366,10 +389,18 @@ func main() {
 		`package main
 
 func main() {
-	a := func() { fmt.Println(1) }
-	a := func() int { return 1 }
-	b := func(a int) { fmt.Println(a) }
-	c := func(a int) int { return a }
+	a := func() {
+		fmt.Println(1)
+	}
+	a := func() int {
+		return 1
+	}
+	b := func(a int) {
+		fmt.Println(a)
+	}
+	c := func(a int) int {
+		return a
+	}
 }
 `,
 		// func_type.og
@@ -379,7 +410,9 @@ func a(arg func() int) {
 	arg()
 }
 func main() {
-	a(func() int { 2 })
+	a(func() int {
+		2
+	})
 }
 `,
 		// rest.og

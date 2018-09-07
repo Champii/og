@@ -20,7 +20,9 @@ type OgConfig struct {
 	OutPath string
 }
 
-var config OgConfig
+var (
+	config OgConfig
+)
 
 func Compile(config_ OgConfig) error {
 	config = config_
@@ -86,7 +88,6 @@ func writeFile(filePath string, data string) {
 	}
 	newPath := strings.Replace(path.Join(config.OutPath, filePath), ".og", ".go", 1)
 	os.MkdirAll(filepath.Dir(newPath), os.ModePerm)
-
 	ioutil.WriteFile(newPath, []byte(data), os.ModePerm)
 	if config.Verbose == true {
 		fmt.Println("->", newPath)
@@ -99,6 +100,7 @@ func format(str string) (string, error) {
 	stdin.Close()
 	final, err := cmd.CombinedOutput()
 	if err != nil {
+		fmt.Println(string(final))
 		return "", err
 	}
 	return string(final), nil
@@ -130,8 +132,8 @@ func execCode(str string) {
   func main() {
   fmt.Print(` + str[:len(str)-1] + `)
   }`
-	ioutil.WriteFile("/tmp/file.go", []byte(skelton), os.ModePerm)
-	cmd := exec.Command("go", "run", "/tmp/file.go")
+	ioutil.WriteFile("/tmp/main.go", []byte(skelton), os.ModePerm)
+	cmd := exec.Command("go", "run", "/tmp/main.go")
 	stdin, _ := cmd.StdinPipe()
 	stdin.Write([]byte(str))
 	stdin.Close()

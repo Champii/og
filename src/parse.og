@@ -5,6 +5,7 @@ import
   fmt
   strings
   strconv
+  "github.com/champii/og/lib/ast"
   "github.com/champii/og/lib/translator"
   "github.com/champii/og/parser"
   "github.com/antlr/antlr4/runtime/Go/antlr"
@@ -20,18 +21,18 @@ var green = color.New(color.FgHiGreen).SprintfFunc()
 struct ErrorHandler
   *antlr.DefaultErrorStrategy
 
+  // tok := p.GetCurrentToken().GetText()
+
+  // fmt.Print("TOK: '", tok, "'\n")
+
+  // if tok == "(" || tok == ")" || tok == "{" || tok == "}"
+  //   p.Consume()
+  //   @DefaultErrorStrategy.Recover(p, r)
+  //   // fmt.Println("KIK")
+  // else
+
   Recover(p antlr.Parser, r antlr.RecognitionException) ->
-    // tok := p.GetCurrentToken().GetText()
-
-    // fmt.Print("TOK: '", tok, "'\n")
-
-    // if tok == "(" || tok == ")" || tok == "{" || tok == "}"
-    //   p.Consume()
-    //   @DefaultErrorStrategy.Recover(p, r)
-    //   // fmt.Println("KIK")
-    // else
     os.Exit(1)
-
 
 NewErrorHandler: *ErrorHandler ->
   return &ErrorHandler
@@ -80,9 +81,9 @@ Parse(filePath, str string): string ->
 
   t := new(translator.OgVisitor)
 
-  final := t.VisitSourceFile(res.(*parser.SourceFileContext), t)
+  final := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile).Eval()
 
-  return final.(string)
+  return final
 
 ParseInterpret(filePath, str string): string ->
   p := parserInit(filePath, str)
@@ -91,6 +92,6 @@ ParseInterpret(filePath, str string): string ->
 
   t := new(translator.OgVisitor)
 
-  final := t.VisitInterp(res.(*parser.InterpContext), t)
+  final := t.VisitInterp(res.(*parser.InterpContext), t).(*ast.Interpret).Eval()
 
-  return final.(string)
+  return final

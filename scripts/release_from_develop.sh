@@ -63,6 +63,10 @@ git tag -a $NEW_TAG -m "$NEW_TAG"
 
 git push --tags
 
+echo "Update the global Og binary to $NEW_TAG"
+
+go get github.com/champii/og
+
 git checkout develop
 
 echo "Release of $NEW_TAG OK"

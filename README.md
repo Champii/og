@@ -48,7 +48,7 @@ The main goal is to simplify the syntax, to borrow some concepts from Livescript
 go get -u github.com/champii/og
 
 # If your `$PATH` includes `$GOPATH/bin` (and it should)
-og --version
+og --version # or `og -V`
 ```
 
 # Basics
@@ -223,6 +223,7 @@ og exemples/import.og
 # TODO
 
 ## Golang basics
+- [ ] Perfs !!
 - [ ] Ternary expression
 - [ ] Make tests truly executable
 - [ ] VSCode extension
@@ -230,6 +231,7 @@ og exemples/import.og
 - [ ] Better error context
 
 ## Syntaxic Sugar
+- [ ] Suffix keywork `return foo if bar`, `foo += i for i in array`
 - [ ] Auto setup package name with folder name if not specified
 - [ ] `const` and `var` multiple consecutive declaration
 - [ ] Empty statement (need to avoid skiping empty lines in preproc)
@@ -248,7 +250,6 @@ og exemples/import.og
 - [ ] Pattern matching
 - [ ] Function currying
 - [ ] Function shorthand `(+ 10)`
-- [ ] Perfs
 - [ ] Generics
 - [ ] Import pattern matching
 

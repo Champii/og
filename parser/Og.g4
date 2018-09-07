@@ -512,7 +512,7 @@ forClause
 
 //RangeClause = [ ExpressionList "=" | IdentifierList ":=" ] "range" Expression .
 rangeClause
-    : (expressionList | identifierList ) 'in' expression
+    : (identifierList | expressionList ) 'in' expression
     ;
 
 //GoStmt = "go" Expression .
@@ -598,7 +598,6 @@ methodSpec
     | typeName
     | IDENTIFIER parameters
     ;
-
 
 //FunctionType   = "func" Signature .
 //Signature      = Parameters [ Result ] .
