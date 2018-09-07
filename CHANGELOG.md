@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.4.1: Current version
+## DEV: Current version
+
+## v0.4.1
   - Abstract AST walker and a derived AST Printer
   - `-a` CLI option to show the AST
   - Disambiguation of `for`, `if` and `else if` statements with a `;` before the block
