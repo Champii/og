@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.4.0: Current version
+## DEV: Current version
+
+## v0.4.0
   - New AST system for more flexibility
   - Switched to SLL prediction mode to greatly improve performances
   - Multiline `type`, `const` and `var` declaration
