@@ -15,6 +15,8 @@ type OgConfig struct {
 	Blocks  bool
 	Dirty   bool
 	Print   bool
+	Compile bool
+	Ast     bool
 	Verbose bool
 	Paths   []string
 	OutPath string
@@ -77,7 +79,7 @@ func ProcessFile(filePath string, data string, isInterpret bool) (string, error)
 func finalizeFile(filePath string, data string) {
 	if config.Print == true {
 		fmt.Println(data)
-	} else {
+	} else if config.Ast != true && config.Print != true && config.Dirty != true && config.Blocks != true {
 		writeFile(filePath, data)
 	}
 }
@@ -100,7 +102,6 @@ func format(str string) (string, error) {
 	stdin.Close()
 	final, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println(string(final))
 		return "", err
 	}
 	return string(final), nil

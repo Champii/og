@@ -79,12 +79,18 @@ parserInit(filePath, str string): *parser.OgParser ->
 Parse(filePath, str string): string ->
   p := parserInit(filePath, str)
 
-
   res := p.SourceFile()
 
   t := new(translator.OgVisitor)
 
-  final := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile).Eval()
+  tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
+
+  tree = ast.RunDesugar(tree).(*ast.SourceFile)
+
+  if config.Ast == true
+    ast.Print(tree)
+
+  final := tree.Eval()
 
   return final
 

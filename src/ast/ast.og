@@ -2,30 +2,6 @@
 
 import
 	strings
-	"github.com/antlr/antlr4/runtime/Go/antlr"
-
-interface INode
-	IsNode: bool
-
-struct Node
-	start    int
-	stop     int
-
-	Text     string
-	out      string
-
-	parent   *Node
-	children []*Node
-	ctx      antlr.RuleContext
-
-	// VisitChildren ->
-	IsNode: bool -> return true
-	Eval: string -> return ""
-
-
-NewNode(ctx antlr.RuleContext): *Node ->
-	return &Node
-		Text: ctx.GetText()
 
 struct SourceFile
 	*Node

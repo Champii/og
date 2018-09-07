@@ -70,7 +70,7 @@ func parserInit(filePath, str string) *parser.OgParser {
 	stream := antlr.NewCommonTokenStream(lexer, 0)
 	p := parser.NewOgParser(stream)
 	p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
-	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+	p.RemoveErrorListeners()
 	p.AddErrorListener(NewErrorListener(filePath, str))
 	p.SetErrorHandler(NewErrorHandler())
 	return p
@@ -79,7 +79,12 @@ func Parse(filePath, str string) string {
 	p := parserInit(filePath, str)
 	res := p.SourceFile()
 	t := new(translator.OgVisitor)
-	final := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile).Eval()
+	tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
+	tree = ast.RunDesugar(tree).(*ast.SourceFile)
+	if config.Ast == true {
+		ast.Print(tree)
+	}
+	final := tree.Eval()
 	return final
 }
 func ParseInterpret(filePath, str string) string {

@@ -17,6 +17,7 @@ func parseArgs(done func(og.OgConfig)) {
 			Blocks:  c.Bool("b"),
 			Dirty:   c.Bool("d"),
 			Print:   c.Bool("p"),
+			Ast:     c.Bool("a"),
 			Verbose: c.Bool("v"),
 			OutPath: c.String("o"),
 			Paths:   []string(c.Args()),
@@ -37,7 +38,10 @@ func setupCli() *cli.App {
 USAGE:
 	{{if .VisibleFlags}}{{.HelpName}} [options] [folders...|files...]
 
-	If run without any arguments, a small interpreter is spawn{{end}}
+	By default it compiles the given files.
+	If a Print argument (-p, -b, -d, -a) is given, NO COMPILATION is done.
+
+	If run without any arguments, a small interpreter is spawn (ALPHA){{end}}
 	{{if len .Authors}}
 AUTHOR:
 	{{range .Authors}}{{ . }}{{end}}
@@ -75,20 +79,24 @@ COPYRIGHT:
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "o, out",
-			Usage: "Output directory. If input is recursive folder, the tree is recreated",
+			Usage: "Output `directory`. If input is recursive folder, the tree is recreated",
 			Value: "./",
 		},
 		cli.BoolFlag{
 			Name:  "p, print",
-			Usage: "Print only to stdout. No files created",
+			Usage: "Print the file",
 		},
 		cli.BoolFlag{
 			Name:  "d, dirty",
-			Usage: "Don't use 'go fmt'",
+			Usage: "Print the file before going through 'go fmt'",
 		},
 		cli.BoolFlag{
 			Name:  "b, blocks",
-			Usage: "Get only the generated blocks from indent. No compilation to go.",
+			Usage: "Print the file after it goes to preprocessor. Shows only block-based indentation",
+		},
+		cli.BoolFlag{
+			Name:  "a, ast",
+			Usage: "Print the generated AST",
 		},
 		cli.BoolFlag{
 			Name:  "v, verbose",

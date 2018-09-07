@@ -427,7 +427,7 @@ deferStmt
 //IfStmt = "if" [ SimpleStmt ";" ] Expression Block [ "else" ( IfStmt | Block ) ] .
 ifStmt
     // Probable perf problem here
-    : 'if' (simpleStmt ';')? expression ( ('=>' statement eos) | block) ( 'else' ( ifStmt | ( ('=>' statement eos) | block ) ) )?
+    : 'if' (simpleStmt ';')? expression ( ('=>' statement eos) | ';' block) ( 'else' ( ifStmt | ( ('=>' statement eos) | block ) ) )?
     ;
 
 //SwitchStmt = ExprSwitchStmt | TypeSwitchStmt .

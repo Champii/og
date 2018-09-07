@@ -134,19 +134,23 @@ NAME:
 USAGE:
   og [options] [folders...|files...]
 
-  If run without any arguments, a small interpreter is spawn
+  By default it compiles the given files.
+  If a Print argument (-p, -b, -d, -a) is given, NO COMPILATION is done.
+
+  If run without any arguments, a small interpreter is spawn (ALPHA)
 
 VERSION:
   DEV
 
 OPTIONS:
-  -o value, --out value  Output directory. If input is recursive folder, the tree is recreated (default: "./")
-  -p, --print            Print only to stdout. No files created
-  -d, --dirty            Don't use 'go fmt'
-  -b, --blocks           Get only the generated blocks from indent. No compilation to go.
-  -v, --verbose          Show the filenames
-  -h, --help             Print help
-  -V, --version          Print version
+  -o directory, --out directory  Output directory. If input is recursive folder, the tree is recreated (default: "./")
+  -p, --print                    Print the file
+  -d, --dirty                    Print the file before going through 'go fmt'
+  -b, --blocks                   Print the file after it goes to preprocessor. Shows only block-based indentation
+  -a, --ast                      Print the generated AST
+  -v, --verbose                  Show the filenames
+  -h, --help                     Print help
+  -V, --version                  Print version
 ```
 
 ### Interpreter (ALPHA)
@@ -233,9 +237,6 @@ og exemples/import.og
 ## Syntaxic Sugar
 - [ ] Suffix keywork `return foo if bar`, `foo += i for i in array`
 - [ ] Auto setup package name with folder name if not specified
-- [ ] `const` and `var` multiple consecutive declaration
-- [ ] Empty statement (need to avoid skiping empty lines in preproc)
-- [ ] Empty Function body
 - [ ] OneLiner if/for: `if a => 1`, `for b => b--`
 - [ ] Returnable and assignable statements (if, for, ...)
 - [ ] Auto return for last statement in a block

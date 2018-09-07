@@ -1,0 +1,49 @@
+!ast
+
+import
+	reflect
+
+struct AstWalker
+	type_ interface
+
+	*callDelegate(name string, arg reflect.Value) ->
+		method := reflect.ValueOf(@type_).MethodByName(name)
+
+		if method.IsValid()
+			method.Call([]reflect.Value{arg})
+
+	*Walk(ast INode): INode ->
+		val := reflect.ValueOf(ast).Elem()
+
+		for i := 0; i < val.NumField(); i++
+			valueField := val.Field(i)
+			typeField := val.Type().Field(i)
+
+			valueKind := valueField.Kind()
+
+			if valueKind == reflect.String || valueKind == reflect.Bool || typeField.Name == "Node"
+				continue
+
+			if valueKind == reflect.Slice || false
+				for i := 0; i < valueField.Len(); i++
+					if valueField.Index(i).Kind() == reflect.String && true
+						continue
+
+					@Walk(valueField.Index(i).Interface().(INode))
+
+				continue
+
+			if valueField.IsNil()
+				continue
+
+			name := reflect.TypeOf(ast).String()[5:]
+
+			@callDelegate("Before", valueField)
+			@callDelegate("Each", valueField)
+			@callDelegate(name, valueField)
+
+			@Walk(valueField.Interface().(INode))
+
+			@callDelegate("After", valueField)
+
+		return ast

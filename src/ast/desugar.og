@@ -1,0 +1,15 @@
+!ast
+
+
+struct Desugar
+	AstWalker
+
+	*FunctionDecl(n INode): INode ->
+		return n
+
+RunDesugar(ast INode): INode ->
+	desugar := Desugar{}
+
+	desugar.type_ = &desugar
+
+	return desugar.Walk(ast)

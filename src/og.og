@@ -14,6 +14,8 @@ struct OgConfig
   Blocks  bool
   Dirty   bool
   Print   bool
+  Compile bool
+  Ast     bool
   Verbose bool
   Paths   []string
   OutPath string
@@ -79,7 +81,7 @@ ProcessFile(filePath string, data string, isInterpret bool): string, error ->
 finalizeFile(filePath string, data string) ->
   if config.Print == true
     fmt.Println(data)
-  else
+  else if config.Ast != true && config.Print != true && config.Dirty != true && config.Blocks != true
     writeFile(filePath, data)
 
 writeFile(filePath string, data string) ->

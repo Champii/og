@@ -29,8 +29,16 @@ Preproc(str string): string ->
     //   continue
     indent := indentCount(lines[i])
 
+    token := "=>"
+
     // SEMI-COLUMN
     if len(lines[i]) > indent + 4 && lines[i][indent:indent+4] == "for "
+      lines[i] += ";"
+
+    if len(lines[i]) > indent + 3 && lines[i][indent:indent+3] == "if " && !strings.Contains(lines[i], token)
+      lines[i] += ";"
+
+    if len(lines[i]) > indent + 5 && lines[i][indent:indent+5] == "else " && !strings.Contains(lines[i], token)
       lines[i] += ";"
 
 

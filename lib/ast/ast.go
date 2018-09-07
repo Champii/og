@@ -1,32 +1,8 @@
 package ast
 
 import (
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"strings"
 )
-
-type INode interface {
-	IsNode() bool
-}
-type Node struct {
-	start    int
-	stop     int
-	Text     string
-	out      string
-	parent   *Node
-	children []*Node
-	ctx      antlr.RuleContext
-}
-
-func (this Node) IsNode() bool {
-	return true
-}
-func (this Node) Eval() string {
-	return ""
-}
-func NewNode(ctx antlr.RuleContext) *Node {
-	return &Node{Text: ctx.GetText()}
-}
 
 type SourceFile struct {
 	*Node

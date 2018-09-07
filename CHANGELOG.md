@@ -1,6 +1,15 @@
 # Changelog
 
 ## DEV: Current version
+  - Abstract AST walker and a derived AST Printer
+  - `-a` CLI option to show the AST
+  - Disambiguation of `for`, `if` and `else if` statements with a `;` before the block
+  - Empty statement and empty onliner-function body with `;`
+    ```go
+      foobar -> ;
+
+      if foo == bar => ;
+    ```
 
 ## v0.4.0
   - New AST system for more flexibility

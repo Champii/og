@@ -25,7 +25,14 @@ func Preproc(str string) string {
 	indentSize := 0
 	for i := range lines {
 		indent := indentCount(lines[i])
+		token := "=>"
 		if len(lines[i]) > indent+4 && lines[i][indent:indent+4] == "for " {
+			lines[i] += ";"
+		}
+		if len(lines[i]) > indent+3 && lines[i][indent:indent+3] == "if " && !strings.Contains(lines[i], token) {
+			lines[i] += ";"
+		}
+		if len(lines[i]) > indent+5 && lines[i][indent:indent+5] == "else " && !strings.Contains(lines[i], token) {
 			lines[i] += ";"
 		}
 		if indentSize == 0 && indent != lastIndent {
