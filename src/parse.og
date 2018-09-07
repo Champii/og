@@ -69,8 +69,8 @@ parserInit(filePath, str string): *parser.OgParser ->
 
   p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
 
-  p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-  // p.RemoveErrorListeners()
+  // p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+  p.RemoveErrorListeners()
   p.AddErrorListener(NewErrorListener(filePath, str))
   p.SetErrorHandler(NewErrorHandler())
 

@@ -10,6 +10,10 @@
         bar = 2
       )
     ```
+  - Disambiguation character `~` for `label` statements
+    ```go
+      ~myLabel: something()
+    ```
 
 ## v0.3.0
   - Allow single line If statement
