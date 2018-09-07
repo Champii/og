@@ -1,6 +1,6 @@
 Og-Lang
 ===
-### *DEV* ([CHANGELOG](https://github.com/champii/og/tree/master/CHANGELOG.md))
+### *v0.4.0* ([CHANGELOG](https://github.com/champii/og/tree/master/CHANGELOG.md))
 
 <table>
   <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em></td></tr>
@@ -137,7 +137,7 @@ USAGE:
   If run without any arguments, a small interpreter is spawn
 
 VERSION:
-  DEV
+  v0.4.0
 
 OPTIONS:
   -o value, --out value  Output directory. If input is recursive folder, the tree is recreated (default: "./")
