@@ -1,11 +1,11 @@
-Og-Lang
+Og-Lang (Optimistic Golang)
 ===
 ### *DEV* ([CHANGELOG](https://github.com/champii/og/tree/master/CHANGELOG.md))
 
 <table>
   <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em></td></tr>
   <tr><td><b>"The Code like it should be. 5/7"</b></td><td>- <em>Mahatma Gandhi</em></td></tr>
-  <tr><td><b>"...[Recursive Facepalm]..."</b></td> <td>- <em>Google</em></td></tr>
+  <tr><td><b>"(..Recursive Facepalm..)"</b></td> <td>- <em>Google</em></td></tr>
 </table>
 
 # Index
@@ -23,16 +23,22 @@ Og-Lang
 
 # Intro
 
-To be pronounced `Oh-Jee`.
+<h3> Disclamer: This software is in its early stage.<br/>
+New features come fast, at the cost of breaking things often.<br />
+Testers and Contributors are most welcome
+</h3>
+
+
+`Og` is to be pronounced `Oh-Jee` and stands for `Optimistic Golang`
 
 `Oglang` is an indentation based language mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of `GoLang`.
+
 
 ### Bootstraped Language
 
 `Oglang` is written in itself. It is said to be a 'Bootstraped' language. In fact, `Oglang` needs the previous release of itself to build itself.
 
-See the [Src](https://github.com/champii/og/tree/master/src) folder for `Oglang` source.
-
+See the [Src](https://github.com/champii/og/tree/master/src) folder for `Oglang` source.  
 And the [Lib](https://github.com/champii/og/tree/master/lib) folder for the compiled one (in Golang).
 
 Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
@@ -53,10 +59,9 @@ og --version # or `og -V`
 
 # Quick Overview
 
-This is an quick overview of how `Oglang` looks like actualy. 
-
 ### [Full overview here](https://github.com/champii/og/tree/master/docs/overview.md) with compiled comparison
 
+This is an quick overview of how `Oglang` looks like actualy. 
 
 See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder or the [Src](https://github.com/champii/og/tree/master/src) folder for more exemples.
 
@@ -182,6 +187,8 @@ The `-b` (`--block`) option prints the output of the preprocessor who's in charg
 
 # Build
 
+### The current build time of the project is around 18s for all sources files with `og src` alone, and around 60s for full rebootstrap with `make re` (That bootstraps from old version then rebootstraps from itself, with `go build` and `go test` each time). Tests take around 5s to pass. Need better perfs.
+
 Here is the procedure to regenerate the parser from the grammar if you want to make changes to it.
 
 If you just want to (re)build the binary, you can call `make build` or just `go build` (needs a previously generated parser from grammar. See below)
@@ -193,17 +200,16 @@ You will need `Java`, the Antlr4 library is in `./parser/antlr4-4.7.1-SNAPSHOT-c
 go get -u github.com/champii/og
 cd $GOPATH/src/github.com/champii/og
 
-# This needs java (see above)
-# As it will generate the grammar,
-# Compile the existing sources,
-# Regenerate the go sources from og,
-# Recompile the new go sources to be sure
+# This will regenerate the grammar,
+# Compile the existing sources from the previous Og,
 # And run the tests.
+# Needs the last official `og` binary version at global scope.
 make
 
-# Needs the last official `og` binary version at global scope.
-# It recompiles og from the previous global version
-# Handy in case of mistake in the source or for release
+# It cleans the `lib` folder,
+# Then compiles og from the previous global version
+# Then recomiles it from itself
+# And run the tests
 make re
 
 # Simple exemple

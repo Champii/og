@@ -70,9 +70,10 @@ func parserInit(filePath, str string) *parser.OgParser {
 	stream := antlr.NewCommonTokenStream(lexer, 0)
 	p := parser.NewOgParser(stream)
 	p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
+	p.SetErrorHandler(NewErrorHandler())
 	p.RemoveErrorListeners()
 	p.AddErrorListener(NewErrorListener(filePath, str))
-	p.SetErrorHandler(NewErrorHandler())
+	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 	return p
 }
 func Parse(filePath, str string) string {

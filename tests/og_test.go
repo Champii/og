@@ -526,3 +526,20 @@ func voila() int {
 		}
 	}
 }
+
+var res = ""
+
+func BenchmarkMain8(b *testing.B) {
+	test := `!og
+main ->
+	if true => 1
+	else    => 2
+`
+	var r = ""
+
+	for i := 0; i < b.N; i++ {
+		r, _ = og.ProcessFile("STDIN", string(test), false)
+	}
+
+	res = r
+}

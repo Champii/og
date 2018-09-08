@@ -54,12 +54,11 @@ type ImportSpec struct {
 }
 
 func (this ImportSpec) Eval() string {
-	res := ""
 	if len(this.Alias) > 0 {
-		res += this.Alias + " "
+		return this.Alias + " " + this.Path
+	} else {
+		return this.Path
 	}
-	res += this.Path
-	return res
 }
 
 type TopLevel struct {
@@ -72,14 +71,11 @@ type TopLevel struct {
 func (this TopLevel) Eval() string {
 	if this.Declaration != nil {
 		return this.Declaration.Eval()
-	}
-	if this.FunctionDecl != nil {
+	} else if this.FunctionDecl != nil {
 		return this.FunctionDecl.Eval()
-	}
-	if this.MethodDecl != nil {
+	} else {
 		return this.MethodDecl.Eval()
 	}
-	return ""
 }
 
 type Declaration struct {
@@ -92,14 +88,11 @@ type Declaration struct {
 func (this Declaration) Eval() string {
 	if this.ConstDecl != nil {
 		return this.ConstDecl.Eval()
-	}
-	if this.TypeDecl != nil {
+	} else if this.TypeDecl != nil {
 		return this.TypeDecl.Eval()
-	}
-	if this.VarDecl != nil {
+	} else {
 		return this.VarDecl.Eval()
 	}
-	return ""
 }
 
 type ConstDecl struct {
@@ -162,8 +155,7 @@ func (this Parameters) Eval() string {
 	if len(this.List) > 0 {
 		res = res[:len(res)-1]
 	}
-	res += ")"
-	return res
+	return res + ")"
 }
 
 type TypeDecl struct {
@@ -338,50 +330,35 @@ type Statement struct {
 func (this Statement) Eval() string {
 	if this.SimpleStmt != nil {
 		return this.SimpleStmt.Eval()
-	}
-	if this.LabeledStmt != nil {
+	} else if this.LabeledStmt != nil {
 		return this.LabeledStmt.Eval()
-	}
-	if this.GoStmt != nil {
+	} else if this.GoStmt != nil {
 		return this.GoStmt.Eval()
-	}
-	if this.ReturnStmt != nil {
+	} else if this.ReturnStmt != nil {
 		return this.ReturnStmt.Eval()
-	}
-	if this.BreakStmt != nil {
+	} else if this.BreakStmt != nil {
 		return this.BreakStmt.Eval()
-	}
-	if this.ContinueStmt != nil {
+	} else if this.ContinueStmt != nil {
 		return this.ContinueStmt.Eval()
-	}
-	if this.GotoStmt != nil {
+	} else if this.GotoStmt != nil {
 		return this.GotoStmt.Eval()
-	}
-	if this.FallthroughStmt != nil {
+	} else if this.FallthroughStmt != nil {
 		return this.FallthroughStmt.Eval()
-	}
-	if this.IfStmt != nil {
+	} else if this.IfStmt != nil {
 		return this.IfStmt.Eval()
-	}
-	if this.SwitchStmt != nil {
+	} else if this.SwitchStmt != nil {
 		return this.SwitchStmt.Eval()
-	}
-	if this.SelectStmt != nil {
+	} else if this.SelectStmt != nil {
 		return this.SelectStmt.Eval()
-	}
-	if this.ForStmt != nil {
+	} else if this.ForStmt != nil {
 		return this.ForStmt.Eval()
-	}
-	if this.Block != nil {
+	} else if this.Block != nil {
 		return this.Block.Eval()
-	}
-	if this.DeferStmt != nil {
+	} else if this.DeferStmt != nil {
 		return this.DeferStmt.Eval()
-	}
-	if this.Declaration != nil {
+	} else {
 		return this.Declaration.Eval()
 	}
-	return ""
 }
 
 type SimpleStmt struct {
@@ -397,23 +374,17 @@ type SimpleStmt struct {
 func (this SimpleStmt) Eval() string {
 	if this.SendStmt != nil {
 		return this.SendStmt.Eval()
-	}
-	if this.Expression != nil {
+	} else if this.Expression != nil {
 		return this.Expression.Eval()
-	}
-	if this.IncDecStmt != nil {
+	} else if this.IncDecStmt != nil {
 		return this.IncDecStmt.Eval()
-	}
-	if this.ShortVarDecl != nil {
+	} else if this.ShortVarDecl != nil {
 		return this.ShortVarDecl.Eval()
-	}
-	if this.Assignment != nil {
+	} else if this.Assignment != nil {
 		return this.Assignment.Eval()
-	}
-	if this.EmptyStmt {
+	} else {
 		return "\n"
 	}
-	return ""
 }
 
 type SendStmt struct {
@@ -435,11 +406,10 @@ type IncDecStmt struct {
 func (this IncDecStmt) Eval() string {
 	res := this.Expression.Eval()
 	if this.IsInc {
-		res += "++"
+		return res + "++"
 	} else {
-		res += "--"
+		return res + "--"
 	}
-	return res
 }
 
 type Assignment struct {

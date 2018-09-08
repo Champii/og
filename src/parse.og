@@ -69,28 +69,38 @@ parserInit(filePath, str string): *parser.OgParser ->
 
   p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
 
-  // p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+  p.SetErrorHandler(NewErrorHandler())
+
   p.RemoveErrorListeners()
   p.AddErrorListener(NewErrorListener(filePath, str))
-  p.SetErrorHandler(NewErrorHandler())
+  p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+  // p.SetErrorHandler(antlr.NewBailErrorStrategy())
 
   p
 
 Parse(filePath, str string): string ->
   p := parserInit(filePath, str)
 
+  // fmt.Println("Parser start")
   res := p.SourceFile()
+  // fmt.Println("Parser stop")
 
   t := new(translator.OgVisitor)
 
+  // fmt.Println("Visitor start")
   tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
+  // fmt.Println("Visitor stop")
 
   if config.Ast
     ast.Print(tree)
 
+  // fmt.Println("Desugar start")
   tree = ast.RunDesugar(tree).(*ast.SourceFile)
+  // fmt.Println("Desugar stop")
 
+  // fmt.Println("Eval start")
   final := tree.Eval()
+  // fmt.Println("Eval stop")
 
   final
 

@@ -348,13 +348,8 @@ simpleStmt
     | incDecStmt
     | shortVarDecl
     | assignment
-    | expressionStmt
+    | expression
     | emptyStmt
-    ;
-
-//ExpressionStmt = Expression .
-expressionStmt
-    : expression
     ;
 
 //SendStmt = Channel "<-" Expression .
@@ -813,8 +808,8 @@ receiverType
 //UnaryExpr  = PrimaryExpr | unary_op UnaryExpr .
 
 expression
-    : unaryExpr
-    | expression ('||' | '&&' | '==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '|' | '^' | '*' | '/' | '%' | '<<' | '>>' | '&' | '&^') expression
+    : expression ('||' | '&&' | '==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '|' | '^' | '*' | '/' | '%' | '<<' | '>>' | '&' | '&^') expression
+    | unaryExpr
     ;
 
 unaryExpr
@@ -1393,6 +1388,6 @@ LINE_COMMENT
     :   '//' ~[\r\n]* -> skip
     ;
 
-// ErrorChar
-//     : .
-//     ;
+ErrorChar
+    : .
+    ;

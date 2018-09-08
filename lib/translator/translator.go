@@ -314,8 +314,8 @@ func (this *OgVisitor) VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate a
 	if ctx.SendStmt() != nil {
 		node.SendStmt = this.VisitSendStmt(ctx.SendStmt().(*parser.SendStmtContext), delegate).(*SendStmt)
 	}
-	if ctx.ExpressionStmt() != nil {
-		node.Expression = this.VisitExpressionStmt(ctx.ExpressionStmt().(*parser.ExpressionStmtContext), delegate).(*Expression)
+	if ctx.Expression() != nil {
+		node.Expression = this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 	}
 	if ctx.IncDecStmt() != nil {
 		node.IncDecStmt = this.VisitIncDecStmt(ctx.IncDecStmt().(*parser.IncDecStmtContext), delegate).(*IncDecStmt)
@@ -330,9 +330,6 @@ func (this *OgVisitor) VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate a
 		node.EmptyStmt = true
 	}
 	return node
-}
-func (this *OgVisitor) VisitExpressionStmt(ctx *parser.ExpressionStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 }
 func (this *OgVisitor) VisitSendStmt(ctx *parser.SendStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &SendStmt{

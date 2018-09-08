@@ -1,5 +1,21 @@
 # Overview
 
+## Index
+
+1. [Global](#global)
+2. [Detail](#detail)
+    1. [Package](#package)
+    1. [Import](#import)
+    1. [Top Level Function](#top-level-function)
+    1. [If / Else](#if-/-else)
+    1. [For](#for)
+    1. [Goroutine](#goroutine)
+    1. [Slice](#slice)
+    1. [Swtch/Case](#switch/case)
+    1. [Select](#select)
+    1. [Struct](#struct)
+    1. [Interface](#interface)
+
 # Global
 
 ```go
@@ -395,7 +411,7 @@ go func() {
 }()
 ```
 
-## Slices
+## Slice
 
 #### Og
 

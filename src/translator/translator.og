@@ -349,8 +349,8 @@ struct OgVisitor
     if ctx.SendStmt() != nil
       node.SendStmt = @VisitSendStmt(ctx.SendStmt().(*parser.SendStmtContext), delegate).(*SendStmt)
 
-    if ctx.ExpressionStmt() != nil
-      node.Expression = @VisitExpressionStmt(ctx.ExpressionStmt().(*parser.ExpressionStmtContext), delegate).(*Expression)
+    if ctx.Expression() != nil
+      node.Expression = @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 
     if ctx.IncDecStmt() != nil
       node.IncDecStmt = @VisitIncDecStmt(ctx.IncDecStmt().(*parser.IncDecStmtContext), delegate).(*IncDecStmt)
@@ -366,8 +366,8 @@ struct OgVisitor
 
     node
 
-  VisitExpressionStmt(ctx *parser.ExpressionStmtContext, delegate antlr.ParseTreeVisitor): interface ->
-    @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
+  // VisitExpressionStmt(ctx *parser.ExpressionStmtContext, delegate antlr.ParseTreeVisitor): interface ->
+  //   @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 
   VisitSendStmt(ctx *parser.SendStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     &SendStmt

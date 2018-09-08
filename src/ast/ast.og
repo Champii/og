@@ -35,10 +35,8 @@ struct ImportSpec
 	Path  string
 	Alias string
 	Eval: string ->
-		res := ""
-		if len(@Alias) > 0 => res += @Alias + " "
-		res += @Path
-		res
+		if len(@Alias) > 0 => @Alias + " " + @Path
+		else               => @Path
 
 struct TopLevel
 	*Node
@@ -46,10 +44,9 @@ struct TopLevel
 	FunctionDecl *FunctionDecl
 	MethodDecl   *MethodDecl
 	Eval: string ->
-		if @Declaration  != nil => return @Declaration.Eval()
-		if @FunctionDecl != nil => return @FunctionDecl.Eval()
-		if @MethodDecl   != nil => return @MethodDecl.Eval()
-		""
+		if      @Declaration  != nil => @Declaration.Eval()
+		else if @FunctionDecl != nil => @FunctionDecl.Eval()
+		else                         => @MethodDecl.Eval()
 
 struct Declaration
 	*Node
@@ -57,10 +54,9 @@ struct Declaration
 	TypeDecl  *TypeDecl
 	VarDecl   *VarDecl
 	Eval: string ->
-		if @ConstDecl != nil => return @ConstDecl.Eval()
-		if @TypeDecl  != nil => return @TypeDecl.Eval()
-		if @VarDecl   != nil => return @VarDecl.Eval()
-		""
+		if      @ConstDecl != nil => @ConstDecl.Eval()
+		else if @TypeDecl  != nil => @TypeDecl.Eval()
+		else                      => @VarDecl.Eval()
 
 struct ConstDecl
 	*Node
@@ -102,8 +98,7 @@ struct Parameters
 			res += expr.Eval() + ","
 		if len(@List) > 0
 			res = res[:len(res)-1]
-		res += ")"
-		res
+		res + ")"
 
 struct TypeDecl
 	*Node
@@ -143,13 +138,13 @@ struct FunctionDecl
 
 struct Function
 	*Node
-	Signature        *Signature
-	Block            *Block
+	Signature *Signature
+	Block     *Block
 	Eval: string ->  @Signature.Eval() + @Block.Eval()
 
 struct MethodDecl
 	*Node
-	Receiver *Receiver
+	Receiver  *Receiver
 	Function  *Function
 	Signature *Signature
 	Eval: string ->
@@ -219,22 +214,21 @@ struct Statement
 	DeferStmt       *DeferStmt
 	Declaration     *Declaration
 	Eval: string ->
-		if @SimpleStmt      != nil => return @SimpleStmt.Eval()
-		if @LabeledStmt     != nil => return @LabeledStmt.Eval()
-		if @GoStmt          != nil => return @GoStmt.Eval()
-		if @ReturnStmt      != nil => return @ReturnStmt.Eval()
-		if @BreakStmt       != nil => return @BreakStmt.Eval()
-		if @ContinueStmt    != nil => return @ContinueStmt.Eval()
-		if @GotoStmt        != nil => return @GotoStmt.Eval()
-		if @FallthroughStmt != nil => return @FallthroughStmt.Eval()
-		if @IfStmt          != nil => return @IfStmt.Eval()
-		if @SwitchStmt      != nil => return @SwitchStmt.Eval()
-		if @SelectStmt      != nil => return @SelectStmt.Eval()
-		if @ForStmt         != nil => return @ForStmt.Eval()
-		if @Block           != nil => return @Block.Eval()
-		if @DeferStmt       != nil => return @DeferStmt.Eval()
-		if @Declaration     != nil => return @Declaration.Eval()
-		""
+		if      @SimpleStmt      != nil => @SimpleStmt.Eval()
+		else if @LabeledStmt     != nil => @LabeledStmt.Eval()
+		else if @GoStmt          != nil => @GoStmt.Eval()
+		else if @ReturnStmt      != nil => @ReturnStmt.Eval()
+		else if @BreakStmt       != nil => @BreakStmt.Eval()
+		else if @ContinueStmt    != nil => @ContinueStmt.Eval()
+		else if @GotoStmt        != nil => @GotoStmt.Eval()
+		else if @FallthroughStmt != nil => @FallthroughStmt.Eval()
+		else if @IfStmt          != nil => @IfStmt.Eval()
+		else if @SwitchStmt      != nil => @SwitchStmt.Eval()
+		else if @SelectStmt      != nil => @SelectStmt.Eval()
+		else if @ForStmt         != nil => @ForStmt.Eval()
+		else if @Block           != nil => @Block.Eval()
+		else if @DeferStmt       != nil => @DeferStmt.Eval()
+		else                            => @Declaration.Eval()
 
 struct SimpleStmt
 	*Node
@@ -245,13 +239,12 @@ struct SimpleStmt
 	Assignment     *Assignment
 	EmptyStmt      bool
 	Eval: string ->
-		if @SendStmt     != nil => return @SendStmt.Eval()
-		if @Expression   != nil => return @Expression.Eval()
-		if @IncDecStmt   != nil => return @IncDecStmt.Eval()
-		if @ShortVarDecl != nil => return @ShortVarDecl.Eval()
-		if @Assignment   != nil => return @Assignment.Eval()
-		if @EmptyStmt           => return "\n"
-		""
+		if      @SendStmt     != nil => @SendStmt.Eval()
+		else if @Expression   != nil => @Expression.Eval()
+		else if @IncDecStmt   != nil => @IncDecStmt.Eval()
+		else if @ShortVarDecl != nil => @ShortVarDecl.Eval()
+		else if @Assignment   != nil => @Assignment.Eval()
+		else                         => "\n"
 
 struct SendStmt
 	*Node
@@ -265,9 +258,8 @@ struct IncDecStmt
 	IsInc      bool
 	Eval: string ->
 		res := @Expression.Eval()
-		if @IsInc => res += "++"
-		else      => res += "--"
-		res
+		if @IsInc => res + "++"
+		else      => res + "--"
 
 struct Assignment
 	*Node
