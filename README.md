@@ -51,7 +51,7 @@ go get -u github.com/champii/og
 og --version # or `og -V`
 ```
 
-# Overview
+# Quick Overview
 
 This is an quick overview of how `Oglang` looks like actualy. 
 
