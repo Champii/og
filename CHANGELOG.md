@@ -1,6 +1,6 @@
 # Changelog
 
-## DEV: Current version
+## v0.5.0: Current version
   - Removed every non necessary terminal `return`
   - Makefile now compiles with the previous released version by default instead of the last compiled one. New rule `make new` that compiles itself with the last present `og`
   - Fix a bug on ParameterDecl that wanted a name for each type
