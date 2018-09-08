@@ -33,7 +33,12 @@ func (this *AstWalker) Walk(ast INode) INode {
 					continue
 				}
 				node.SetParent(ast)
+				name := valueField.Index(i).Type().String()[5:]
+				this.callDelegate("Before", valueField.Index(i))
+				this.callDelegate("Each", valueField.Index(i))
+				this.callDelegate(name, valueField.Index(i))
 				valueField.Index(i).Set(reflect.ValueOf(this.Walk(node)))
+				this.callDelegate("After", valueField.Index(i))
 			}
 			continue
 		}

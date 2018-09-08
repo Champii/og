@@ -241,6 +241,9 @@ func (this *OgVisitor) VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.P
 	if ctx.ExpressionList() != nil {
 		node.ExpressionList = this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
 	}
+	if ctx.Statement() != nil {
+		node.Statement = this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)
+	}
 	return node
 }
 func (this *OgVisitor) VisitBlock(ctx *parser.BlockContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -259,6 +262,9 @@ func (this *OgVisitor) VisitStatementList(ctx *parser.StatementListContext, dele
 }
 func (this *OgVisitor) VisitStatement(ctx *parser.StatementContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &Statement{Node: NewNode(ctx)}
+	if ctx.Declaration() != nil {
+		node.Declaration = this.VisitDeclaration(ctx.Declaration().(*parser.DeclarationContext), delegate).(*Declaration)
+	}
 	if ctx.SimpleStmt() != nil {
 		node.SimpleStmt = this.VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(*SimpleStmt)
 	}

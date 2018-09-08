@@ -228,7 +228,7 @@ og exemples/import.og
 # TODO
 
 ## Golang basics
-- [ ] Perfs !!
+- [ ] Perfs !! (More specific rules, reduce size and workload of Walkers, remove ambiguity in grammar)
 - [ ] Ternary expression
 - [ ] Named return
 - [ ] Make tests truly executable
@@ -255,6 +255,12 @@ og exemples/import.og
 - [ ] Import pattern matching
 - [ ] Language extensions ?
 - [ ] Don't recompile files that didn't change
+- [ ] Remove that `fn` keywork that diminish lisibility
+- [ ] Simple type checker to catch errors before Golang formater/compiler does
+- [ ] Fix bad perfs for nested struct instantiation 
+- [ ] Conditionnal expression like `res := getFirst() || getSecond()` that make `if` statements
+- [ ] Assignation and return for `for`, `switch`
+
 
 # Long term utopia
 

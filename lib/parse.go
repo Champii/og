@@ -80,12 +80,18 @@ func Parse(filePath, str string) string {
 	res := p.SourceFile()
 	t := new(translator.OgVisitor)
 	tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
-	tree = ast.RunDesugar(tree).(*ast.SourceFile)
 	if config.Ast {
 		ast.Print(tree)
 	}
+	tree = ast.RunDesugar(tree).(*ast.SourceFile)
 	final := tree.Eval()
 	return final
+}
+func ParseStmt(filePath, str string) *ast.Statement {
+	p := parserInit(filePath, str)
+	res := p.Statement()
+	t := new(translator.OgVisitor)
+	return t.VisitStatement(res.(*parser.StatementContext), t).(*ast.Statement)
 }
 func ParseInterpret(filePath, str string) string {
 	p := parserInit(filePath, str)

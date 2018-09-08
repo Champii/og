@@ -271,6 +271,9 @@ struct OgVisitor
     if ctx.ExpressionList() != nil
       node.ExpressionList = @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
 
+    if ctx.Statement() != nil
+      node.Statement = @VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)
+
     node
 
   VisitBlock(ctx *parser.BlockContext, delegate antlr.ParseTreeVisitor): interface ->
@@ -291,6 +294,9 @@ struct OgVisitor
   VisitStatement(ctx *parser.StatementContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Statement
       Node: NewNode(ctx)
+
+    if ctx.Declaration() != nil
+      node.Declaration = @VisitDeclaration(ctx.Declaration().(*parser.DeclarationContext), delegate).(*Declaration)
 
     if ctx.SimpleStmt() != nil
       node.SimpleStmt = @VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(*SimpleStmt)

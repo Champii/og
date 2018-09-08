@@ -4,9 +4,25 @@
   - Removed every non necessary terminal `return`
   - Makefile now compiles with the previous released version by default instead of the last compiled one. New rule `make new` that compiles itself with the last present `og`
   - Fix a bug on ParameterDecl that wanted a name for each type
+  - Auto return for `if` statement
+    ```go
+      someFunc: int ->
+        if true => 42
+        else    => 0
+    ```
+  - Assignation for `if` statement
+    ```go
+      var a int = if true
+        42
+      else
+        0
+    ```
 
 ## v0.4.2
   - Auto return for function with no return keyword (only for simple statement yet)
+    ```go
+      someFunc: int -> 2
+    ```
 
 ## v0.4.1
   - Abstract AST walker and a derived AST Printer

@@ -184,10 +184,12 @@ struct VarSpec
 	IdentifierList []string
 	Type           *Type
 	ExpressionList *ExpressionList
+	Statement      *Statement
 	Eval: string ->
 		res := strings.Join(@IdentifierList, ",")
 		if @Type           != nil => res += " " + @Type.Eval()
 		if @ExpressionList != nil => res += "=" + @ExpressionList.Eval()
+		if @Statement      != nil => res += "=" + @Statement.Eval()
 		res
 
 struct Block
@@ -215,6 +217,7 @@ struct Statement
 	ForStmt         *ForStmt
 	Block           *Block
 	DeferStmt       *DeferStmt
+	Declaration     *Declaration
 	Eval: string ->
 		if @SimpleStmt      != nil => return @SimpleStmt.Eval()
 		if @LabeledStmt     != nil => return @LabeledStmt.Eval()
@@ -230,6 +233,7 @@ struct Statement
 		if @ForStmt         != nil => return @ForStmt.Eval()
 		if @Block           != nil => return @Block.Eval()
 		if @DeferStmt       != nil => return @DeferStmt.Eval()
+		if @Declaration     != nil => return @Declaration.Eval()
 		""
 
 struct SimpleStmt

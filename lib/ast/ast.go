@@ -286,6 +286,7 @@ type VarSpec struct {
 	IdentifierList []string
 	Type           *Type
 	ExpressionList *ExpressionList
+	Statement      *Statement
 }
 
 func (this VarSpec) Eval() string {
@@ -295,6 +296,9 @@ func (this VarSpec) Eval() string {
 	}
 	if this.ExpressionList != nil {
 		res += "=" + this.ExpressionList.Eval()
+	}
+	if this.Statement != nil {
+		res += "=" + this.Statement.Eval()
 	}
 	return res
 }
@@ -328,6 +332,7 @@ type Statement struct {
 	ForStmt         *ForStmt
 	Block           *Block
 	DeferStmt       *DeferStmt
+	Declaration     *Declaration
 }
 
 func (this Statement) Eval() string {
@@ -372,6 +377,9 @@ func (this Statement) Eval() string {
 	}
 	if this.DeferStmt != nil {
 		return this.DeferStmt.Eval()
+	}
+	if this.Declaration != nil {
+		return this.Declaration.Eval()
 	}
 	return ""
 }

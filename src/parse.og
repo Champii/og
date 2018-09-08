@@ -85,14 +85,23 @@ Parse(filePath, str string): string ->
 
   tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
 
-  tree = ast.RunDesugar(tree).(*ast.SourceFile)
-
   if config.Ast
     ast.Print(tree)
+
+  tree = ast.RunDesugar(tree).(*ast.SourceFile)
 
   final := tree.Eval()
 
   final
+
+ParseStmt(filePath, str string): *ast.Statement ->
+  p := parserInit(filePath, str)
+
+  res := p.Statement()
+
+  t := new(translator.OgVisitor)
+
+  t.VisitStatement(res.(*parser.StatementContext), t).(*ast.Statement)
 
 ParseInterpret(filePath, str string): string ->
   p := parserInit(filePath, str)

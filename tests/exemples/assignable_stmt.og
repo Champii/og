@@ -1,5 +1,12 @@
-!main
+!og
 
-main ->
-  if b == 0 => 0
-  else => 1
+voila: int ->
+  var a int = if true
+    1
+  else
+    2
+
+  var b int = if true => 1 ; else => 2
+
+  if true => 1
+  else    => 2

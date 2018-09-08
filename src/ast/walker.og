@@ -1,6 +1,7 @@
 !ast
 
 import
+	// fmt
 	reflect
 
 struct AstWalker
@@ -35,8 +36,14 @@ struct AstWalker
 						continue
 
 					node.SetParent(ast)
+					name := valueField.Index(i).Type().String()[5:]
+
+					@callDelegate("Before", valueField.Index(i))
+					@callDelegate("Each", valueField.Index(i))
+					@callDelegate(name, valueField.Index(i))
 
 					valueField.Index(i).Set(reflect.ValueOf(@Walk(node)))
+					@callDelegate("After", valueField.Index(i))
 
 				continue
 

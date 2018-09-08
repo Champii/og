@@ -443,6 +443,35 @@ func main() {
 	x = x << 0xF0
 }
 `,
+		// assignable_stmt.og
+		`package og
+
+func voila() int {
+	var (
+		a int = func() int {
+			if true {
+				return 1
+			} else {
+				return 2
+			}
+		}()
+	)
+	var (
+		b int = func() int {
+			if true {
+				return 1
+			} else {
+				return 2
+			}
+		}()
+	)
+	if true {
+		return 1
+	} else {
+		return 2
+	}
+}
+`,
 	}
 
 	paths := []string{
@@ -476,6 +505,7 @@ func main() {
 		`func_type`,
 		`rest`,
 		`bitwise`,
+		`assignable_stmt`,
 	}
 
 	for i, p := range paths {

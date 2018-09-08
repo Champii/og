@@ -309,7 +309,7 @@ varDecl
     ;
 
 varSpec
-    : identifierList ( type_ ( '=' expressionList )? | '=' expressionList )
+    : identifierList ( type_ ( '=' statement )? | '=' expressionList )
     ;
 
 
