@@ -1,6 +1,6 @@
 # Changelog
 
-## DEV: Current version
+## v0.4.2: Current version
   - Auto return for function with no return keyword (only for simple statement yet)
 
 ## v0.4.1
