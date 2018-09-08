@@ -230,29 +230,31 @@ og exemples/import.og
 ## Golang basics
 - [ ] Perfs !!
 - [ ] Ternary expression
+- [ ] Named return
 - [ ] Make tests truly executable
 - [ ] VSCode extension
 - [ ] Adapt Golang tooling like `gofmt` or `golint`
 - [ ] Better error context
 
 ## Syntaxic Sugar
-- [ ] Suffix keywork `return foo if bar`, `foo += i for i in array`
-- [ ] Auto setup package name with folder name if not specified
-- [ ] OneLiner if/for: `if a => 1`, `for b => b--`
+- [ ] Suffix keyword `return foo if bar`, `foo += i for i in array`
+- [ ] OneLiner for: `for b => b--`
 - [ ] Returnable and assignable statements (if, for, ...)
 - [ ] Predicat recapture: `if a => that`
 - [ ] External type declaration like Haskell: `myFunc :: string -> Foo -> Bar`
 - [ ] Struct compostion ("Inheritance")
-- [ ] Existance test (if toto?) for non-nil value test
-- [ ] Auto add `default` to switch ?
+- [ ] Existance test (if foo? => bar) for non-nil value test
 - [ ] `pub` visibility instead of capitalizing
 - [ ] For with a range (for i in [0..10])
 - [ ] Error bubbling
 - [ ] Pattern matching
+- [ ] Auto setup package name with folder name if not specified
 - [ ] Function currying
 - [ ] Function shorthand `(+ 10)`
 - [ ] Generics
 - [ ] Import pattern matching
+- [ ] Language extensions ?
+- [ ] Don't recompile files that didn't change
 
 # Long term utopia
 

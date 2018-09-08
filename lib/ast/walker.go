@@ -28,7 +28,12 @@ func (this *AstWalker) Walk(ast INode) INode {
 				if valueField.Index(i).Kind() == reflect.String {
 					continue
 				}
-				this.Walk(valueField.Index(i).Interface().(INode))
+				node := valueField.Index(i).Interface().(INode)
+				if node == nil {
+					continue
+				}
+				node.SetParent(ast)
+				valueField.Index(i).Set(reflect.ValueOf(this.Walk(node)))
 			}
 			continue
 		}
@@ -36,10 +41,12 @@ func (this *AstWalker) Walk(ast INode) INode {
 			continue
 		}
 		name := valueField.Type().String()[5:]
+		node := valueField.Interface().(INode)
+		node.SetParent(ast)
 		this.callDelegate("Before", valueField)
 		this.callDelegate("Each", valueField)
 		this.callDelegate(name, valueField)
-		this.Walk(valueField.Interface().(INode))
+		val.Field(i).Set(reflect.ValueOf(this.Walk(node)))
 		this.callDelegate("After", valueField)
 	}
 	return ast

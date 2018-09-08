@@ -40,7 +40,7 @@ SRC_PATH=src/
 SRC=$(wildcard $(SRC_PATH)*.og $(SRC_PATH)translator/*.og $(SRC_PATH)ast/*.og)
 RES=$(subst src/, lib/, $(SRC:.og=.go))
 EXE=og
-CC=./og
+CC=og
 
 all: grammar build
 
@@ -48,7 +48,6 @@ grammar: parser/*.go
 parser/*.go: parser/Og.g4
 	@$(call section_title,Grammar)
 	@$(call run_and_test,go generate,Generating parser from $<)
-	@$(call run_and_test,go build,Building go source)
 
 build:
 	@$(call section_title,Oglang to Golang Compilation)
@@ -66,9 +65,13 @@ re:
 re_: grammar
 	@make clean --no-print-directory
 	@$(call title,Recompiling sources from og `og -V`)
-	@make CC='og' build --no-print-directory
+	@make build --no-print-directory
 	@$(call title,Rebuilding with new og `./og -V`)
-	@make clean all --no-print-directory
+	@make CC='./og' clean all --no-print-directory
+
+new:
+	@$(call title,Rebuilding with new og `./og -V`)
+	@make CC='./og' clean all --no-print-directory
 
 test: all
 	@$(call run_and_test,go test og/tests,Testing)

@@ -1,12 +1,49 @@
 !ast
 
+import
+	fmt
+	reflect
+
+var mangle = 0
+
 struct Desugar
 	AstWalker
+
+	*IfStmt(n INode): INode ->
+		node := n.(*IfStmt)
+		fmt.Println("PARENT", reflect.TypeOf(node.Parent).String()[5:], node.Parent)
+		parentName := reflect.TypeOf(node.Parent).String()[5:]
+		// stmtList := []*Statement{}
+		switch parentName
+			_           => fmt.Println("HERE0", parentName)
+			"IfStmt"    => fmt.Println("HERE1")
+			"Statement" =>
+				block := node.Parent.(*Statement).Block
+
+				idx := -1
+				for i, s in block.Statements
+					if s == node.Parent.(*Statement)
+						idx = i
+						break
+				if idx == -1
+					fmt.Println("Cannot find !!!!!")
+
+				// newStmts := []*Statement{}
+				// vDecl := &VarDecl
+				// 	Node: NewNodeNoCtx()
+				// 	VarSpecs: []*VarSpecs
+				// 		&VarSpec
+				// 			IdentifierList: []*IdentifierList{"toto"}
+				// 			Type: &Type
+				// 				TypeName: ""
+
+		n
 
 	*Function(n INode): INode ->
 		function := n.(*Function)
 		sig := function.Signature
 
+		// No signature means no return type
 		if sig == nil
 			return n
 
@@ -20,12 +57,25 @@ struct Desugar
 		if block != nil && len(block.Statements) > 0
 			last := block.Statements[len(block.Statements)-1]
 
-			// We only support simple statement yet
-			if last.SimpleStmt != nil && last.ReturnStmt == nil
-				block.Statements[len(block.Statements)-1] = &Statement
-					ReturnStmt: &ReturnStmt
-						Expressions: &ExpressionList
-							Expressions: []*Expression{last.SimpleStmt.Expression}
+			if last.ReturnStmt == nil
+				// We only support simple statement yet
+				if last.SimpleStmt != nil
+					block.Statements[len(block.Statements)-1] = &Statement
+						Node: NewNodeNoCtx()
+						ReturnStmt: &ReturnStmt
+							Node: NewNodeNoCtx()
+							Expressions: &ExpressionList
+								Node: NewNodeNoCtx()
+								Expressions: []*Expression{last.SimpleStmt.Expression}
+				// We only support simple statement yet
+				// if last.IfStmt != nil
+				// 	block.Statements[len(block.Statements)-1] = &Statement
+				// 		Node: NewNodeNoCtx()
+				// 		ReturnStmt: &ReturnStmt
+				// 			Node: NewNodeNoCtx()
+				// 			Expressions: &ExpressionList
+				// 				Node: NewNodeNoCtx()
+				// 				Expressions: []*Expression{last.SimpleStmt.Expression}
 
 		n
 	// *Block(n INode): INode ->
@@ -40,6 +90,14 @@ struct Desugar
 	// 					Statement: last
 
 	// 	return n
+
+Block::*ReplaceLastStatement(s *Statement) ->
+	last := @Statements[len(@Statements)-1]
+
+	if last.ReturnStmt == nil
+		// We only support simple statement yet
+		if last.SimpleStmt != nil
+			@Statements[len(@Statements)-1] = s
 
 RunDesugar(ast INode): INode ->
 	desugar := Desugar{}

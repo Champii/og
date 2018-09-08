@@ -2,6 +2,8 @@
 
 ## DEV: Current version
   - Removed every non necessary terminal `return`
+  - Makefile now compiles with the previous released version by default instead of the last compiled one. New rule `make new` that compiles itself with the last present `og`
+  - Fix a bug on ParameterDecl that wanted a name for each type
 
 ## v0.4.2
   - Auto return for function with no return keyword (only for simple statement yet)

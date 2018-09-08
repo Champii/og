@@ -6,14 +6,20 @@ import
 interface INode
 	Eval: string
 	Text: string
+	SetParent(n INode)
 
 struct Node
 	Text_     string
 	Children []INode
+	Parent   INode
 
 	Eval: string ->  ""
 	Text: string -> @Text_
+	*SetParent(n INode) -> if @Parent == nil => @Parent = n
 
 NewNode(ctx antlr.RuleContext): *Node ->
 	&Node
 		Text_: ctx.GetText()
+
+NewNodeNoCtx(): *Node ->
+	&Node{}

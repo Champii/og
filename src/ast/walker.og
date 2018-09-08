@@ -29,7 +29,14 @@ struct AstWalker
 					if valueField.Index(i).Kind() == reflect.String
 						continue
 
-					@Walk(valueField.Index(i).Interface().(INode))
+					node := valueField.Index(i).Interface().(INode)
+
+					if node == nil
+						continue
+
+					node.SetParent(ast)
+
+					valueField.Index(i).Set(reflect.ValueOf(@Walk(node)))
 
 				continue
 
@@ -38,11 +45,15 @@ struct AstWalker
 
 			name := valueField.Type().String()[5:]
 
+			node := valueField.Interface().(INode)
+
+			node.SetParent(ast)
+
 			@callDelegate("Before", valueField)
 			@callDelegate("Each", valueField)
 			@callDelegate(name, valueField)
 
-			@Walk(valueField.Interface().(INode))
+			val.Field(i).Set(reflect.ValueOf(@Walk(node)))
 
 			@callDelegate("After", valueField)
 

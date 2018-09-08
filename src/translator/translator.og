@@ -219,7 +219,9 @@ struct OgVisitor
       node.Block = @VisitBlock(ctx.Block().(*parser.BlockContext), delegate).(*Block)
 
     if ctx.Statement() != nil
-      node.Block = &Block{ Statements: []*Statement{@VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)}}
+      node.Block = &Block
+        Node: NewNode(ctx)
+        Statements: []*Statement{@VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)}
 
     node
 
@@ -463,12 +465,16 @@ struct OgVisitor
     if ctx.Block(0) != nil
       node.Block = @VisitBlock(ctx.Block(0).(*parser.BlockContext), delegate).(*Block)
     else if ctx.Statement(0) != nil
-      node.Block = &Block{ Statements: []*Statement{@VisitStatement(ctx.Statement(0).(*parser.StatementContext), delegate).(*Statement)}}
+      node.Block = &Block
+        Node: NewNode(ctx)
+        Statements: []*Statement{@VisitStatement(ctx.Statement(0).(*parser.StatementContext), delegate).(*Statement)}
 
     if ctx.Block(1) != nil
       node.BlockElse = @VisitBlock(ctx.Block(1).(*parser.BlockContext), delegate).(*Block)
     else if ctx.Statement(1) != nil
-      node.BlockElse = &Block{ Statements: []*Statement{@VisitStatement(ctx.Statement(1).(*parser.StatementContext), delegate).(*Statement)}}
+      node.BlockElse = &Block
+        Node: NewNode(ctx)
+        Statements: []*Statement{@VisitStatement(ctx.Statement(1).(*parser.StatementContext), delegate).(*Statement)}
     else if ctx.IfStmt() != nil
       node.IfStmt = @VisitIfStmt(ctx.IfStmt().(*parser.IfStmtContext), delegate).(*IfStmt)
 
@@ -603,7 +609,9 @@ struct OgVisitor
     if ctx.Block() != nil
       node.Block = @VisitBlock(ctx.Block().(*parser.BlockContext), delegate).(*Block)
     else if ctx.Statement() != nil
-      node.Block = &Block{ Statements: []*Statement{@VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)}}
+      node.Block = &Block
+        Node: NewNode(ctx)
+        Statements: []*Statement{@VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)}
 
     node
 
@@ -846,7 +854,8 @@ struct OgVisitor
     if ctx.ParameterList() != nil
       return @VisitParameterList(ctx.ParameterList().(*parser.ParameterListContext), delegate).(*Parameters)
 
-    &Parameters{}
+    &Parameters
+      Node: NewNode(ctx)
 
   VisitParameterList(ctx *parser.ParameterListContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Parameters
@@ -866,9 +875,11 @@ struct OgVisitor
   VisitParameterDecl(ctx *parser.ParameterDeclContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Parameter
       Node: NewNode(ctx)
-      Names:  @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
       Type:  @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
       IsVariadic: ctx.RestOp() != nil
+
+    if ctx.IdentifierList() != nil
+      node.Names = @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
 
     node
 

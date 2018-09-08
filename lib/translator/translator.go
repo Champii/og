@@ -192,7 +192,9 @@ func (this *OgVisitor) VisitFunction(ctx *parser.FunctionContext, delegate antlr
 		node.Block = this.VisitBlock(ctx.Block().(*parser.BlockContext), delegate).(*Block)
 	}
 	if ctx.Statement() != nil {
-		node.Block = &Block{Statements: []*Statement{this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)},
+		node.Block = &Block{
+			Node:       NewNode(ctx),
+			Statements: []*Statement{this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)},
 		}
 	}
 	return node
@@ -419,13 +421,17 @@ func (this *OgVisitor) VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.Par
 	if ctx.Block(0) != nil {
 		node.Block = this.VisitBlock(ctx.Block(0).(*parser.BlockContext), delegate).(*Block)
 	} else if ctx.Statement(0) != nil {
-		node.Block = &Block{Statements: []*Statement{this.VisitStatement(ctx.Statement(0).(*parser.StatementContext), delegate).(*Statement)},
+		node.Block = &Block{
+			Node:       NewNode(ctx),
+			Statements: []*Statement{this.VisitStatement(ctx.Statement(0).(*parser.StatementContext), delegate).(*Statement)},
 		}
 	}
 	if ctx.Block(1) != nil {
 		node.BlockElse = this.VisitBlock(ctx.Block(1).(*parser.BlockContext), delegate).(*Block)
 	} else if ctx.Statement(1) != nil {
-		node.BlockElse = &Block{Statements: []*Statement{this.VisitStatement(ctx.Statement(1).(*parser.StatementContext), delegate).(*Statement)},
+		node.BlockElse = &Block{
+			Node:       NewNode(ctx),
+			Statements: []*Statement{this.VisitStatement(ctx.Statement(1).(*parser.StatementContext), delegate).(*Statement)},
 		}
 	} else if ctx.IfStmt() != nil {
 		node.IfStmt = this.VisitIfStmt(ctx.IfStmt().(*parser.IfStmtContext), delegate).(*IfStmt)
@@ -542,7 +548,9 @@ func (this *OgVisitor) VisitCommClause(ctx *parser.CommClauseContext, delegate a
 	if ctx.Block() != nil {
 		node.Block = this.VisitBlock(ctx.Block().(*parser.BlockContext), delegate).(*Block)
 	} else if ctx.Statement() != nil {
-		node.Block = &Block{Statements: []*Statement{this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)},
+		node.Block = &Block{
+			Node:       NewNode(ctx),
+			Statements: []*Statement{this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)},
 		}
 	}
 	return node
@@ -765,7 +773,7 @@ func (this *OgVisitor) VisitParameters(ctx *parser.ParametersContext, delegate a
 	if ctx.ParameterList() != nil {
 		return this.VisitParameterList(ctx.ParameterList().(*parser.ParameterListContext), delegate).(*Parameters)
 	}
-	return &Parameters{}
+	return &Parameters{Node: NewNode(ctx)}
 }
 func (this *OgVisitor) VisitParameterList(ctx *parser.ParameterListContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &Parameters{Node: NewNode(ctx)}
@@ -780,9 +788,11 @@ func (this *OgVisitor) VisitParameterList(ctx *parser.ParameterListContext, dele
 func (this *OgVisitor) VisitParameterDecl(ctx *parser.ParameterDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &Parameter{
 		Node:       NewNode(ctx),
-		Names:      this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string),
 		Type:       this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type),
 		IsVariadic: ctx.RestOp() != nil,
+	}
+	if ctx.IdentifierList() != nil {
+		node.Names = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
 	}
 	return node
 }
