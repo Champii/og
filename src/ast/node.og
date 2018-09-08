@@ -1,22 +1,19 @@
 !ast
 
 import
-	reflect
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 
 interface INode
 	Eval: string
 	Text: string
-	GetName: string
 
 struct Node
 	Text_     string
 	Children []INode
 
-	GetName: string -> return reflect.ValueOf(@).Type().Name()
-	Eval: string -> return ""
-	Text: string -> return @Text_
+	Eval: string ->  ""
+	Text: string -> @Text_
 
 NewNode(ctx antlr.RuleContext): *Node ->
-	return &Node
+	&Node
 		Text_: ctx.GetText()

@@ -1,6 +1,7 @@
 # Changelog
 
 ## DEV: Current version
+  - Removed every non necessary terminal `return`
 
 ## v0.4.2
   - Auto return for function with no return keyword (only for simple statement yet)

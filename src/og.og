@@ -32,7 +32,7 @@ Compile(config_ OgConfig): error ->
 
       return err
 
-  return nil
+  nil
 
 walker(filePath string, info os.FileInfo, err error): error ->
   if err != nil
@@ -56,7 +56,7 @@ walker(filePath string, info os.FileInfo, err error): error ->
 
   finalizeFile(filePath, res)
 
-  return nil
+  nil
 
 ProcessFile(filePath string, data string, isInterpret bool): string, error ->
   if config.Verbose == true

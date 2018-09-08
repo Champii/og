@@ -25,7 +25,7 @@ struct OgVisitor
           string => return resultSoFar.(string) + childResult.(string)
           _      => return childResult
 
-    return nil
+    nil
 
   // *parser.SourceFileContext -> antlr.ParseTreeVisitor -> interface
   // VisitSourceFile(ctx, delegate) -> @VisitChildren(ctx, delegate)
@@ -47,15 +47,15 @@ struct OgVisitor
 
     node.TopLevels = res
 
-    return node
+    node
 
   VisitPackageClause(ctx *parser.PackageClauseContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &Package
+    &Package
       Node: NewNode(ctx)
       Name: ctx.IDENTIFIER().GetText()
 
   VisitImportDecl(ctx *parser.ImportDeclContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &Import
+    &Import
       Node:    NewNode(ctx)
       Items:   @VisitImportBody(ctx.ImportBody().(*parser.ImportBodyContext), delegate).([]*ImportSpec)
 
@@ -67,7 +67,7 @@ struct OgVisitor
     for _, spec in bodies
       res = append(res, @VisitImportSpec(spec.(*parser.ImportSpecContext), delegate).(*ImportSpec))
 
-    return res
+    res
 
   VisitImportSpec(ctx *parser.ImportSpecContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &ImportSpec
@@ -81,7 +81,7 @@ struct OgVisitor
     else if strings.Contains(ctx.GetText(), ":")
       node.Alias = "."
 
-    return node
+    node
 
   VisitImportPath(ctx *parser.ImportPathContext, delegate antlr.ParseTreeVisitor): interface ->
     txt := ctx.GetText()
@@ -104,7 +104,7 @@ struct OgVisitor
     if ctx.MethodDecl() != nil
       node.MethodDecl = @VisitMethodDecl(ctx.MethodDecl().(*parser.MethodDeclContext), delegate).(*MethodDecl)
 
-    return node
+    node
 
   VisitDeclaration(ctx *parser.DeclarationContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Declaration
@@ -119,7 +119,7 @@ struct OgVisitor
     if ctx.VarDecl() != nil
       node.VarDecl = @VisitVarDecl(ctx.VarDecl().(*parser.VarDeclContext), delegate).(*VarDecl)
 
-    return node
+    node
 
   VisitConstDecl(ctx *parser.ConstDeclContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &ConstDecl
@@ -134,7 +134,7 @@ struct OgVisitor
 
     node.ConstSpecs = res
 
-    return node
+    node
 
   VisitConstSpec(ctx *parser.ConstSpecContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &ConstSpec
@@ -149,10 +149,10 @@ struct OgVisitor
     if ctx.ExpressionList() != nil
       node.ExpressionList = @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
 
-    return node
+    node
 
   VisitIdentifierList(ctx *parser.IdentifierListContext, delegate antlr.ParseTreeVisitor): interface ->
-    return strings.Split(ctx.GetText(), ",")
+    strings.Split(ctx.GetText(), ",")
 
   VisitExpressionList(ctx *parser.ExpressionListContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &ExpressionList
@@ -167,7 +167,7 @@ struct OgVisitor
 
     node.Expressions = res
 
-    return node
+    node
 
   VisitTypeDecl(ctx *parser.TypeDeclContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &TypeDecl
@@ -189,10 +189,10 @@ struct OgVisitor
     if ctx.InterfaceType() != nil
       node.InterfaceType = @VisitInterfaceType(ctx.InterfaceType().(*parser.InterfaceTypeContext), delegate).(*InterfaceType)
 
-    return node
+    node
 
   VisitTypeSpec(ctx *parser.TypeSpecContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &TypeSpec
+    &TypeSpec
       Node: NewNode(ctx)
       Name: ctx.IDENTIFIER().GetText()
       Type: @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
@@ -208,7 +208,7 @@ struct OgVisitor
     if ctx.Signature() != nil
       node.Signature = @VisitSignature(ctx.Signature().(*parser.SignatureContext), delegate).(*Signature)
 
-    return node
+    node
 
   VisitFunction(ctx *parser.FunctionContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Function
@@ -221,7 +221,7 @@ struct OgVisitor
     if ctx.Statement() != nil
       node.Block = &Block{ Statements: []*Statement{@VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)}}
 
-    return node
+    node
 
   VisitMethodDecl(ctx *parser.MethodDeclContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &MethodDecl
@@ -234,10 +234,10 @@ struct OgVisitor
     if ctx.Signature() != nil
       node.Signature = @VisitSignature(ctx.Signature().(*parser.SignatureContext), delegate).(*Signature)
 
-    return node
+    node
 
   VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &Receiver
+    &Receiver
       Node: NewNode(ctx)
       Package: ctx.IDENTIFIER(0).GetText()
       IsPointerReceiver: strings.Contains(ctx.GetText(), "*")
@@ -256,7 +256,7 @@ struct OgVisitor
 
     node.VarSpecs = res
 
-    return node
+    node
 
   VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &VarSpec
@@ -269,10 +269,10 @@ struct OgVisitor
     if ctx.ExpressionList() != nil
       node.ExpressionList = @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
 
-    return node
+    node
 
   VisitBlock(ctx *parser.BlockContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &Block
+    &Block
       Node: NewNode(ctx)
       Statements: @VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).([]*Statement)
 
@@ -284,7 +284,7 @@ struct OgVisitor
     for _, spec in bodies
       res = append(res, @VisitStatement(spec.(*parser.StatementContext), delegate).(*Statement))
 
-    return res
+    res
 
   VisitStatement(ctx *parser.StatementContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Statement
@@ -332,57 +332,7 @@ struct OgVisitor
     if ctx.DeferStmt() != nil
       node.DeferStmt = @VisitDeferStmt(ctx.DeferStmt().(*parser.DeferStmtContext), delegate).(*DeferStmt)
 
-    return node
-
-
-  // VisitStatementNoBlock(ctx *parser.StatementNoBlockContext, delegate antlr.ParseTreeVisitor): interface ->
-  //   node := &Block
-  //     Node: NewNode(ctx)
-
-  //   res := &Statement{}
-
-  //   if ctx.SimpleStmt() != nil
-  //     res.SimpleStmt = @VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(*SimpleStmt)
-
-  //   if ctx.LabeledStmt() != nil
-  //     res.LabeledStmt = @VisitLabeledStmt(ctx.LabeledStmt().(*parser.LabeledStmtContext), delegate).(*LabeledStmt)
-
-  //   if ctx.GoStmt() != nil
-  //     res.GoStmt = @VisitGoStmt(ctx.GoStmt().(*parser.GoStmtContext), delegate).(*GoStmt)
-
-  //   if ctx.ReturnStmt() != nil
-  //     res.ReturnStmt = @VisitReturnStmt(ctx.ReturnStmt().(*parser.ReturnStmtContext), delegate).(*ReturnStmt)
-
-  //   if ctx.BreakStmt() != nil
-  //     res.BreakStmt = @VisitBreakStmt(ctx.BreakStmt().(*parser.BreakStmtContext), delegate).(*BreakStmt)
-
-  //   if ctx.ContinueStmt() != nil
-  //     res.ContinueStmt = @VisitContinueStmt(ctx.ContinueStmt().(*parser.ContinueStmtContext), delegate).(*ContinueStmt)
-
-  //   if ctx.GotoStmt() != nil
-  //     res.GotoStmt = @VisitGotoStmt(ctx.GotoStmt().(*parser.GotoStmtContext), delegate).(*GotoStmt)
-
-  //   if ctx.FallthroughStmt() != nil
-  //     res.FallthroughStmt = @VisitFallthroughStmt(ctx.FallthroughStmt().(*parser.FallthroughStmtContext), delegate).(*FallthroughStmt)
-
-  //   if ctx.IfStmt() != nil
-  //     res.IfStmt = @VisitIfStmt(ctx.IfStmt().(*parser.IfStmtContext), delegate).(*IfStmt)
-
-  //   if ctx.SwitchStmt() != nil
-  //     res.SwitchStmt = @VisitSwitchStmt(ctx.SwitchStmt().(*parser.SwitchStmtContext), delegate).(*SwitchStmt)
-
-  //   if ctx.SelectStmt() != nil
-  //     res.SelectStmt = @VisitSelectStmt(ctx.SelectStmt().(*parser.SelectStmtContext), delegate).(*SelectStmt)
-
-  //   if ctx.ForStmt() != nil
-  //     res.ForStmt = @VisitForStmt(ctx.ForStmt().(*parser.ForStmtContext), delegate).(*ForStmt)
-
-  //   if ctx.DeferStmt() != nil
-  //     res.DeferStmt = @VisitDeferStmt(ctx.DeferStmt().(*parser.DeferStmtContext), delegate).(*DeferStmt)
-
-  //   node.Statements = []*Statement{res}
-
-  //   return node
+    node
 
   VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &SimpleStmt
@@ -406,25 +356,25 @@ struct OgVisitor
     if ctx.EmptyStmt() != nil
       node.EmptyStmt = true
 
-    return node
+    node
 
   VisitExpressionStmt(ctx *parser.ExpressionStmtContext, delegate antlr.ParseTreeVisitor): interface ->
-    return @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
+    @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 
   VisitSendStmt(ctx *parser.SendStmtContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &SendStmt
+    &SendStmt
       Node: NewNode(ctx)
       Left: @VisitExpression(ctx.Expression(0).(*parser.ExpressionContext), delegate).(*Expression)
       Right: @VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(*Expression)
 
   VisitIncDecStmt(ctx *parser.IncDecStmtContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &IncDecStmt
+    &IncDecStmt
       Node: NewNode(ctx)
       Expression: @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
       IsInc: strings.Contains(ctx.GetText(), "++")
 
   VisitAssignment(ctx *parser.AssignmentContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &Assignment
+    &Assignment
       Node: NewNode(ctx)
       Left: @VisitExpressionList(ctx.ExpressionList(0).(*parser.ExpressionListContext), delegate).(*ExpressionList)
       Op: ctx.Assign_op().GetText()
@@ -434,7 +384,7 @@ struct OgVisitor
     if len(ctx.GetText()) == 1
       return "="
 
-    return ctx.GetText()
+    ctx.GetText()
 
   // VisitBinary_op(ctx *parser.Binary_opContext, delegate antlr.ParseTreeVisitor): interface ->
   //   return ctx.GetText()
@@ -449,13 +399,13 @@ struct OgVisitor
     // if ctx.Statement() != nil
     //   node.Statement = @VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)
 
-    return node
+    node
 
   VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate antlr.ParseTreeVisitor): interface ->
-    return "\n"
+    "\n"
 
   VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &LabeledStmt
+    &LabeledStmt
       Node: NewNode(ctx)
       Name: ctx.IDENTIFIER().GetText()
       Statement: @VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)
@@ -467,7 +417,7 @@ struct OgVisitor
     if ctx.ExpressionList() != nil
       node.Expressions = @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
 
-    return node
+    node
 
   VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &BreakStmt
@@ -476,7 +426,7 @@ struct OgVisitor
     if ctx.IDENTIFIER() != nil
       node.Name = ctx.IDENTIFIER().GetText()
 
-    return node
+    node
 
   VisitContinueStmt(ctx *parser.ContinueStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     node :=  &ContinueStmt
@@ -485,19 +435,19 @@ struct OgVisitor
     if ctx.IDENTIFIER() != nil
       node.Name = ctx.IDENTIFIER().GetText()
 
-    return node
+    node
 
   VisitGotoStmt(ctx *parser.GotoStmtContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &GotoStmt
+    &GotoStmt
       Node: NewNode(ctx)
       Name: ctx.IDENTIFIER().GetText()
 
   VisitFallthroughStmt(ctx *parser.FallthroughStmtContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &FallthroughStmt
+    &FallthroughStmt
       Node: NewNode(ctx)
 
   VisitDeferStmt(ctx *parser.DeferStmtContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &DeferStmt
+    &DeferStmt
       Node: NewNode(ctx)
       Expression: @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 
@@ -522,7 +472,7 @@ struct OgVisitor
     else if ctx.IfStmt() != nil
       node.IfStmt = @VisitIfStmt(ctx.IfStmt().(*parser.IfStmtContext), delegate).(*IfStmt)
 
-    return node
+    node
 
   VisitSwitchStmt(ctx *parser.SwitchStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &SwitchStmt
@@ -534,7 +484,7 @@ struct OgVisitor
     if ctx.TypeSwitchStmt() != nil
       node.TypeSwitchStmt = @VisitTypeSwitchStmt(ctx.TypeSwitchStmt().(*parser.TypeSwitchStmtContext), delegate).(*TypeSwitchStmt)
 
-    return node
+    node
 
   VisitExprSwitchStmt(ctx *parser.ExprSwitchStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &ExprSwitchStmt
@@ -555,10 +505,10 @@ struct OgVisitor
 
     node.ExprCaseClauses = res
 
-    return node
+    node
 
   VisitExprCaseClause(ctx *parser.ExprCaseClauseContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &ExprCaseClause
+    &ExprCaseClause
       Node: NewNode(ctx)
       ExprSwitchCase: @VisitExprSwitchCase(ctx.ExprSwitchCase().(*parser.ExprSwitchCaseContext), delegate).(*ExprSwitchCase)
       Statements: @VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).([]*Statement)
@@ -574,7 +524,7 @@ struct OgVisitor
     if ctx.ExpressionList() != nil
       node.Expressions = @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
 
-    return node
+    node
 
   VisitTypeSwitchStmt(ctx *parser.TypeSwitchStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &TypeSwitchStmt
@@ -593,7 +543,7 @@ struct OgVisitor
 
     node.TypeCaseClauses = res
 
-    return node
+    node
 
   VisitTypeSwitchGuard(ctx *parser.TypeSwitchGuardContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &TypeSwitchGuard
@@ -603,10 +553,10 @@ struct OgVisitor
     if ctx.IDENTIFIER() != nil
       node.Name = ctx.IDENTIFIER().GetText()
 
-    return node
+    node
 
   VisitTypeCaseClause(ctx *parser.TypeCaseClauseContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &TypeCaseClause
+    &TypeCaseClause
       Node: NewNode(ctx)
       TypeSwitchCase: @VisitTypeSwitchCase(ctx.TypeSwitchCase().(*parser.TypeSwitchCaseContext), delegate).(*TypeSwitchCase)
       Statements: @VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).([]*Statement)
@@ -618,7 +568,7 @@ struct OgVisitor
     if ctx.TypeList() != nil
       node.Types = @VisitTypeList(ctx.TypeList().(*parser.TypeListContext), delegate).([]*Type)
 
-    return node
+    node
 
   VisitTypeList(ctx *parser.TypeListContext, delegate antlr.ParseTreeVisitor): interface ->
     res := []*Type{}
@@ -628,7 +578,7 @@ struct OgVisitor
     for _, spec in bodies
       res = append(res, @VisitType_(spec.(*parser.Type_Context), delegate).(*Type))
 
-    return res
+    res
 
   VisitSelectStmt(ctx *parser.SelectStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &SelectStmt
@@ -643,7 +593,7 @@ struct OgVisitor
 
     node.CommClauses = res
 
-    return node
+    node
 
   VisitCommClause(ctx *parser.CommClauseContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &CommClause
@@ -655,7 +605,7 @@ struct OgVisitor
     else if ctx.Statement() != nil
       node.Block = &Block{ Statements: []*Statement{@VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)}}
 
-    return node
+    node
 
   VisitCommCase(ctx *parser.CommCaseContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &CommCase
@@ -671,7 +621,7 @@ struct OgVisitor
     if ctx.RecvStmt() != nil
       node.RecvStmt = @VisitRecvStmt(ctx.RecvStmt().(*parser.RecvStmtContext), delegate).(*RecvStmt)
 
-    return node
+    node
 
   VisitRecvStmt(ctx *parser.RecvStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &RecvStmt
@@ -684,7 +634,7 @@ struct OgVisitor
     if ctx.IdentifierList() != nil
       node.Identifiers = @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
 
-    return node
+    node
 
   VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &ForStmt
@@ -700,7 +650,7 @@ struct OgVisitor
     if ctx.Expression() != nil
       node.Expression = @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 
-    return node
+    node
 
   VisitForClause(ctx *parser.ForClauseContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &ForClause
@@ -715,7 +665,7 @@ struct OgVisitor
     if ctx.SimpleStmt(1) != nil
       node.RightSimpleStmt = @VisitSimpleStmt(ctx.SimpleStmt(1).(*parser.SimpleStmtContext), delegate).(*SimpleStmt)
 
-    return node
+    node
 
   VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &RangeClause
@@ -728,7 +678,7 @@ struct OgVisitor
     if ctx.IdentifierList() != nil
       node.Identifiers = @VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
 
-    return node
+    node
 
   VisitGoStmt(ctx *parser.GoStmtContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &GoStmt
@@ -740,7 +690,7 @@ struct OgVisitor
     if ctx.Function() != nil
       node.Function = @VisitFunction(ctx.Function().(*parser.FunctionContext), delegate).(*Function)
 
-    return node
+    node
 
   VisitType_(ctx *parser.Type_Context, delegate antlr.ParseTreeVisitor): interface ->
     node := &Type
@@ -755,10 +705,10 @@ struct OgVisitor
     if ctx.Type_() != nil
       node.Type = @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
 
-    return node
+    node
 
   VisitTypeName(ctx *parser.TypeNameContext, delegate antlr.ParseTreeVisitor): interface ->
-    return ctx.GetText()
+    ctx.GetText()
 
   VisitTypeLit(ctx *parser.TypeLitContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &TypeLit
@@ -788,22 +738,22 @@ struct OgVisitor
     if ctx.ChannelType() != nil
       node.ChannelType = @VisitChannelType(ctx.ChannelType().(*parser.ChannelTypeContext), delegate).(*ChannelType)
 
-    return node
+    node
 
   VisitArrayType(ctx *parser.ArrayTypeContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &ArrayType
+    &ArrayType
       Node: NewNode(ctx)
       Length:  @VisitArrayLength(ctx.ArrayLength().(*parser.ArrayLengthContext), delegate).(*Expression)
       ElementType:  @VisitElementType(ctx.ElementType().(*parser.ElementTypeContext), delegate).(*Type)
 
   VisitArrayLength(ctx *parser.ArrayLengthContext, delegate antlr.ParseTreeVisitor): interface ->
-    return @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
+    @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 
   VisitElementType(ctx *parser.ElementTypeContext, delegate antlr.ParseTreeVisitor): interface ->
-    return @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
+    @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
 
   VisitPointerType(ctx *parser.PointerTypeContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &PointerType
+    &PointerType
       Node: NewNode(ctx)
       Type:  @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
 
@@ -823,21 +773,21 @@ struct OgVisitor
 
     node.MethodSpecs = res
 
-    return node
+    node
 
   VisitSliceType(ctx *parser.SliceTypeContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &SliceType
+    &SliceType
       Node: NewNode(ctx)
       Type: @VisitElementType(ctx.ElementType().(*parser.ElementTypeContext), delegate).(*Type)
 
   VisitMapType(ctx *parser.MapTypeContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &MapType
+    &MapType
       Node: NewNode(ctx)
       InnerType:  @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
       OuterType:  @VisitElementType(ctx.ElementType().(*parser.ElementTypeContext), delegate).(*Type)
 
   VisitChannelType(ctx *parser.ChannelTypeContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &ChannelType
+    &ChannelType
       Node: NewNode(ctx)
       ChannelDecl: ctx.ChannelDecl().GetText()
       Type: @VisitElementType(ctx.ElementType().(*parser.ElementTypeContext), delegate).(*Type)
@@ -858,10 +808,10 @@ struct OgVisitor
     if ctx.Result() != nil
       node.Result = @VisitResult(ctx.Result().(*parser.ResultContext), delegate).(*Result)
 
-    return node
+    node
 
   VisitFunctionType(ctx *parser.FunctionTypeContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &FunctionType
+    &FunctionType
       Node: NewNode(ctx)
       Signature: @VisitSignature(ctx.Signature().(*parser.SignatureContext), delegate).(*Signature)
 
@@ -875,7 +825,7 @@ struct OgVisitor
     if ctx.Result() != nil
       node.Result = @VisitResult(ctx.Result().(*parser.ResultContext), delegate).(*Result)
 
-    return node
+    node
 
   VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Result
@@ -890,13 +840,13 @@ struct OgVisitor
 
     node.Types = res
 
-    return node
+    node
 
   VisitParameters(ctx *parser.ParametersContext, delegate antlr.ParseTreeVisitor): interface ->
     if ctx.ParameterList() != nil
       return @VisitParameterList(ctx.ParameterList().(*parser.ParameterListContext), delegate).(*Parameters)
 
-    return &Parameters{}
+    &Parameters{}
 
   VisitParameterList(ctx *parser.ParameterListContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Parameters
@@ -911,7 +861,7 @@ struct OgVisitor
 
     node.List = res
 
-    return node
+    node
 
   VisitParameterDecl(ctx *parser.ParameterDeclContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Parameter
@@ -920,10 +870,9 @@ struct OgVisitor
       Type:  @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
       IsVariadic: ctx.RestOp() != nil
 
-    return node
+    node
 
-  VisitRestOp(ctx *parser.RestOpContext, delegate antlr.ParseTreeVisitor): interface ->
-    return ctx.GetText()
+  VisitRestOp(ctx *parser.RestOpContext, delegate antlr.ParseTreeVisitor): interface -> ctx.GetText()
 
   VisitOperand(ctx *parser.OperandContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Operand
@@ -941,7 +890,7 @@ struct OgVisitor
     if ctx.Expression() != nil
       node.Expression = @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 
-    return node
+    node
 
   VisitLiteral(ctx *parser.LiteralContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Literal
@@ -956,10 +905,9 @@ struct OgVisitor
     if ctx.FunctionLit() != nil
       node.FunctionLit = @VisitFunctionLit(ctx.FunctionLit().(*parser.FunctionLitContext), delegate).(*FunctionLit)
 
-    return node
+    node
 
-  VisitBasicLit(ctx *parser.BasicLitContext, delegate antlr.ParseTreeVisitor): interface ->
-    return ctx.GetText()
+  VisitBasicLit(ctx *parser.BasicLitContext, delegate antlr.ParseTreeVisitor): interface -> ctx.GetText()
 
   VisitOperandName(ctx *parser.OperandNameContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &OperandName
@@ -972,19 +920,18 @@ struct OgVisitor
     else
       node.Name = ctx.GetText()
 
-    return node
+    node
 
-  VisitThis_(ctx *parser.This_Context, delegate antlr.ParseTreeVisitor): interface ->
-    return "this"
+  VisitThis_(ctx *parser.This_Context, delegate antlr.ParseTreeVisitor): interface -> "this"
 
   VisitQualifiedIdent(ctx *parser.QualifiedIdentContext, delegate antlr.ParseTreeVisitor): interface ->
     if ctx.This_() != nil
       return "this." + ctx.IDENTIFIER(0).GetText()
 
-    return ctx.IDENTIFIER(0).GetText() + "." + ctx.IDENTIFIER(1).GetText()
+    ctx.IDENTIFIER(0).GetText() + "." + ctx.IDENTIFIER(1).GetText()
 
   VisitCompositeLit(ctx *parser.CompositeLitContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &CompositeLit
+    &CompositeLit
       Node: NewNode(ctx)
       LiteralType: @VisitLiteralType(ctx.LiteralType().(*parser.LiteralTypeContext), delegate).(*LiteralType)
       LiteralValue: @VisitLiteralValue(ctx.LiteralValue().(*parser.LiteralValueContext), delegate).(*LiteralValue)
@@ -1011,7 +958,7 @@ struct OgVisitor
     if ctx.TypeName() != nil
       node.Type = @VisitTypeName(ctx.TypeName().(*parser.TypeNameContext), delegate).(string)
 
-    return node
+    node
 
   VisitLiteralValue(ctx *parser.LiteralValueContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &LiteralValue
@@ -1020,7 +967,7 @@ struct OgVisitor
     if ctx.ElementList() != nil
       node.Elements = @VisitElementList(ctx.ElementList().(*parser.ElementListContext), delegate).([]*KeyedElement)
 
-    return node
+    node
 
   VisitElementList(ctx *parser.ElementListContext, delegate antlr.ParseTreeVisitor): interface ->
     res := []*KeyedElement{}
@@ -1030,7 +977,7 @@ struct OgVisitor
     for _, spec in bodies
       res = append(res, @VisitKeyedElement(spec.(*parser.KeyedElementContext), delegate).(*KeyedElement))
 
-    return res
+    res
 
   VisitKeyedElement(ctx *parser.KeyedElementContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &KeyedElement
@@ -1040,7 +987,7 @@ struct OgVisitor
     if ctx.Key() != nil
       node.Key = @VisitKey(ctx.Key().(*parser.KeyContext), delegate).(*Key)
 
-    return node
+    node
 
   VisitKey(ctx *parser.KeyContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Key
@@ -1055,7 +1002,7 @@ struct OgVisitor
     if ctx.LiteralValue() != nil
       node.LiteralValue = @VisitLiteralValue(ctx.LiteralValue().(*parser.LiteralValueContext), delegate).(*LiteralValue)
 
-    return node
+    node
 
   VisitElement(ctx *parser.ElementContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Element
@@ -1067,7 +1014,7 @@ struct OgVisitor
     if ctx.LiteralValue() != nil
       node.LiteralValue = @VisitLiteralValue(ctx.LiteralValue().(*parser.LiteralValueContext), delegate).(*LiteralValue)
 
-    return node
+    node
 
   VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &StructType
@@ -1085,7 +1032,7 @@ struct OgVisitor
 
     node.Fields = res
 
-    return node
+    node
 
   VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &FieldDecl
@@ -1106,22 +1053,22 @@ struct OgVisitor
     if ctx.InlineStructMethod() != nil
       node.InlineStructMethod = @VisitInlineStructMethod(ctx.InlineStructMethod().(*parser.InlineStructMethodContext), delegate).(*InlineStructMethod)
 
-    return node
+    node
 
   VisitInlineStructMethod(ctx *parser.InlineStructMethodContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &InlineStructMethod
+    &InlineStructMethod
       Node: NewNode(ctx)
       FunctionDecl: @VisitFunctionDecl(ctx.FunctionDecl().(*parser.FunctionDeclContext), delegate).(*FunctionDecl)
       IsPointerReceiver: strings.Contains(ctx.GetText(), "*") // Warning here, can consume a `*` later in the stream
 
   VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &AnonymousField
+    &AnonymousField
       Node: NewNode(ctx)
       Type: @VisitTypeName(ctx.TypeName().(*parser.TypeNameContext), delegate).(string)
       IsPointerReceiver: strings.Contains(ctx.GetText(), "*") // Warning here, can consume a `*` later in the stream
 
   VisitFunctionLit(ctx *parser.FunctionLitContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &FunctionLit
+    &FunctionLit
       Node: NewNode(ctx)
       Function: @VisitFunction(ctx.Function().(*parser.FunctionContext), delegate).(*Function)
 
@@ -1139,7 +1086,7 @@ struct OgVisitor
       node.PrimaryExpr = @VisitPrimaryExpr(ctx.PrimaryExpr().(*parser.PrimaryExprContext), delegate).(*PrimaryExpr)
       node.SecondaryExpr = @VisitSecondaryExpr(ctx.SecondaryExpr().(*parser.SecondaryExprContext), delegate).(*SecondaryExpr)
 
-    return node
+    node
 
   VisitSecondaryExpr(ctx *parser.SecondaryExprContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &SecondaryExpr
@@ -1160,14 +1107,13 @@ struct OgVisitor
     if ctx.Arguments() != nil
       node.Arguments = @VisitArguments(ctx.Arguments().(*parser.ArgumentsContext), delegate).(*Arguments)
 
-    return node
+    node
 
 
-  VisitSelector(ctx *parser.SelectorContext, delegate antlr.ParseTreeVisitor): interface ->
-    return "." + ctx.IDENTIFIER().GetText()
+  VisitSelector(ctx *parser.SelectorContext, delegate antlr.ParseTreeVisitor): interface -> "." + ctx.IDENTIFIER().GetText()
 
   VisitIndex(ctx *parser.IndexContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &Index
+    &Index
       Node: NewNode(ctx)
       Expression: @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 
@@ -1198,10 +1144,10 @@ struct OgVisitor
 
 
 
-    return node
+    node
 
   VisitTypeAssertion(ctx *parser.TypeAssertionContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &TypeAssertion
+    &TypeAssertion
       Node: NewNode(ctx)
       Type: @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
 
@@ -1216,10 +1162,10 @@ struct OgVisitor
     if ctx.ExpressionList() != nil
       node.Expressions = @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
 
-    return node
+    node
 
   VisitMethodExpr(ctx *parser.MethodExprContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &MethodExpr
+    &MethodExpr
       Node: NewNode(ctx)
       ReceiverType: @VisitReceiverType(ctx.ReceiverType().(*parser.ReceiverTypeContext), delegate).(*ReceiverType)
       Name: ctx.IDENTIFIER().GetText()
@@ -1235,7 +1181,7 @@ struct OgVisitor
     if ctx.ReceiverType() != nil
       node.ReceiverType = @VisitReceiverType(ctx.ReceiverType().(*parser.ReceiverTypeContext), delegate).(*ReceiverType)
 
-    return node
+    node
 
   VisitExpression(ctx *parser.ExpressionContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Expression
@@ -1252,7 +1198,7 @@ struct OgVisitor
       node.Op = ctx.GetChild(1).GetPayload().(*antlr.CommonToken).GetText()
       node.RightExpression = @VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(*Expression)
 
-    return node
+    node
 
   VisitUnaryExpr(ctx *parser.UnaryExprContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &UnaryExpr
@@ -1265,13 +1211,13 @@ struct OgVisitor
       node.Op = ctx.GetChild(0).GetPayload().(*antlr.CommonToken).GetText()
       node.UnaryExpr = @VisitUnaryExpr(ctx.UnaryExpr().(*parser.UnaryExprContext), delegate).(*UnaryExpr)
 
-    return node
+    node
 
   // VisitUnary_op(ctx *parser.Unary_opContext, delegate antlr.ParseTreeVisitor): interface ->
   //   return ctx.GetText()
 
   VisitConversion(ctx *parser.ConversionContext, delegate antlr.ParseTreeVisitor): interface ->
-    return &Conversion
+    &Conversion
       Node: NewNode(ctx)
       Type: @VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
       Expression: @VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
@@ -1293,4 +1239,4 @@ struct OgVisitor
     if ctx.TopLevelDecl() != nil
       node.TopLevel = @VisitTopLevelDecl(ctx.TopLevelDecl().(*parser.TopLevelDeclContext), delegate).(*TopLevel)
 
-    return node
+    node

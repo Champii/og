@@ -14,13 +14,12 @@ struct SourceFile
 		if @Import  != nil => res += @Import.Eval() + "\n"
 		for _, t in @TopLevels
 			res += t.Eval() + "\n"
-		return res
+		res
 
 struct Package
 	*Node
 	Name string
-	Eval: string ->
-		return "package " + @Name
+	Eval: string -> "package " + @Name
 
 struct Import
 	*Node
@@ -29,7 +28,7 @@ struct Import
 		res := "import (\n"
 		for _, i in @Items
 			res += i.Eval()
-		return res + "\n)\n"
+		res + "\n)\n"
 
 struct ImportSpec
 	*Node
@@ -39,7 +38,7 @@ struct ImportSpec
 		res := ""
 		if len(@Alias) > 0 => res += @Alias + " "
 		res += @Path
-		return res
+		res
 
 struct TopLevel
 	*Node
@@ -50,7 +49,7 @@ struct TopLevel
 		if @Declaration  != nil => return @Declaration.Eval()
 		if @FunctionDecl != nil => return @FunctionDecl.Eval()
 		if @MethodDecl   != nil => return @MethodDecl.Eval()
-		return ""
+		""
 
 struct Declaration
 	*Node
@@ -61,7 +60,7 @@ struct Declaration
 		if @ConstDecl != nil => return @ConstDecl.Eval()
 		if @TypeDecl  != nil => return @TypeDecl.Eval()
 		if @VarDecl   != nil => return @VarDecl.Eval()
-		return ""
+		""
 
 struct ConstDecl
 	*Node
@@ -70,7 +69,7 @@ struct ConstDecl
 		res := "const ("
 		for _, spec in @ConstSpecs
 			res += spec.Eval() + "\n"
-		return res + ")"
+		res + ")"
 
 struct ConstSpec
 	*Node
@@ -81,7 +80,7 @@ struct ConstSpec
 		res := strings.Join(@IdentifierList, ",")
 		if @Type           != nil => res += " " + @Type.Eval()
 		if @ExpressionList != nil => res += " = " + @ExpressionList.Eval()
-		return res
+		res
 
 struct ExpressionList
 	*Node
@@ -92,7 +91,7 @@ struct ExpressionList
 			res += expr.Eval() + ","
 		if len(@Expressions) > 0
 			res = res[:len(res)-1]
-		return res
+		res
 
 struct Parameters
 	*Node
@@ -104,7 +103,7 @@ struct Parameters
 		if len(@List) > 0
 			res = res[:len(res)-1]
 		res += ")"
-		return res
+		res
 
 struct TypeDecl
 	*Node
@@ -123,14 +122,13 @@ struct TypeDecl
 			res += ")"
 		if @StructType         != nil => res += @StructType.Eval()
 		else if @InterfaceType != nil => res += @InterfaceType.Eval()
-		return res
+		res
 
 struct TypeSpec
 	*Node
 	Name string
 	Type *Type
-	Eval: string ->
-		return @Name + " " + @Type.Eval()
+	Eval: string -> @Name + " " + @Type.Eval()
 
 struct FunctionDecl
 	*Node
@@ -141,14 +139,13 @@ struct FunctionDecl
 		res := "func " + @Name
 		if @Function  != nil => res += @Function.Eval()
 		if @Signature != nil => res += @Signature.Eval()
-		return res
+		res
 
 struct Function
 	*Node
 	Signature        *Signature
 	Block            *Block
-	Eval: string ->
-		return @Signature.Eval() + @Block.Eval()
+	Eval: string ->  @Signature.Eval() + @Block.Eval()
 
 struct MethodDecl
 	*Node
@@ -159,7 +156,7 @@ struct MethodDecl
 		res := "func " + @Receiver.Eval()
 		if @Function  != nil => res += @Function.Eval()
 		if @Signature != nil => res += @Signature.Eval()
-		return res
+		res
 
 struct Receiver
 	*Node
@@ -171,7 +168,7 @@ struct Receiver
 		if @IsPointerReceiver => res += "*"
 		res += @Package + ")"
 		res += @Method
-		return res
+		res
 
 struct VarDecl
 	*Node
@@ -180,7 +177,7 @@ struct VarDecl
 		res := "var ("
 		for _, spec in @VarSpecs
 			res += spec.Eval() + "\n"
-		return res + ")"
+		res + ")"
 
 struct VarSpec
 	*Node
@@ -191,7 +188,7 @@ struct VarSpec
 		res := strings.Join(@IdentifierList, ",")
 		if @Type           != nil => res += " " + @Type.Eval()
 		if @ExpressionList != nil => res += "=" + @ExpressionList.Eval()
-		return res
+		res
 
 struct Block
 	*Node
@@ -200,7 +197,7 @@ struct Block
 		res := "{\n"
 		for _, spec in @Statements
 			res += spec.Eval() + "\n"
-		return res + "}"
+		res + "}"
 
 struct Statement
 	*Node
@@ -233,7 +230,7 @@ struct Statement
 		if @ForStmt         != nil => return @ForStmt.Eval()
 		if @Block           != nil => return @Block.Eval()
 		if @DeferStmt       != nil => return @DeferStmt.Eval()
-		return ""
+		""
 
 struct SimpleStmt
 	*Node
@@ -250,14 +247,13 @@ struct SimpleStmt
 		if @ShortVarDecl != nil => return @ShortVarDecl.Eval()
 		if @Assignment   != nil => return @Assignment.Eval()
 		if @EmptyStmt           => return "\n"
-		return ""
+		""
 
 struct SendStmt
 	*Node
 	Left  *Expression
 	Right *Expression
-	Eval: string ->
-		return @Left.Eval() + "<-" + @Right.Eval()
+	Eval: string -> @Left.Eval() + "<-" + @Right.Eval()
 
 struct IncDecStmt
 	*Node
@@ -267,15 +263,14 @@ struct IncDecStmt
 		res := @Expression.Eval()
 		if @IsInc => res += "++"
 		else      => res += "--"
-		return res
+		res
 
 struct Assignment
 	*Node
 	Left  *ExpressionList
 	Op    string
 	Right *ExpressionList
-	Eval: string ->
-		return @Left.Eval() + @Op + @Right.Eval()
+	Eval: string -> @Left.Eval() + @Op + @Right.Eval()
 
 struct ShortVarDecl
 	*Node
@@ -287,14 +282,13 @@ struct ShortVarDecl
 		res += strings.Join(@Identifiers, ",") + ":="
 		if @Expressions != nil => res += @Expressions.Eval()
 		// if @Statement   != nil => res += @Statement.Eval()
-		return res
+		res
 
 struct LabeledStmt
 	*Node
 	Name      string
 	Statement *Statement
-	Eval: string ->
-		return @Name + ": " + @Statement.Eval()
+	Eval: string -> @Name + ": " + @Statement.Eval()
 
 struct ReturnStmt
 	*Node
@@ -302,36 +296,31 @@ struct ReturnStmt
 	Eval: string ->
 		res := "return "
 		if @Expressions != nil => res += @Expressions.Eval()
-		return res
+		res
 
 struct BreakStmt
 	*Node
 	Name string
-	Eval: string ->
-		return "break " + @Name
+	Eval: string -> "break " + @Name
 
 struct ContinueStmt
 	*Node
 	Name string
-	Eval: string ->
-		return "continue " + @Name
+	Eval: string -> "continue " + @Name
 
 struct GotoStmt
 	*Node
 	Name string
-	Eval: string ->
-		return "goto " + @Name
+	Eval: string -> "goto " + @Name
 
 struct FallthroughStmt
 	*Node
-	Eval: string ->
-		return "fallthrough"
+	Eval: string -> "fallthrough"
 
 struct DeferStmt
 	*Node
 	Expression *Expression
-	Eval: string ->
-		return "defer " + @Expression.Eval()
+	Eval: string -> "defer " + @Expression.Eval()
 
 struct IfStmt
 	*Node
@@ -347,7 +336,7 @@ struct IfStmt
 		if @Block      != nil => res += @Block.Eval()
 		if @BlockElse  != nil => res += "else " + @BlockElse.Eval()
 		if @IfStmt     != nil => res += "else " + @IfStmt.Eval()
-		return res
+		res
 
 struct SwitchStmt
 	*Node
@@ -356,7 +345,7 @@ struct SwitchStmt
 	Eval: string ->
 		if @ExprSwitchStmt != nil => return @ExprSwitchStmt.Eval()
 		if @TypeSwitchStmt != nil => return @TypeSwitchStmt.Eval()
-		return ""
+		""
 
 struct ExprSwitchStmt
 	*Node
@@ -370,7 +359,7 @@ struct ExprSwitchStmt
 		res += "{\n"
 		for _, spec in @ExprCaseClauses
 			res += spec.Eval() + "\n"
-		return res + "}"
+		res + "}"
 
 struct ExprCaseClause
 	*Node
@@ -383,7 +372,7 @@ struct ExprCaseClause
 			res += spec.Eval() + "\n"
 		if len(@Statements) > 0
 			res = res[:len(res)-1]
-		return res
+		res
 
 struct ExprSwitchCase
 	*Node
@@ -391,7 +380,7 @@ struct ExprSwitchCase
 	IsDefault   bool
 	Eval: string ->
 		if @IsDefault => return "default"
-		return "case " + @Expressions.Eval()
+		"case " + @Expressions.Eval()
 
 struct TypeSwitchStmt
 	*Node
@@ -405,7 +394,7 @@ struct TypeSwitchStmt
 		res += "{\n"
 		for _, spec in @TypeCaseClauses
 			res += spec.Eval() + "\n"
-		return res + "}"
+		res + "}"
 
 struct TypeSwitchGuard
 	*Node
@@ -414,7 +403,7 @@ struct TypeSwitchGuard
 	Eval: string ->
 		res := ""
 		if len(@Name) > 0 => res += @Name + "="
-		return res + @PrimaryExpr.Eval() + ".(type)"
+		res + @PrimaryExpr.Eval() + ".(type)"
 
 struct TypeCaseClause
 	*Node
@@ -426,7 +415,7 @@ struct TypeCaseClause
 			res += spec.Eval() + "\n"
 		if len(@Statements) > 0
 			res = res[:len(res)-1]
-		return res
+		res
 
 struct TypeSwitchCase
 	*Node
@@ -438,7 +427,7 @@ struct TypeSwitchCase
 		for _, spec in @Types
 			res += spec.Eval() + ","
 		res = res[:len(res)-1]
-		return res
+		res
 
 struct SelectStmt
 	*Node
@@ -447,7 +436,7 @@ struct SelectStmt
 		res := "select {\n"
 		for _, spec in @CommClauses
 			res += spec.Eval()
-		return res + "}"
+		res + "}"
 
 struct CommClause
 	*Node
@@ -455,7 +444,7 @@ struct CommClause
 	Block *Block
 	Eval: string ->
 		block := @Block.Eval()
-		return @CommCase.Eval() + ":" + block[1:len(block)-1]
+		@CommCase.Eval() + ":" + block[1:len(block)-1]
 
 struct CommCase
 	*Node
@@ -466,7 +455,7 @@ struct CommCase
 		if @IsDefault       => return "default"
 		if @SendStmt != nil => return "case " + @SendStmt.Eval()
 		if @RecvStmt != nil => return "case " + @RecvStmt.Eval()
-		return ""
+		""
 
 struct RecvStmt
 	*Node
@@ -479,7 +468,7 @@ struct RecvStmt
 		res += strings.Join(@Identifiers, ",")
 		if len(@Identifiers) > 0 => res += ":="
 		res += @Expression.Eval()
-		return res
+		res
 
 struct ForStmt
 	*Node
@@ -492,7 +481,7 @@ struct ForStmt
 		if @Expression  != nil => res += @Expression.Eval()
 		if @ForClause   != nil => res += @ForClause.Eval()
 		if @RangeClause != nil => res += @RangeClause.Eval()
-		return res + @Block.Eval()
+		res + @Block.Eval()
 
 struct ForClause
 	*Node
@@ -506,7 +495,7 @@ struct ForClause
 		if @Expression      != nil => res += @Expression.Eval()
 		res += ";"
 		if @RightSimpleStmt != nil => res += @RightSimpleStmt.Eval()
-		return res
+		res
 
 struct RangeClause
 	*Node
@@ -518,7 +507,7 @@ struct RangeClause
 		// if @Expressions != nil => res += @Expressions.Eval()
 		res += strings.Join(@Identifiers, ",")
 		res += ":= "
-		return res + "range " +  @Expression.Eval()
+		res + "range " +  @Expression.Eval()
 
 struct GoStmt
 	*Node
@@ -527,7 +516,7 @@ struct GoStmt
 	Eval: string ->
 		if @Function   != nil => return "go func " + @Function.Eval() + "()"
 		if @Expression != nil => return "go " + @Expression.Eval()
-		return ""
+		""
 
 struct Type
 	*Node
@@ -537,7 +526,7 @@ struct Type
 	Eval: string ->
 		if @TypeLit != nil => return @TypeLit.Eval()
 		if @Type    != nil => return "(" + @Type.Eval() + ")"
-		return @TypeName
+		@TypeName
 
 struct TypeLit
 	*Node
@@ -558,20 +547,18 @@ struct TypeLit
 		if @SliceType     != nil => return @SliceType.Eval()
 		if @MapType       != nil => return @MapType.Eval()
 		if @ChannelType   != nil => return @ChannelType.Eval()
-		return ""
+		""
 
 struct ArrayType
 	*Node
 	Length      *Expression
 	ElementType *Type
-	Eval: string ->
-		return "[" + @Length.Eval() + "]" + @ElementType.Eval()
+	Eval: string -> "[" + @Length.Eval() + "]" + @ElementType.Eval()
 
 struct PointerType
 	*Node
 	Type *Type
-	Eval: string ->
-		return "*" + @Type.Eval()
+	Eval: string -> "*" + @Type.Eval()
 
 struct InterfaceType
 	*Node
@@ -583,27 +570,24 @@ struct InterfaceType
 			res += "\n"
 		for _, spec in @MethodSpecs
 			res += spec.Eval() + "\n"
-		return @Name + " interface {" + res  + "}"
+		@Name + " interface {" + res  + "}"
 
 struct SliceType
 	*Node
 	Type *Type
-	Eval: string ->
-		return "[]" + @Type.Eval()
+	Eval: string -> "[]" + @Type.Eval()
 
 struct MapType
 	*Node
 	InnerType *Type
 	OuterType *Type
-	Eval: string ->
-		return "map[" + @InnerType.Eval() + "]" + @OuterType.Eval()
+	Eval: string -> "map[" + @InnerType.Eval() + "]" + @OuterType.Eval()
 
 struct ChannelType
 	*Node
 	ChannelDecl string
 	Type        *Type
-	Eval: string ->
-		return @ChannelDecl + " " + @Type.Eval()
+	Eval: string -> @ChannelDecl + " " + @Type.Eval()
 
 struct MethodSpec
 	*Node
@@ -616,13 +600,12 @@ struct MethodSpec
 		if @Parameters != nil => res += @Parameters.Eval()
 		if @Result     != nil => res += @Result.Eval()
 		res += @Type
-		return res
+		res
 
 struct FunctionType
 	*Node
 	Signature *Signature
-	Eval: string->
-		return "func " + @Signature.Eval()
+	Eval: string -> "func " + @Signature.Eval()
 
 struct Signature
 	*Node
@@ -632,7 +615,7 @@ struct Signature
 		res := ""
 		if @Parameters != nil => res += @Parameters.Eval()
 		if @Result != nil => res += @Result.Eval()
-		return res
+		res
 
 struct Result
 	*Node
@@ -642,7 +625,7 @@ struct Result
 		for _, spec in @Types
 			res += spec.Eval() + ","
 		res += ")"
-		return res
+		res
 
 struct Parameter
 	*Node
@@ -657,7 +640,7 @@ struct Parameter
 			res = res[:len(res)-1]
 		res += " "
 		if @IsVariadic => res += "..."
-		return res + @Type.Eval()
+		res + @Type.Eval()
 
 struct Operand
 	*Node
@@ -670,7 +653,7 @@ struct Operand
 		if @OperandName != nil => return @OperandName.Eval()
 		if @MethodExpr  != nil => return @MethodExpr.Eval()
 		if @Expression  != nil => return "(" + @Expression.Eval() + ")"
-		return ""
+		""
 
 struct Literal
 	*Node
@@ -680,20 +663,18 @@ struct Literal
 	Eval: string ->
 		if @Composite != nil => return @Composite.Eval()
 		if @FunctionLit != nil => return @FunctionLit.Eval()
-		return @Basic
+		@Basic
 
 struct OperandName
 	*Node
 	Name string
-	Eval: string ->
-		return @Name
+	Eval: string -> @Name
 
 struct CompositeLit
 	*Node
 	LiteralType  *LiteralType
 	LiteralValue *LiteralValue
-	Eval: string ->
-		return @LiteralType.Eval() + @LiteralValue.Eval()
+	Eval: string -> @LiteralType.Eval() + @LiteralValue.Eval()
 
 struct LiteralType
 	*Node
@@ -709,7 +690,7 @@ struct LiteralType
 		if @Element != nil => return "[...]" + @Element.Eval()
 		if @Slice   != nil => return @Slice.Eval()
 		if @Map     != nil => return @Map.Eval()
-		return @Type
+		@Type
 
 struct LiteralValue
 	*Node
@@ -720,7 +701,7 @@ struct LiteralValue
 			res += "\n"
 		for _, spec in @Elements
 			res += spec.Eval() + ",\n"
-		return res + "}"
+		res + "}"
 
 struct KeyedElement
 	*Node
@@ -729,7 +710,7 @@ struct KeyedElement
 	Eval: string ->
 		res := ""
 		if @Key != nil => res += @Key.Eval() + ":"
-		return res + @Element.Eval()
+		res + @Element.Eval()
 
 struct Key
 	*Node
@@ -739,7 +720,7 @@ struct Key
 	Eval: string ->
 		if @Expression   != nil => return @Expression.Eval()
 		if @LiteralValue != nil => return @LiteralValue.Eval()
-		return @Name
+		@Name
 
 struct Element
 	*Node
@@ -748,7 +729,7 @@ struct Element
 	Eval: string ->
 		if @Expression   != nil => return @Expression.Eval()
 		if @LiteralValue != nil => return @LiteralValue.Eval()
-		return ""
+		""
 
 struct StructType
 	*Node
@@ -764,7 +745,7 @@ struct StructType
 				methods += "\nfunc (this " + receiver + ")" + spec.InlineStructMethod.Eval()
 			else
 				res += spec.Eval() + "\n"
-		return res + "}" + methods
+		res + "}" + methods
 
 struct FieldDecl
 	*Node
@@ -778,14 +759,13 @@ struct FieldDecl
 		res := strings.Join(@Identifiers, ",")
 		if @Type != nil => res += " " + @Type.Eval()
 		if @Anonymous != nil => res += @Anonymous.Eval()
-		return res + " " + @Tag
+		res + " " + @Tag
 
 struct InlineStructMethod
 	*Node
 	IsPointerReceiver bool
 	FunctionDecl      *FunctionDecl
-	Eval: string ->
-		return @FunctionDecl.Eval()[4:]
+	Eval: string -> @FunctionDecl.Eval()[4:]
 
 struct AnonymousField
 	*Node
@@ -794,13 +774,12 @@ struct AnonymousField
 	Eval: string ->
 		res := @Type
 		if @IsPointerReceiver => res = "*" + res
-		return res
+		res
 
 struct FunctionLit
 	*Node
 	Function *Function
-	Eval: string ->
-		return "func " + @Function.Eval()
+	Eval: string -> "func " + @Function.Eval()
 
 struct PrimaryExpr
 	*Node
@@ -812,7 +791,7 @@ struct PrimaryExpr
 		if @Operand       != nil => return @Operand.Eval()
 		if @Conversion    != nil => return @Conversion.Eval()
 		if @PrimaryExpr   != nil => return @PrimaryExpr.Eval() + @SecondaryExpr.Eval()
-		return ""
+		""
 
 struct SecondaryExpr
 	*Node
@@ -827,13 +806,12 @@ struct SecondaryExpr
 		if @Slice             != nil => return @Slice.Eval()
 		if @TypeAssertion     != nil => return @TypeAssertion.Eval()
 		if @Arguments         != nil => return @Arguments.Eval()
-		return ""
+		""
 
 struct Index
 	*Node
 	Expression *Expression
-	Eval: string ->
-		return "[" + @Expression.Eval() + "]"
+	Eval: string -> "[" + @Expression.Eval() + "]"
 
 struct Slice
 	*Node
@@ -846,13 +824,12 @@ struct Slice
 		res += ":"
 		if @MiddleExpr != nil => res += @MiddleExpr.Eval()
 		if @RightExpr != nil => res += ":" + @RightExpr.Eval()
-		return res + "]"
+		res + "]"
 
 struct TypeAssertion
 	*Node
 	Type *Type
-	Eval: string ->
-		return ".(" + @Type.Eval() + ")"
+	Eval: string -> ".(" + @Type.Eval() + ")"
 
 struct Arguments
 	*Node
@@ -867,14 +844,13 @@ struct Arguments
 				res += ","
 		if @Expressions != nil => res += @Expressions.Eval()
 		if @IsVariadic         => res += "..."
-		return res + ")"
+		res + ")"
 
 struct MethodExpr
 	*Node
 	ReceiverType *ReceiverType
 	Name         string
-	Eval: string ->
-		return @ReceiverType.Eval() + "." + @Name
+	Eval: string -> @ReceiverType.Eval() + "." + @Name
 
 struct ReceiverType
 	*Node
@@ -886,7 +862,7 @@ struct ReceiverType
 		if @ReceiverType != nil => return "(" + @ReceiverType.Eval() + ")"
 		res += @Type
 		if @IsPointer => res = "(*" + res + ")"
-		return res
+		res
 
 struct Expression
 	*Node
@@ -898,7 +874,7 @@ struct Expression
 	Eval: string ->
 		if @UnaryExpr   != nil => return @UnaryExpr.Eval()
 		// if @FunctionLit != nil => return @FunctionLit.Eval()
-		return @LeftExpression.Eval() + @Op + @RightExpression.Eval()
+		@LeftExpression.Eval() + @Op + @RightExpression.Eval()
 
 struct UnaryExpr
 	*Node
@@ -907,14 +883,13 @@ struct UnaryExpr
 	UnaryExpr   *UnaryExpr
 	Eval: string ->
 		if @PrimaryExpr != nil => return @PrimaryExpr.Eval()
-		return @Op + @UnaryExpr.Eval()
+		@Op + @UnaryExpr.Eval()
 
 struct Conversion
 	*Node
 	Type       *Type
 	Expression *Expression
-	Eval: string ->
-		return @Type.Eval() + "(" + @Expression.Eval() + ")"
+	Eval: string -> @Type.Eval() + "(" + @Expression.Eval() + ")"
 
 struct Interpret
 	*Node
@@ -923,4 +898,4 @@ struct Interpret
 	Eval: string ->
 		if @Statement != nil => return @Statement.Eval()
 		if @TopLevel != nil => return @TopLevel.Eval()
-		return ""
+		""

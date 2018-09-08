@@ -27,7 +27,7 @@ struct Desugar
 						Expressions: &ExpressionList
 							Expressions: []*Expression{last.SimpleStmt.Expression}
 
-		return n
+		n
 	// *Block(n INode): INode ->
 	// 	block := n.(*Block)
 
@@ -46,4 +46,4 @@ RunDesugar(ast INode): INode ->
 
 	desugar.type_ = &desugar
 
-	return desugar.Walk(ast)
+	desugar.Walk(ast)

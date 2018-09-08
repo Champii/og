@@ -35,7 +35,7 @@ struct ErrorHandler
     os.Exit(1)
 
 NewErrorHandler: *ErrorHandler ->
-  return &ErrorHandler
+  &ErrorHandler
     DefaultErrorStrategy: antlr.NewDefaultErrorStrategy()
 
 struct ErrorListener
@@ -54,7 +54,7 @@ struct ErrorListener
 
 
 NewErrorListener(filePath, source string): *ErrorListener ->
-  return &ErrorListener
+  &ErrorListener
     DefaultErrorListener: antlr.NewDefaultErrorListener()
     filePath: filePath
     source: strings.Split(source, "\n")
@@ -74,7 +74,7 @@ parserInit(filePath, str string): *parser.OgParser ->
   p.AddErrorListener(NewErrorListener(filePath, str))
   p.SetErrorHandler(NewErrorHandler())
 
-  return p
+  p
 
 Parse(filePath, str string): string ->
   p := parserInit(filePath, str)
@@ -92,7 +92,7 @@ Parse(filePath, str string): string ->
 
   final := tree.Eval()
 
-  return final
+  final
 
 ParseInterpret(filePath, str string): string ->
   p := parserInit(filePath, str)
@@ -103,4 +103,4 @@ ParseInterpret(filePath, str string): string ->
 
   final := t.VisitInterp(res.(*parser.InterpContext), t).(*ast.Interpret).Eval()
 
-  return final
+  final

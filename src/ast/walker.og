@@ -46,4 +46,4 @@ struct AstWalker
 
 			@callDelegate("After", valueField)
 
-		return ast
+		ast
