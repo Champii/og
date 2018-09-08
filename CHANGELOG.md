@@ -12,11 +12,11 @@
     ```
   - Assignation for `if` statement
     ```go
-      var a int = if true
-        42
-      else
-        0
+      var a int = 
+        if true => 42
+        else    => 0
     ```
+  - Overview section in the docs
 
 ## v0.4.2
   - Auto return for function with no return keyword (only for simple statement yet)

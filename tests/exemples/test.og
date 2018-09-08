@@ -1,17 +1,6 @@
 !og
 
-voila: int ->
-  var b = 2
-
-  if true => 1
-  else    => 2
-
-  var a int = if true
-    1
-  else
-    2
-
-  var b int = if true => 1 ; else => 2
-
-  if true => 1
-  else    => 2
+voila ->
+  var a int =
+    if foo == bar => foo.Do()
+    else          => bar.Do()

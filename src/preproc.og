@@ -51,6 +51,7 @@ Preproc(str string): string ->
     if indentSize == 0 && indent != lastIndent
       indentSize = indent
 
+    //&& lines[i-1][len(lines[i-1])-1] != '='
     if indent > lastIndent
       res[len(res)-1] = res[len(res)-1] + " {"
     else if indent < lastIndent

@@ -12,7 +12,7 @@ Og-Lang
 
 1. [Intro](#intro)
 2. [Install](#install)
-3. [Basics](#basics)
+3. [Quick Overview](#quick-overview)
 4. [Usage](#usage)
     1. [Interpreter (ALPHA)](#interpreter-alpha)
     2. [Basic file compilation](#basic-file-compilation)
@@ -51,59 +51,48 @@ go get -u github.com/champii/og
 og --version # or `og -V`
 ```
 
-# Basics
+# Overview
 
-This is an exemple of how `Oglang` looks like actualy. See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder or the [Src](https://github.com/champii/og/tree/master/src) folder.
+This is an quick overview of how `Oglang` looks like actualy. 
+
+### [Full overview here](https://github.com/champii/og/tree/master/docs/overview.md) with compiled comparison
+
+
+See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder or the [Src](https://github.com/champii/og/tree/master/src) folder for more exemples.
 
 ```go
-!main // package shorthand
+!main
 
-// No parenthesis and single word can omit quotes
 import
   fmt
   strings
   "some/repo"
 
-// Alias for `type Foo struct`
 struct Foo
-  // Classical property declaration
   bar int
-  // Inline method declaration
-  // with no arguments that returns `this.bar`
-  getBar : int -> @bar
-  // Pointer type for receiver
+  getBar: int    -> @bar
   *setBar(i int) -> @bar = i
 
-// External Foo method declaration
-Foo::inc(foo int) -> @bar = @bar + foo
-// Pointer type for receiver
-Foo::*inc(foo int) -> @bar = @bar + foo
+Foo::inc    (foo int): int -> @bar + foo
+Foo::*setInc(foo int)      -> @bar = @bar + foo
 
-// Alias for `type Bar interface`
 interface Bar
   Foo()
   Bar(i int): SomeType
 
-// Alias for struct
-class Test
-
-// Classical top-level function declaration
-// Automatic return for last statement of a block
 otherFunc(a string): string -> a
+
+autoIfReturn: int ->
+  if true => 1
+  else    => 0
 
 main ->
   test := Foo{}
-
   test.inc(42)
 
-  if test.getBar() == 42
-    answerTheUltimateQuestion()
-  else
-    enterTheVoid()
-
-  // One-liners
-  if test.getBar() == 42 => answerTheUltimateQuestion()
-  else                   => enterTheVoid()
+  var a int = 
+    if true => 1
+    else    => 0
 
   someArr := []string
     "value1"
@@ -116,14 +105,10 @@ main ->
     42 => doSomething()
     _  => doDefault()
 
-  // Function literal with the keywork `fn`
   callback := fn (arg int): int -> arg + 1
 
   go someFunc()
-
-  // Auto executed closure when in goroutines
-  // No need to add the extra `()`
-  go fn -> doSomething()
+  go -> doSomething()
 ```
 
 # Usage
@@ -235,6 +220,7 @@ og exemples/import.og
 - [ ] VSCode extension
 - [ ] Adapt Golang tooling like `gofmt` or `golint`
 - [ ] Better error context
+- [ ] Fix type switch assignement `switch t := v.(type)` 
 
 ## Syntaxic Sugar
 - [ ] Suffix keyword `return foo if bar`, `foo += i for i in array`
@@ -264,85 +250,6 @@ og exemples/import.og
 
 # Long term utopia
 
-```go
-!main
+What we want `Og` to looks like in the futur
 
-import fmt
-
-// Generics
-struct Generic<T>
-  // attributes
-  pub test T
-
-  // Instance method
-  fn : T -> @test
-
-  // Class method with external type declaration
-  $ T -> Generic<T>
-  pub @new(v) -> Generic<T>{ v }
-
-
-// External grouped method definition
-Generic<T>::(
-  // With '*', tells the receiver (this or @) is a pointer to Generic<T>
-  *method1 : int -> 1
-
-  // External type declaration with no return
-  $ int -> SomeComplexType -> (AnotherOne -> interface{}) -> ()
-  method2(a, b, c) -> 2
-)
-
-// Returnable statements, nil existence test, predicat recapture (that)
-genericFunc<T>(g Generic<T>): T -> if g.fn()? => that
-                                   else       => somethingElse
-
-// External type declaration
-$ Generic<T> -> T
-genericFunc<T>(g) -> g.test
-
-// Multiple return values
-$ int -> (int, string)
-multipleReturn(i) -> i, "foo"
-
-// Automatic "it" argument when not specified
-$ string -> string
-someFunc -> it + "Hello"
-
-// No arguments, multiple return values, error bubbling
-# (error, SomeType)
-failableFunc ->
-  res1 := funcsThatMayFail()?
-  res2 := funcsThatFail()?
-
-  res1 + res2
-
-// Macro definition (like rust)
-$macro my_macro ->
-  ($number:expr) =>
-    myFunc$(number) : int -> $number
-    if $number > 0
-      $my_macro($number - 1)
-
-// Generate 10 function `myFunc10(), myFunc9(), .. myFunc0()` that all return their number,
-$my_macro(10)
-
-// Operator definition with precedence
-operator ~~ 9
-
-// Typeclass (could be implemented with macros ? lets see...)
-impl SomeTypeClass for MyType
-  x ~~ y = x.DoSomething(y)
-
-main ->
-  t := Generic<string>::new("str")
-
-  // Range array creation, call chaining,
-  // function currying and function shorthand.
-  // Here a == [10, 11, 12, 13, 14, 15]
-  a := []int{0..10}
-    |> map((+ 10))
-    |> filter((<= 15))
-
-  // Function composition
-  f := map >> filter
-```
+[Utopia](https://github.com/champii/og/tree/master/tests/exemples/utopia.og)

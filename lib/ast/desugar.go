@@ -17,7 +17,11 @@ func (this *Desugar) VarDecl(n INode) INode {
 		}
 		ifStmt := statement.IfStmt
 		if ifStmt == nil {
-			continue
+			if statement.Block != nil && len(statement.Block.Statements) == 1 && statement.Block.Statements[0].IfStmt != nil {
+				ifStmt = statement.Block.Statements[0].IfStmt
+			} else {
+				continue
+			}
 		}
 		varSpec.Statement = ifStmt.MakeReturnClosureStatement(varSpec.Type)
 	}
