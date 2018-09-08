@@ -40,7 +40,7 @@ func walker(filePath string, info os.FileInfo, err error) error {
 	if err != nil {
 		return err
 	}
-	if info.IsDir() == true {
+	if info.IsDir() {
 		return nil
 	}
 	if path.Ext(filePath) != ".og" {
@@ -62,7 +62,7 @@ func ProcessFile(filePath string, data string, isInterpret bool) (string, error)
 		fmt.Print(filePath)
 	}
 	preprocessed := Preproc(string(data))
-	if config.Blocks == true {
+	if config.Blocks {
 		return preprocessed, nil
 	}
 	res := ""
@@ -71,15 +71,15 @@ func ProcessFile(filePath string, data string, isInterpret bool) (string, error)
 	} else {
 		res = ParseInterpret(filePath, string(preprocessed))
 	}
-	if config.Dirty == true {
+	if config.Dirty {
 		return res, nil
 	}
 	return format(res)
 }
 func finalizeFile(filePath string, data string) {
-	if config.Print == true {
+	if config.Print {
 		fmt.Println(data)
-	} else if config.Ast != true && config.Print != true && config.Dirty != true && config.Blocks != true {
+	} else if !config.Ast && !config.Print && !config.Dirty && !config.Blocks {
 		writeFile(filePath, data)
 	}
 }
@@ -91,7 +91,7 @@ func writeFile(filePath string, data string) {
 	newPath := strings.Replace(path.Join(config.OutPath, filePath), ".og", ".go", 1)
 	os.MkdirAll(filepath.Dir(newPath), os.ModePerm)
 	ioutil.WriteFile(newPath, []byte(data), os.ModePerm)
-	if config.Verbose == true {
+	if config.Verbose {
 		fmt.Println("->", newPath)
 	}
 }

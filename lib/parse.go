@@ -81,7 +81,7 @@ func Parse(filePath, str string) string {
 	t := new(translator.OgVisitor)
 	tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
 	tree = ast.RunDesugar(tree).(*ast.SourceFile)
-	if config.Ast == true {
+	if config.Ast {
 		ast.Print(tree)
 	}
 	final := tree.Eval()

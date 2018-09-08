@@ -17,16 +17,16 @@ struct AstWalker
 
 		for i := 0; i < val.NumField(); i++
 			valueField := val.Field(i)
-			typeField := val.Type().Field(i)
+			valueType := val.Type().Field(i)
 
 			valueKind := valueField.Kind()
 
-			if valueKind == reflect.String || valueKind == reflect.Bool || typeField.Name == "Node"
+			if valueKind == reflect.String || valueKind == reflect.Bool || valueType.Name == "Node"
 				continue
 
-			if valueKind == reflect.Slice || false
+			if valueKind == reflect.Slice
 				for i := 0; i < valueField.Len(); i++
-					if valueField.Index(i).Kind() == reflect.String && true
+					if valueField.Index(i).Kind() == reflect.String
 						continue
 
 					@Walk(valueField.Index(i).Interface().(INode))
@@ -36,7 +36,7 @@ struct AstWalker
 			if valueField.IsNil()
 				continue
 
-			name := reflect.TypeOf(ast).String()[5:]
+			name := valueField.Type().String()[5:]
 
 			@callDelegate("Before", valueField)
 			@callDelegate("Each", valueField)

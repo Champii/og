@@ -1,6 +1,7 @@
 # Changelog
 
 ## DEV: Current version
+  - Auto return for function with no return keyword (only for simple statement yet)
 
 ## v0.4.1
   - Abstract AST walker and a derived AST Printer

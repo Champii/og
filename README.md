@@ -70,7 +70,7 @@ struct Foo
   bar int
   // Inline method declaration
   // with no arguments that returns `this.bar`
-  getBar : int -> return @bar
+  getBar : int -> @bar
   // Pointer type for receiver
   *setBar(i int) -> @bar = i
 
@@ -88,7 +88,8 @@ interface Bar
 class Test
 
 // Classical top-level function declaration
-otherFunc(a string): string -> return a
+// Automatic return for last statement of a block
+otherFunc(a string): string -> a
 
 main ->
   test := Foo{}
@@ -116,7 +117,7 @@ main ->
     _  => doDefault()
 
   // Function literal with the keywork `fn`
-  callback := fn (arg int): int -> return arg + 1
+  callback := fn (arg int): int -> arg + 1
 
   go someFunc()
 
@@ -239,7 +240,6 @@ og exemples/import.og
 - [ ] Auto setup package name with folder name if not specified
 - [ ] OneLiner if/for: `if a => 1`, `for b => b--`
 - [ ] Returnable and assignable statements (if, for, ...)
-- [ ] Auto return for last statement in a block
 - [ ] Predicat recapture: `if a => that`
 - [ ] External type declaration like Haskell: `myFunc :: string -> Foo -> Bar`
 - [ ] Struct compostion ("Inheritance")

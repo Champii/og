@@ -1,11 +1,45 @@
 !ast
 
-
 struct Desugar
 	AstWalker
 
-	*FunctionDecl(n INode): INode ->
+	*Function(n INode): INode ->
+		function := n.(*Function)
+		sig := function.Signature
+
+		if sig == nil
+			return n
+
+		retType := sig.Result
+
+		// We don't support multiple return type (yet)
+		if retType == nil || len(retType.Types) != 1
+			return n
+
+		block := function.Block
+		if block != nil && len(block.Statements) > 0
+			last := block.Statements[len(block.Statements)-1]
+
+			// We only support simple statement yet
+			if last.SimpleStmt != nil && last.ReturnStmt == nil
+				block.Statements[len(block.Statements)-1] = &Statement
+					ReturnStmt: &ReturnStmt
+						Expressions: &ExpressionList
+							Expressions: []*Expression{last.SimpleStmt.Expression}
+
 		return n
+	// *Block(n INode): INode ->
+	// 	block := n.(*Block)
+
+	// 	if len(block.Statements) > 0
+	// 		last := block.Statements[len(block.Statements)-1]
+
+	// 		if last.ReturnStmt == nil
+	// 			block.Statements[len(block.Statements)-1] = &Statement
+	// 				ReturnStmt: &ReturnStmt
+	// 					Statement: last
+
+	// 	return n
 
 RunDesugar(ast INode): INode ->
 	desugar := Desugar{}

@@ -18,14 +18,14 @@ func (this *AstWalker) Walk(ast INode) INode {
 	val := reflect.ValueOf(ast).Elem()
 	for i := 0; i < val.NumField(); i++ {
 		valueField := val.Field(i)
-		typeField := val.Type().Field(i)
+		valueType := val.Type().Field(i)
 		valueKind := valueField.Kind()
-		if valueKind == reflect.String || valueKind == reflect.Bool || typeField.Name == "Node" {
+		if valueKind == reflect.String || valueKind == reflect.Bool || valueType.Name == "Node" {
 			continue
 		}
-		if valueKind == reflect.Slice || false {
+		if valueKind == reflect.Slice {
 			for i := 0; i < valueField.Len(); i++ {
-				if valueField.Index(i).Kind() == reflect.String && true {
+				if valueField.Index(i).Kind() == reflect.String {
 					continue
 				}
 				this.Walk(valueField.Index(i).Interface().(INode))
@@ -35,7 +35,7 @@ func (this *AstWalker) Walk(ast INode) INode {
 		if valueField.IsNil() {
 			continue
 		}
-		name := reflect.TypeOf(ast).String()[5:]
+		name := valueField.Type().String()[5:]
 		this.callDelegate("Before", valueField)
 		this.callDelegate("Each", valueField)
 		this.callDelegate(name, valueField)

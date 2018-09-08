@@ -87,7 +87,7 @@ Parse(filePath, str string): string ->
 
   tree = ast.RunDesugar(tree).(*ast.SourceFile)
 
-  if config.Ast == true
+  if config.Ast
     ast.Print(tree)
 
   final := tree.Eval()

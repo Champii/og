@@ -38,7 +38,7 @@ walker(filePath string, info os.FileInfo, err error): error ->
   if err != nil
     return err
 
-  if info.IsDir() == true
+  if info.IsDir()
     return nil
 
   if path.Ext(filePath) != ".og"
@@ -64,7 +64,7 @@ ProcessFile(filePath string, data string, isInterpret bool): string, error ->
 
   preprocessed := Preproc(string(data))
 
-  if config.Blocks == true
+  if config.Blocks
     return preprocessed, nil
 
   res := ""
@@ -73,15 +73,15 @@ ProcessFile(filePath string, data string, isInterpret bool): string, error ->
   else
     res = ParseInterpret(filePath, string(preprocessed))
 
-  if config.Dirty == true
+  if config.Dirty
     return res, nil
 
   return format(res)
 
 finalizeFile(filePath string, data string) ->
-  if config.Print == true
+  if config.Print
     fmt.Println(data)
-  else if config.Ast != true && config.Print != true && config.Dirty != true && config.Blocks != true
+  else if !config.Ast && !config.Print && !config.Dirty && !config.Blocks
     writeFile(filePath, data)
 
 writeFile(filePath string, data string) ->
@@ -95,7 +95,7 @@ writeFile(filePath string, data string) ->
 
   ioutil.WriteFile(newPath, []byte(data), os.ModePerm)
 
-  if config.Verbose == true
+  if config.Verbose
     fmt.Println("->", newPath)
 
 format(str string): string, error ->

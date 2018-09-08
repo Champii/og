@@ -326,7 +326,7 @@ func main() {
 		`package main
 
 func someFunc(c1 chan<- int, c2 <-chan int) chan int {
-	0
+	return 0
 }
 func main() {
 	c := make(chan string)
@@ -411,7 +411,7 @@ func a(arg func() int) {
 }
 func main() {
 	a(func() int {
-		2
+		return 2
 	})
 }
 `,
