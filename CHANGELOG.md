@@ -1,6 +1,6 @@
 # Changelog
 
-## DEV: Current version
+## v0.6.0: Current version
   - Generics that are produced at compile time
     ```go
       genericFunction<T>(arg T): T -> arg
