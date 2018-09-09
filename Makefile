@@ -67,7 +67,7 @@ re:
 
 re_: grammar
 	@make clean build --no-print-directory
-	@make CC='./og' new --no-print-directory
+	@make CC='./og' clean new --no-print-directory
 
 new:
 	@make CC='./og' all --no-print-directory

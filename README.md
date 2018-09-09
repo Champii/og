@@ -39,8 +39,7 @@ Testers and Contributors are most welcome
 
 `Oglang` is written in itself. It is said to be a 'Bootstraped' language. In fact, `Oglang` needs the previous release of itself to build itself.
 
-See the [Src](https://github.com/champii/og/tree/master/src) folder for `Oglang` source.  
-And the [Lib](https://github.com/champii/og/tree/master/lib) folder for the compiled one (in Golang).
+See the [Src](https://github.com/champii/og/tree/master/src) folder for both `Oglang` and `Golang` sources.
 
 Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
 
