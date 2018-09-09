@@ -17,9 +17,10 @@ func (this *Printer) Before(n INode) {
 func (this *Printer) After(n INode) {
 	this.indent--
 }
-func (this *Printer) Each(n INode) {
+func (this *Printer) Each(n INode) INode {
 	name := reflect.TypeOf(n).String()[5:]
 	fmt.Printf("%s\n", strings.Repeat(" ", this.indent)+name)
+	return n
 }
 func Print(ast INode) {
 	p := Printer{}

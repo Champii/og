@@ -1,6 +1,9 @@
 !og
 
-voila ->
-  var a int =
-    if foo == bar => foo.Do()
-    else          => bar.Do()
+a<T>(t T): T-> t
+
+main ->
+  var a = 2
+  a = 3
+  fmt.Println(a<int>(1))
+  fmt.Println(a<string>(1))

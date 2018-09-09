@@ -29,7 +29,7 @@ Testers and Contributors are most welcome
 </h3>
 
 
-`Og` is to be pronounced `Oh-Jee` and stands for `Optimistic Golang`
+`Og` is to be pronounced `Oh-Jee` and stands for ~~`Orgasmic Granny`~~ `Optimistic Golang`
 
 `Oglang` is an indentation based language mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of `GoLang`.
 
@@ -187,7 +187,7 @@ The `-b` (`--block`) option prints the output of the preprocessor who's in charg
 
 # Build
 
-### The current build time of the project is around 18s for all sources files with `og src` alone, and around 60s for full rebootstrap with `make re` (That bootstraps from old version then rebootstraps from itself, with `go build` and `go test` each time). Tests take around 5s to pass. Need better perfs.
+The current build time of the project is around 20s for all sources files with `./og src` alone, and around 60s for full rebootstrap with `make re` (That bootstraps from old version then rebootstraps from itself, with `go build` and `go test` each time). Tests take around 5s to pass. Need better perfs.
 
 Here is the procedure to regenerate the parser from the grammar if you want to make changes to it.
 
@@ -219,40 +219,43 @@ og exemples/import.og
 # TODO
 
 ## Golang basics
-- [ ] Perfs !! (More specific rules, reduce size and workload of Walkers, remove ambiguity in grammar)
 - [ ] Ternary expression
 - [ ] Named return
-- [ ] Make tests truly executable
-- [ ] VSCode extension
-- [ ] Adapt Golang tooling like `gofmt` or `golint`
-- [ ] Better error context
 - [ ] Fix type switch assignement `switch t := v.(type)` 
 
 ## Syntaxic Sugar
+- [ ] Slices declaration without type `[1, 2, 3]`, `[]string` (need type inference)
+- [ ] `*` Operator in slices to reference own lenght `arr = arr[*-1]`
 - [ ] Suffix keyword `return foo if bar`, `foo += i for i in array`
-- [ ] OneLiner for: `for b => b--`
-- [ ] Returnable and assignable statements (if, for, ...)
+- [ ] Returnable and assignable statements (for, switch, ...)
 - [ ] Predicat recapture: `if a => that`
 - [ ] External type declaration like Haskell: `myFunc :: string -> Foo -> Bar`
-- [ ] Struct compostion ("Inheritance")
 - [ ] Existance test (if foo? => bar) for non-nil value test
 - [ ] `pub` visibility instead of capitalizing
 - [ ] For with a range (for i in [0..10])
-- [ ] Error bubbling
 - [ ] Pattern matching
 - [ ] Auto setup package name with folder name if not specified
+- [ ] Error bubbling
 - [ ] Function currying
 - [ ] Function shorthand `(+ 10)`
 - [ ] Generics
 - [ ] Import pattern matching
-- [ ] Language extensions ?
-- [ ] Don't recompile files that didn't change
 - [ ] Remove that `fn` keywork that diminish lisibility
-- [ ] Simple type checker to catch errors before Golang formater/compiler does
-- [ ] Fix bad perfs for nested struct instantiation 
 - [ ] Conditionnal expression like `res := getFirst() || getSecond()` that make `if` statements
 - [ ] Assignation and return for `for`, `switch`
+- [ ] `super` keyword
 
+## Technical
+- [ ] Perfs !! (More specific rules, reduce size and workload of Walkers, remove ambiguity in grammar)
+- [ ] Do a single pass on AST instead of multiple walkers (for perfs)
+- [ ] Fix bad perfs for nested struct instantiation 
+- [ ] Simple type checker to catch errors before Golang formater/compiler does
+- [ ] Don't recompile files that didn't change
+- [ ] Language extensions ?
+- [ ] Make tests truly executable
+- [ ] VSCode extension
+- [ ] Adapt Golang tooling like `gofmt` or `golint`
+- [ ] Better error context (How to keep line number after preproc ?)
 
 # Long term utopia
 

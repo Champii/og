@@ -598,8 +598,12 @@ functionType
     ;
 
 signature
-    : {p.noTerminatorAfterParams(1)}? parameters ':' result
-    | parameters
+    : {p.noTerminatorAfterParams(1)}? templateSpec? parameters ':' result
+    | templateSpec? parameters
+    ;
+
+templateSpec
+    : '<' result '>'
     ;
 
 result
@@ -789,7 +793,7 @@ typeAssertion
     ;
 
 arguments
-    : '(' ( ( expressionList | type_ ( ',' expressionList )? ) restOp? ','? )? ')'
+    : templateSpec? '(' ( ( expressionList | type_ ( ',' expressionList )? ) restOp? ','? )? ')'
     ;
 
 //MethodExpr    = ReceiverType "." MethodName .
@@ -1380,13 +1384,17 @@ COMMENT
     :   '/*' .*? '*/' -> channel(HIDDEN)
     ;
 
+LINE_COMMENT
+    :   ('#' | '//') ~[\r\n]* -> skip
+    ;
+
 TERMINATOR
 	: [\r\n]+ -> channel(HIDDEN)
 	;
 
-LINE_COMMENT
-    :   '//' ~[\r\n]* -> skip
-    ;
+// LINE_COMMENT
+//     :   '//' ~[\r\n]* -> skip
+//     ;
 
 ErrorChar
     : .

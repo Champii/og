@@ -1,0 +1,89 @@
+!ast
+
+// import
+// 	fmt
+
+struct FuncSig
+	name      string
+	arguments map[string]string
+	returns   map[string]string
+
+NewFuncSig: *FuncSig ->
+	&FuncSig
+		arguments: make(map[string]string)
+		returns:   make(map[string]string)
+
+struct Scope
+	vars  map[string]string
+	funcs map[string]*FuncSig
+
+NewScope: *Scope ->
+	&Scope
+		vars: make(map[string]string)
+
+struct Stack
+	scopes []*Scope
+	*PushScope                    -> @scopes = append([]*Scope{NewScope()}, @scopes...)
+	*PopScope                     -> @scopes = @scopes[1:]
+	*AddVar(name, t string): bool ->
+		if _, ok := @GetVar(name); ok
+			return false
+
+		@scopes[0].vars[name] = t
+
+		true
+
+	*GetVar(name string): string, bool ->
+		for _, scope in @scopes
+			if t, ok := scope.vars[name]; ok
+				return t, true
+		return "", false
+
+	*AddFunc(name string, f *FuncSig): bool ->
+		if r := @GetFunc(name); r != nil
+			return false
+
+		@scopes[0].funcs[name] = f
+
+		true
+
+	*GetFunc(name string): *FuncSig ->
+		for _, scope in @scopes
+			if f, ok := scope.funcs[name]; ok
+				return f
+		return nil
+
+struct TypeChecker
+	AstWalker
+	stack *Stack
+
+	*VarSpec(n INode): INode ->
+		// fmt.Printf("VarSpec %#v\n", n)
+		n
+
+	*Assignment(n INode): INode ->
+		// fmt.Printf("ASSIGN %#v\n", n)
+		n
+
+	*BeforeBlock(n INode) ->
+		// fmt.Println("PUSH")
+		@stack.PushScope()
+
+	*AfterBlock(n INode) ->
+		// fmt.Println("POP")
+		@stack.PopScope()
+
+	*Each(n INode): INode -> n
+	// name := reflect.TypeOf(n).String()[5:]
+
+	// fmt.Printf("%s\n", strings.Repeat(" ", @indent) + name)
+
+TypeCheck(ast INode) ->
+	t := TypeChecker
+		stack: &Stack{}
+
+	t.stack.PushScope()
+
+	t.type_ = &t
+
+	t.Walk(ast)

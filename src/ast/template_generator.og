@@ -1,0 +1,31 @@
+!ast
+
+// import
+// 	fmt
+// reflect
+
+struct TemplateGen
+	AstWalker
+	typeSrc []string
+	typeDest []string
+
+	*Type(n INode): INode ->
+		t := n.(*Type)
+		tName := t.Eval()
+		for i, ty in @typeSrc
+			if tName == ty
+				t.TypeName = @typeDest[i]
+				t.TypeLit = nil
+				t.Type = nil
+		n
+
+RunTemplateGen(ast INode, typeSrc []string, typeDest []string): INode ->
+	templateGen := TemplateGen
+		typeSrc:  typeSrc
+		typeDest:  typeDest
+
+	templateGen.type_ = &templateGen
+
+	res := templateGen.Walk(ast)
+
+	res

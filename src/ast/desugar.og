@@ -1,13 +1,104 @@
 !ast
 
-// import
-// 	fmt
-// 	reflect
+import
+	fmt
+	bytes
+	strings
+	"encoding/gob"
 
-var mangle = 0
+struct TemplateFn
+	Name    string
+	Types   []string
+	UsedFor [][]string
+	FuncDecl *FunctionDecl
+
+struct GobRegister
+	AstWalker
+	*Each(n INode) -> gob.Register(n)
+
+RunGobRegister(tree INode) ->
+	p := GobRegister{}
+	gob.Register(tree)
+	p.type_ = &p
+	p.Walk(tree)
+
 
 struct Desugar
 	AstWalker
+	root      INode
+	Templates map[string]*TemplateFn
+
+	*GenerateTopFns ->
+		source := @root.(*SourceFile)
+		RunGobRegister(source)
+
+		for _, template in @Templates
+			topArr := source.TopLevels
+			for i, top in topArr
+				if top.FunctionDecl == template.FuncDecl
+					if len(topArr) - 1 == i
+						source.TopLevels = source.TopLevels[:i]
+					else if i == 0
+						source.TopLevels = source.TopLevels[1:]
+					else
+						source.TopLevels = append(source.TopLevels[0:i], source.TopLevels[i+1:]...)
+					break
+
+			for _, usedFor in template.UsedFor
+				other := &FunctionDecl{}
+
+				var buf bytes.Buffer
+				enc := gob.NewEncoder(&buf)
+				if err := enc.Encode(&template.FuncDecl); err != nil
+					fmt.Println("ERROR ENCODE", err)
+
+				dec := gob.NewDecoder(&buf)
+				if err := dec.Decode(&other); err != nil
+					fmt.Println("ERROR DECODE", err)
+
+				newFn := RunTemplateGen(other, template.Types, usedFor).(*FunctionDecl)
+
+				newFn.Name += strings.Join(usedFor, "")
+
+				topLevel := &TopLevel{FunctionDecl: newFn}
+
+				source.TopLevels = append(source.TopLevels, topLevel)
+
+	*Arguments(n INode): INode ->
+		args := n.(*Arguments)
+
+		if args.TemplateSpec != nil
+			callee := args.parent.(*SecondaryExpr).parent.(*PrimaryExpr).PrimaryExpr.Operand
+
+			calleeName := callee.Eval()
+
+			types := []string{}
+
+			for _, t in args.TemplateSpec.Result.Types
+				types = append(types, t.Eval())
+
+			@Templates[calleeName].UsedFor = append(@Templates[calleeName].UsedFor, types)
+			callee.OperandName.Name = calleeName + strings.Join(types, "")
+
+		n
+
+	*Signature(n INode): INode ->
+		sig := n.(*Signature)
+		if sig.TemplateSpec != nil
+
+			if f, ok := sig.parent.(*Function); ok
+				fDecl := f.parent.(*FunctionDecl)
+
+				types := []string{}
+				for _, t in sig.TemplateSpec.Result.Types
+					types = append(types, t.Eval())
+
+				@Templates[fDecl.Name] = &TemplateFn
+					Name: fDecl.Name
+					Types: types
+					UsedFor: [][]string{}
+					FuncDecl: fDecl
+		n
 
 	*VarDecl(n INode): INode ->
 		varDecl := n.(*VarDecl)
@@ -18,7 +109,7 @@ struct Desugar
 
 			ifStmt := statement.IfStmt
 			if ifStmt == nil
-				// Hack: Get the inner ifStmt if existant
+				/* Hack: Get the inner ifStmt if existant */
 				if statement.Block != nil && len(statement.Block.Statements) == 1 && statement.Block.Statements[0].IfStmt != nil
 					ifStmt = statement.Block.Statements[0].IfStmt
 				else
@@ -32,13 +123,13 @@ struct Desugar
 		function := n.(*Function)
 		sig := function.Signature
 
-		// No signature means no return type
+		/* No signature means no return type */
 		if sig == nil
 			return n
 
 		retType := sig.Result
 
-		// We don't support multiple return type (yet)
+		/* We don't support multiple return type (yet) */
 		if retType == nil || len(retType.Types) != 1
 			return n
 
@@ -55,7 +146,7 @@ struct Desugar
 IfStmt::*MakeReturnClosureStatement(t *Type): *Statement ->
 	@AddReturn()
 
-	// FIXME: Problem with large nested struct decl
+	/* FIXME: Problem with large nested struct decl */
 	funcLit := &FunctionLit
 		Node: NewNodeNoCtx()
 		Function: &Function
@@ -104,9 +195,9 @@ IfStmt::*MakeReturnClosureStatement(t *Type): *Statement ->
 			Expression: expr
 
 	return stmt
-	// TODO: Fixme: without return the parser think this is `@AddReturn() & Statement`
-	// return &Statement
-	// 	Node: NewNodeNoCtx()
+	/* TODO: Fixme: without return the parser think this is `@AddReturn() & Statement` */
+	/* return &Statement */
+	// Node: NewNodeNoCtx()
 
 IfStmt::*AddReturn() ->
 	if @Block     != nil => @Block.AddReturn()
@@ -129,8 +220,14 @@ Block::*AddReturn() ->
 						Expressions: []*Expression{last.SimpleStmt.Expression}
 
 RunDesugar(ast INode): INode ->
-	desugar := Desugar{}
+	desugar := Desugar
+		root:      ast
+		Templates: make(map[string]*TemplateFn)
 
 	desugar.type_ = &desugar
 
-	desugar.Walk(ast)
+	res := desugar.Walk(ast)
+
+	desugar.GenerateTopFns()
+
+	res

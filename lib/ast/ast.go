@@ -961,8 +961,9 @@ func (this FunctionType) Eval() string {
 
 type Signature struct {
 	*Node
-	Parameters *Parameters
-	Result     *Result
+	TemplateSpec *TemplateSpec
+	Parameters   *Parameters
+	Result       *Result
 }
 
 func (this Signature) Eval() string {
@@ -976,6 +977,10 @@ func (this Signature) Eval() string {
 	return res
 }
 
+type TemplateSpec struct {
+	*Node
+	Result *Result
+}
 type Result struct {
 	*Node
 	Types []*Type
@@ -1334,9 +1339,10 @@ func (this TypeAssertion) Eval() string {
 
 type Arguments struct {
 	*Node
-	Expressions *ExpressionList
-	Type        *Type
-	IsVariadic  bool
+	TemplateSpec *TemplateSpec
+	Expressions  *ExpressionList
+	Type         *Type
+	IsVariadic   bool
 }
 
 func (this Arguments) Eval() string {

@@ -95,6 +95,8 @@ Parse(filePath, str string): string ->
     ast.Print(tree)
 
   // fmt.Println("Desugar start")
+  ast.TypeCheck(tree)
+
   tree = ast.RunDesugar(tree).(*ast.SourceFile)
   // fmt.Println("Desugar stop")
 

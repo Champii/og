@@ -839,7 +839,15 @@ struct OgVisitor
     if ctx.Result() != nil
       node.Result = @VisitResult(ctx.Result().(*parser.ResultContext), delegate).(*Result)
 
+    if ctx.TemplateSpec() != nil
+      node.TemplateSpec = @VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
+
     node
+
+  VisitTemplateSpec(ctx *parser.TemplateSpecContext, delegate antlr.ParseTreeVisitor): interface ->
+    &TemplateSpec
+      Node: NewNode(ctx)
+      Result: @VisitResult(ctx.Result().(*parser.ResultContext), delegate).(*Result)
 
   VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &Result
@@ -1178,6 +1186,9 @@ struct OgVisitor
 
     if ctx.ExpressionList() != nil
       node.Expressions = @VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
+
+    if ctx.TemplateSpec() != nil
+      node.TemplateSpec = @VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
 
     node
 

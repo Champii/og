@@ -8,11 +8,41 @@ type AstWalker struct {
 	type_ interface{}
 }
 
-func (this *AstWalker) callDelegate(name string, arg reflect.Value) {
+func (this *AstWalker) callDelegate(name string, arg reflect.Value) ([]reflect.Value, bool) {
 	method := reflect.ValueOf(this.type_).MethodByName(name)
 	if method.IsValid() {
-		method.Call([]reflect.Value{arg})
+		res := method.Call([]reflect.Value{arg})
+		if len(res) == 0 {
+			return []reflect.Value{reflect.Zero(arg.Type())}, false
+		} else {
+			return res, true
+		}
 	}
+	return []reflect.Value{reflect.Zero(arg.Type())}, false
+}
+func (this *AstWalker) Trigger(arg reflect.Value, parentField reflect.Value, parentNode INode) (reflect.Value, bool) {
+	node := arg.Interface().(INode)
+	if node == nil {
+		return reflect.Zero(arg.Type()), false
+	}
+	node.SetParent(parentNode)
+	name := arg.Type().String()[5:]
+	this.callDelegate("Before", arg)
+	this.callDelegate("Before"+name, arg)
+	res, ok := this.callDelegate("Each", arg)
+	if ok {
+		node = res[0].Interface().(INode)
+		parentField.Set(reflect.ValueOf(node))
+	}
+	this.callDelegate(name, arg)
+	parentField.Set(reflect.ValueOf(this.Walk(node)))
+	res, ok = this.callDelegate("After", arg)
+	if ok {
+		node = res[0].Interface().(INode)
+		parentField.Set(reflect.ValueOf(node))
+	}
+	this.callDelegate("After"+name, arg)
+	return reflect.ValueOf(node), true
 }
 func (this *AstWalker) Walk(ast INode) INode {
 	val := reflect.ValueOf(ast).Elem()
@@ -24,35 +54,24 @@ func (this *AstWalker) Walk(ast INode) INode {
 			continue
 		}
 		if valueKind == reflect.Slice {
-			for i := 0; i < valueField.Len(); i++ {
-				if valueField.Index(i).Kind() == reflect.String {
+			for j := 0; j < valueField.Len(); j++ {
+				if valueField.Index(j).Kind() == reflect.String {
 					continue
 				}
-				node := valueField.Index(i).Interface().(INode)
-				if node == nil {
-					continue
+				res, ok := this.Trigger(valueField.Index(j), valueField.Index(j), ast)
+				if ok {
+					valueField.Index(j).Set(res)
 				}
-				node.SetParent(ast)
-				name := valueField.Index(i).Type().String()[5:]
-				this.callDelegate("Before", valueField.Index(i))
-				this.callDelegate("Each", valueField.Index(i))
-				this.callDelegate(name, valueField.Index(i))
-				valueField.Index(i).Set(reflect.ValueOf(this.Walk(node)))
-				this.callDelegate("After", valueField.Index(i))
 			}
 			continue
 		}
 		if valueField.IsNil() {
 			continue
 		}
-		name := valueField.Type().String()[5:]
-		node := valueField.Interface().(INode)
-		node.SetParent(ast)
-		this.callDelegate("Before", valueField)
-		this.callDelegate("Each", valueField)
-		this.callDelegate(name, valueField)
-		val.Field(i).Set(reflect.ValueOf(this.Walk(node)))
-		this.callDelegate("After", valueField)
+		res, ok := this.Trigger(valueField, val.Field(i), ast)
+		if ok {
+			val.Field(i).Set(res)
+		}
 	}
 	return ast
 }

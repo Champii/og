@@ -10,6 +10,7 @@ indentCount(str string): int ->
   0
 
 Preproc(str string): string ->
+  // lineCount = 0
   rawLines := strings.Split(str, "\n")
 
   lines := []string{}

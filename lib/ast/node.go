@@ -12,7 +12,7 @@ type INode interface {
 type Node struct {
 	Text_    string
 	Children []INode
-	Parent   INode
+	parent   INode
 }
 
 func (this Node) Eval() string {
@@ -22,8 +22,8 @@ func (this Node) Text() string {
 	return this.Text_
 }
 func (this *Node) SetParent(n INode) {
-	if this.Parent == nil {
-		this.Parent = n
+	if this.parent == nil {
+		this.parent = n
 	}
 }
 func NewNode(ctx antlr.RuleContext) *Node {

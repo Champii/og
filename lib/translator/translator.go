@@ -760,7 +760,16 @@ func (this *OgVisitor) VisitSignature(ctx *parser.SignatureContext, delegate ant
 	if ctx.Result() != nil {
 		node.Result = this.VisitResult(ctx.Result().(*parser.ResultContext), delegate).(*Result)
 	}
+	if ctx.TemplateSpec() != nil {
+		node.TemplateSpec = this.VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
+	}
 	return node
+}
+func (this *OgVisitor) VisitTemplateSpec(ctx *parser.TemplateSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
+	return &TemplateSpec{
+		Node:   NewNode(ctx),
+		Result: this.VisitResult(ctx.Result().(*parser.ResultContext), delegate).(*Result),
+	}
 }
 func (this *OgVisitor) VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &Result{Node: NewNode(ctx)}
@@ -1071,6 +1080,9 @@ func (this *OgVisitor) VisitArguments(ctx *parser.ArgumentsContext, delegate ant
 	}
 	if ctx.ExpressionList() != nil {
 		node.Expressions = this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
+	}
+	if ctx.TemplateSpec() != nil {
+		node.TemplateSpec = this.VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
 	}
 	return node
 }

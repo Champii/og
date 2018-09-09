@@ -605,13 +605,18 @@ struct FunctionType
 
 struct Signature
 	*Node
-	Parameters *Parameters
-	Result     *Result
+	TemplateSpec *TemplateSpec
+	Parameters   *Parameters
+	Result       *Result
 	Eval: string ->
 		res := ""
 		if @Parameters != nil => res += @Parameters.Eval()
 		if @Result != nil => res += @Result.Eval()
 		res
+
+struct TemplateSpec
+	*Node
+	Result *Result
 
 struct Result
 	*Node
@@ -829,8 +834,9 @@ struct TypeAssertion
 
 struct Arguments
 	*Node
-	Expressions *ExpressionList
-	Type        *Type
+	TemplateSpec *TemplateSpec
+	Expressions  *ExpressionList
+	Type         *Type
 	IsVariadic  bool
 	Eval: string ->
 		res := "("

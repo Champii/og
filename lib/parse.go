@@ -84,6 +84,7 @@ func Parse(filePath, str string) string {
 	if config.Ast {
 		ast.Print(tree)
 	}
+	ast.TypeCheck(tree)
 	tree = ast.RunDesugar(tree).(*ast.SourceFile)
 	final := tree.Eval()
 	return final

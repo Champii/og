@@ -11,11 +11,11 @@ interface INode
 struct Node
 	Text_     string
 	Children []INode
-	Parent   INode
+	parent   INode
 
 	Eval: string ->  ""
 	Text: string -> @Text_
-	*SetParent(n INode) -> if @Parent == nil => @Parent = n
+	*SetParent(n INode) -> if @parent == nil => @parent = n
 
 NewNode(ctx antlr.RuleContext): *Node ->
 	&Node

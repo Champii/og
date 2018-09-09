@@ -1,13 +1,108 @@
 package ast
 
-var (
-	mangle = 0
+import (
+	"bytes"
+	"encoding/gob"
+	"fmt"
+	"strings"
 )
 
-type Desugar struct {
+type TemplateFn struct {
+	Name     string
+	Types    []string
+	UsedFor  [][]string
+	FuncDecl *FunctionDecl
+}
+type GobRegister struct {
 	AstWalker
 }
 
+func (this *GobRegister) Each(n INode) {
+	gob.Register(n)
+}
+func RunGobRegister(tree INode) {
+	p := GobRegister{}
+	gob.Register(tree)
+	p.type_ = &p
+	p.Walk(tree)
+}
+
+type Desugar struct {
+	AstWalker
+	root      INode
+	Templates map[string]*TemplateFn
+}
+
+func (this *Desugar) GenerateTopFns() {
+	source := this.root.(*SourceFile)
+	RunGobRegister(source)
+	for _, template := range this.Templates {
+		topArr := source.TopLevels
+		for i, top := range topArr {
+			if top.FunctionDecl == template.FuncDecl {
+				if len(topArr)-1 == i {
+					source.TopLevels = source.TopLevels[:i]
+				} else if i == 0 {
+					source.TopLevels = source.TopLevels[1:]
+				} else {
+					source.TopLevels = append(source.TopLevels[0:i], source.TopLevels[i+1:]...)
+				}
+				break
+			}
+		}
+		for _, usedFor := range template.UsedFor {
+			other := &FunctionDecl{}
+			var (
+				buf bytes.Buffer
+			)
+			enc := gob.NewEncoder(&buf)
+			if err := enc.Encode(&template.FuncDecl); err != nil {
+				fmt.Println("ERROR ENCODE", err)
+			}
+			dec := gob.NewDecoder(&buf)
+			if err := dec.Decode(&other); err != nil {
+				fmt.Println("ERROR DECODE", err)
+			}
+			newFn := RunTemplateGen(other, template.Types, usedFor).(*FunctionDecl)
+			newFn.Name += strings.Join(usedFor, "")
+			topLevel := &TopLevel{FunctionDecl: newFn}
+			source.TopLevels = append(source.TopLevels, topLevel)
+		}
+	}
+}
+func (this *Desugar) Arguments(n INode) INode {
+	args := n.(*Arguments)
+	if args.TemplateSpec != nil {
+		callee := args.parent.(*SecondaryExpr).parent.(*PrimaryExpr).PrimaryExpr.Operand
+		calleeName := callee.Eval()
+		types := []string{}
+		for _, t := range args.TemplateSpec.Result.Types {
+			types = append(types, t.Eval())
+		}
+		this.Templates[calleeName].UsedFor = append(this.Templates[calleeName].UsedFor, types)
+		callee.OperandName.Name = calleeName + strings.Join(types, "")
+	}
+	return n
+}
+func (this *Desugar) Signature(n INode) INode {
+	sig := n.(*Signature)
+	if sig.TemplateSpec != nil {
+		if f, ok := sig.parent.(*Function); ok {
+			fDecl := f.parent.(*FunctionDecl)
+			types := []string{}
+			for _, t := range sig.TemplateSpec.Result.Types {
+				types = append(types, t.Eval())
+			}
+			this.Templates[fDecl.Name] = &TemplateFn{
+				Name:     fDecl.Name,
+				Types:    types,
+				UsedFor:  [][]string{},
+				FuncDecl: fDecl,
+			}
+		}
+	}
+	return n
+}
 func (this *Desugar) VarDecl(n INode) INode {
 	varDecl := n.(*VarDecl)
 	for _, varSpec := range varDecl.VarSpecs {
@@ -144,7 +239,12 @@ func (this *Block) AddReturn() {
 	}
 }
 func RunDesugar(ast INode) INode {
-	desugar := Desugar{}
+	desugar := Desugar{
+		root:      ast,
+		Templates: make(map[string]*TemplateFn),
+	}
 	desugar.type_ = &desugar
-	return desugar.Walk(ast)
+	res := desugar.Walk(ast)
+	desugar.GenerateTopFns()
+	return res
 }
