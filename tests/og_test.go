@@ -473,6 +473,20 @@ func voila() int {
 	}
 }
 `,
+		// generics.og
+		`package og
+
+func main() {
+	fmt.Println(aint(1))
+	fmt.Println(astring(1))
+}
+func aint(t int) int {
+	return t
+}
+func astring(t string) string {
+	return t
+}
+`,
 	}
 
 	paths := []string{
@@ -507,6 +521,7 @@ func voila() int {
 		`rest`,
 		`bitwise`,
 		`assignable_stmt`,
+		`generics`,
 	}
 
 	var wg sync.WaitGroup

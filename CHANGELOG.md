@@ -1,6 +1,30 @@
 # Changelog
 
 ## DEV: Current version
+  - Generics that are produced at compile time
+    ```go
+      genericFunction<T>(arg T): T -> arg
+
+      main ->
+        genericFunction<int>(a)
+        genericFunction<string>(a)
+    ```
+  - Cleaner Makefile
+  - Awesome cli tool to use multi-threaded compilation 
+  - Multithreaded tests
+  - Overall project compilation time down to 8s, tests down to 2s.
+  - Beautiful progress, made verbose default
+  - Removed option `-v, --verbose` to be the opposite: `-q, --quiet`
+  - Add option `-w, --workers` to specify a number of thread for compilation
+  - Changed `-V, --version` for little `-v, --version`
+  - Auto build after compile, add option `-n, --no-build` to avoid that behaviour
+  - Add option `-r, --run` to run after compile
+  - Overview improvements
+  - Allow comments starting with `#` 
+  - First type-checker implementation
+  - Better `AstWalker`
+  - Colors everywhere !
+
 
 ## v0.5.0
   - Removed every non necessary terminal `return`

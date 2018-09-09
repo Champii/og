@@ -38,7 +38,7 @@ define run_and_test
 	exit $$RESULT
 endef
 
-SRC_PATH=src/
+SRC_PATH=lib/
 SRC=$(wildcard $(SRC_PATH)*.og $(SRC_PATH)translator/*.og $(SRC_PATH)ast/*.og)
 RES=$(SRC:.og=.go)
 EXE=og
@@ -53,7 +53,7 @@ parser/*.go: parser/Og.g4
 
 build:
 	@$(call title,Building from `$(CC) -v`)
-	@$(CC) -o lib src
+	@$(CC) lib
 	@make test -s --no-print-directory
 
 $(EXE): $(SRC) $(RES)
@@ -79,6 +79,7 @@ test:
 clean:
 	@$(call section_title,Cleaning src folder)
 	@rm -f $(RES)
+	@rm -f tests/exemples/*.go
 
 # lib/%.go: src/%.og
 # 	@$(call run_and_test,$(CC) -o lib $?,Compiling $<)

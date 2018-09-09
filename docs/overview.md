@@ -645,3 +645,22 @@ func main() {
   genericFunctionstring(a)
 } 
 ```
+
+## Label
+
+#### Og
+
+```go
+main ->
+  ~here:
+  goto here
+```
+
+#### Go
+
+```go
+func main() {
+here:
+  goto here
+}
+```

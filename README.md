@@ -155,6 +155,7 @@ USAGE:
   If run without files, it will compile and execute '.'
 
 OPTIONS:
+  -r, --run                      Run the binary
   -o directory, --out directory  Output directory. If input is recursive folder, the tree is recreated (default: "./")
   -w jobs, --workers jobs        Set the number of jobs (default: 8)
   -p, --print                    Print the file
@@ -163,8 +164,7 @@ OPTIONS:
   -a, --ast                      Print the generated AST
   -i, --interpreter              Run a small interpreter (ALPHA)
   -q, --quiet                    Hide the progress output
-  --no-build                     Dont run 'go build'
-  --no-run                       Dont run the binary
+  -n, --no-build                 Dont run 'go build'
   -h, --help                     Print help
   -v, --version                  Print version
 ```

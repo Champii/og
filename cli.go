@@ -22,7 +22,7 @@ func parseArgs(done func(og.OgConfig)) {
 			Workers:     c.Int("w"),
 			OutPath:     c.String("o"),
 			Interpreter: c.Bool("i"),
-			NoBuild:     c.Bool("no-build"),
+			NoBuild:     c.Bool("n"),
 			Run:         c.Bool("r"),
 			Paths:       []string(c.Args()),
 		}
@@ -82,7 +82,7 @@ COPYRIGHT:
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
-			Name:  "r",
+			Name:  "r, run",
 			Usage: "Run the binary",
 		},
 		cli.StringFlag{
@@ -120,8 +120,8 @@ COPYRIGHT:
 			Usage: "Hide the progress output",
 		},
 		cli.BoolFlag{
-			Name:  "no-build",
-			Usage: "Dont run 'go build'",
+			Name:  "n, no-build",
+			Usage: "Don't run 'go build'",
 		},
 	}
 

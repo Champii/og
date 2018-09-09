@@ -3,6 +3,7 @@ package og
 import (
 	"fmt"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+	tm "github.com/buger/goterm"
 	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/translator"
 	"github.com/champii/og/parser"
@@ -56,6 +57,13 @@ func (this *ErrorListener) SyntaxError(rec antlr.Recognizer, offendingSymbol int
 	badLine = cyan(badLine[:column]) + magenta(badToken) + cyan(badLine[column+len(badToken):])
 	fmt.Println(badLine)
 	fmt.Print(blue("%"+strconv.Itoa(column+1)+"s\n\n", "^"))
+	tm.MoveCursorUp(1)
+	for i := 0; i < 8; i++ {
+		tm.Println("                                                                          ")
+		tm.Flush()
+	}
+	tm.MoveCursorUp(8)
+	tm.Flush()
 }
 func NewErrorListener(filePath, source string) *ErrorListener {
 	return &ErrorListener{

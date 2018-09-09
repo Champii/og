@@ -5,6 +5,7 @@ import
   fmt
   strings
   strconv
+  "github.com/buger/goterm": tm
   "github.com/champii/og/lib/ast"
   "github.com/champii/og/lib/translator"
   "github.com/champii/og/parser"
@@ -51,6 +52,14 @@ struct ErrorListener
     badLine = cyan(badLine[:column]) + magenta(badToken) + cyan(badLine[column+len(badToken):])
     fmt.Println(badLine)
     fmt.Print(blue("%"+strconv.Itoa(column+1)+"s\n\n","^"))
+
+    // FIXME
+    tm.MoveCursorUp(1)
+    for i := 0; i < 8; i++
+      tm.Println("                                                                          ")
+      tm.Flush()
+    tm.MoveCursorUp(8)
+    tm.Flush()
 
 
 NewErrorListener(filePath, source string): *ErrorListener ->

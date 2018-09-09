@@ -51,10 +51,10 @@ Compile(config_ OgConfig): error ->
   if len(config.Files) == 0
     if config.Run
       return Run()
+
     if !config.Quiet
       tm.Print(tm.Color("~> ", tm.YELLOW), tm.Color("Oglang: ", tm.RED), tm.Color("Nothing to do.", tm.GREEN))
       tm.Flush()
-
     return nil
 
   poolSize := config.Workers
@@ -84,7 +84,7 @@ Run: error ->
   dir, err := os.Getwd()
 
   if err != nil
-  	return err
+    return err
 
   current := path.Base(dir)
 
