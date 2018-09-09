@@ -11,15 +11,16 @@ Og-Lang (Optimistic Golang)
 # Index
 
 1. [Intro](#intro)
-2. [Install](#install)
-3. [Quick Overview](#quick-overview)
-4. [Usage](#usage)
+1. [Features](#features)
+1. [Install](#install)
+1. [Quick Overview](#quick-overview)
+1. [Usage](#usage)
     1. [Interpreter (ALPHA)](#interpreter-alpha)
     2. [Basic file compilation](#basic-file-compilation)
     3. [Debug](#debug)
-5. [Build](#build)
-6. [Todo](#todo)
-7. [Long term utopia](#long-term-utopia)
+1. [Build](#build)
+1. [Todo](#todo)
+1. [Long term utopia](#long-term-utopia)
 
 # Intro
 
@@ -46,6 +47,23 @@ Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar
 ### Goal
 
 The main goal is to simplify the syntax, to borrow some concepts from Livescript and other functional languages, to implement Generics and macro processing, as well as some syntaxic sugar to avoid all the boilerplate code Golang forces us into.
+
+# Features
+- Indentation based
+- Transpile to `Golang`
+- No brackets (almost)
+- Clean and nice syntax
+- Auto return the last statement in a block
+- Returnable/Assignable statements (`if` only for the moment)
+- Inline method declaration in `struct`
+- One-liners
+- Syntaxic sugars
+- Bootstraped language
+- Antlr4 parser
+- Multithreaded compilation
+- CLI tool to parse and debug your files
+- Generics (ALPHA)
+- Interpreter (ALPHA)
 
 # Install
 
@@ -91,9 +109,13 @@ autoIfReturn: int ->
   if true => 1
   else    => 0
 
+genericFunction<T>(arg T): T -> arg
+
 main ->
   test := Foo{}
   test.inc(42)
+
+  genericFunction<int>(42)
 
   var a int = 
     if true => 1
@@ -135,6 +157,7 @@ VERSION:
 
 OPTIONS:
   -o directory, --out directory  Output directory. If input is recursive folder, the tree is recreated (default: "./")
+  -w value, --workers value      Set the number of jobs (default: 8)
   -p, --print                    Print the file
   -d, --dirty                    Print the file before going through 'go fmt'
   -b, --blocks                   Print the file after it goes to preprocessor. Shows only block-based indentation

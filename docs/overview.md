@@ -7,6 +7,7 @@
     1. [Package](#package)
     1. [Import](#import)
     1. [Top Level Function](#top-level-function)
+    1. [Function literal](#function-literal)
     1. [If / Else](#if-/-else)
     1. [For](#for)
     1. [Goroutine](#goroutine)
@@ -15,6 +16,8 @@
     1. [Select](#select)
     1. [Struct](#struct)
     1. [Interface](#interface)
+    1. [Generic](#generic)
+    1. [Label](#Label)
 
 # Global
 
@@ -61,9 +64,15 @@ autoIfReturn: int ->
   if true => 1
   else    => 0
 
+// Generic definition (ALPHA)
+genericFunction<T>(arg T): T -> arg
+
 main ->
   test := Foo{}
   test.inc(42)
+
+  // Generic call for int
+  genericFunction<int>(42)
 
   // Conditional assignation
   var a int = 
@@ -270,6 +279,44 @@ func h(a int) int {
 func multi(a, b int) (int, bool) {
    c := a + b
   return c + 42, false
+}
+```
+
+## Function Literal
+
+#### Og
+
+```go
+// `fn` keyword to denote the function type
+struct Foo
+  Bar fn(int): string
+
+// No need of the `fn` in interface
+interface Bar
+  Foo(string): error
+
+f(callback fn(int): error): error -> callback(0)
+
+var g = fn(a int): error -> nil
+```
+
+#### Go
+
+```go
+struct Foo {
+  Bar func (int) string
+}
+
+interface Bar {
+  Foo(string) error
+}
+
+func f(callback func (int) error) error {
+  return callback(0)
+} 
+
+var g = func (a int) error {
+  return nil
 }
 ```
 
@@ -569,4 +616,32 @@ type Foo interface{}
 type Bar interface {
   Method(Type) ReturnType
 }
+```
+## Generic
+
+#### Og
+
+```go
+genericFunction<T>(arg T): T -> arg
+
+main ->
+  genericFunction<int>(a)
+  genericFunction<string>(a)
+```
+
+#### Go
+
+```go
+func genericFunctionint(arg int) int {
+  return arg
+}
+
+func genericFunctionstring(arg string) string {
+  return arg
+}
+
+func main() {
+  genericFunctionint(a)
+  genericFunctionstring(a)
+} 
 ```

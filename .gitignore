@@ -18,3 +18,5 @@ parser/*.go
 parser/Og.interp
 parser/Og.tokens
 parser/OgLexer*
+src/**/*.go
+tests/exemples/*.go

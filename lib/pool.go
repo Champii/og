@@ -2,6 +2,7 @@ package og
 
 import (
 	tm "github.com/buger/goterm"
+	"strconv"
 	"time"
 )
 
@@ -38,7 +39,6 @@ type Pool struct {
 	In       chan string
 	Out      chan error
 	Verbose  bool
-	lineSize []int
 }
 
 func (this Pool) Queue(job string) {
@@ -63,16 +63,25 @@ func (this *Pool) Run() {
 		this.Finished++
 	}
 	ticker.Stop()
+	this.Print()
 }
 func (this Pool) Print() {
 	if !this.Verbose {
 		return
 	}
 	tm.Print("                                          \r")
-	tm.Println("[", this.Finished, "/", this.Total, "]")
+	tm.Println(" ", tm.Color("[", tm.RED), tm.Color(strconv.Itoa(this.Finished), tm.YELLOW), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(this.Total), tm.GREEN), tm.Color("]", tm.RED), "Building sources")
+	working := 0
 	for i, worker := range this.Workers {
 		tm.Print("                                          \r")
-		tm.Println(i+1, ":", worker.Processing)
+		if worker.Processing != "." {
+			working++
+			tm.Println(tm.Color(strconv.Itoa(i+1), tm.CYAN), tm.Color(":", tm.RED), tm.Color(worker.Processing, tm.MAGENTA))
+		}
+	}
+	for working < len(this.Workers) {
+		tm.Print("                                          \n")
+		working++
 	}
 	tm.MoveCursorUp(len(this.Workers) + 2)
 	tm.Flush()

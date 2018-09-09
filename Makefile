@@ -2,6 +2,8 @@
 
 COM_COLOR   = \033[0;34m
 OBJ_COLOR   = \033[0;36m
+MAGENTA_COLOR  = \033[0;35m
+CYAN_COLOR  = \033[0;36m
 OK_COLOR    = \033[0;32m
 ERROR_COLOR = \033[0;31m
 WARN_COLOR  = \033[0;33m
@@ -13,11 +15,11 @@ WARN_STRING  = [WARNING]
 COM_STRING   = [Compiling]
 
 define title
-	printf "%b" "\n$(ERROR_COLOR)=> $(WARN_COLOR)$(1)$(NO_COLOR)\n";
+	printf "%b" "\n$(CYAN_COLOR)=> $(WARN_COLOR)$(1)$(NO_COLOR)\n";
 endef
 
 define section_title
-	printf "%b" "\n$(WARN_COLOR)-> $(OK_COLOR)$(1)$(NO_COLOR)\n";
+	printf "%b" "$(MAGENTA_COLOR)-> $(OK_COLOR)$(1)$(NO_COLOR)\n";
 endef
 
 define run_and_test
@@ -40,7 +42,7 @@ SRC_PATH=src/
 SRC=$(wildcard $(SRC_PATH)*.og $(SRC_PATH)translator/*.og $(SRC_PATH)ast/*.og)
 RES=$(subst src/, lib/, $(SRC:.og=.go))
 EXE=og
-CC=og
+CC=./og
 
 all: grammar build
 
@@ -50,12 +52,13 @@ parser/*.go: parser/Og.g4
 	@$(call run_and_test,go generate,Generating parser from $<)
 
 build:
-	@$(call section_title,Oglang to Golang Compilation)
-	@make $(EXE) --no-print-directory
+	@$(call title,Building from `$(CC) -V`)
+	@$(CC) -v -o lib src
+	@make $(EXE) -s --no-print-directory
 
-$(EXE): $(RES)
+$(EXE): $(SRC) $(RES)
 	@$(call section_title,Building Binary)
-	@$(call run_and_test,go build,Building go source)
+	@go build
 	@make test --no-print-directory
 
 re:
@@ -63,22 +66,19 @@ re:
 	@make re_ --no-print-directory
 
 re_: grammar
-	@make clean --no-print-directory
-	@$(call title,Recompiling sources from og `og -V`)
-	@make build --no-print-directory
-	@$(call title,Rebuilding with new og `./og -V`)
-	@make CC='./og' clean all --no-print-directory
+	@make clean build --no-print-directory
+	@make CC='./og' new --no-print-directory
 
 new:
-	@$(call title,Rebuilding with new og `./og -V`)
 	@make CC='./og' clean all --no-print-directory
 
-test: all
-	@$(call run_and_test,go test og/tests,Testing)
+test:
+	@$(call section_title,Testing)
+	@go test og/tests
 
 clean:
-	@$(call section_title,Cleaning)
-	@$(call run_and_test,rm -f $(RES),Delete src folder)
+	@$(call section_title,Cleaning src folder)
+	@rm -f $(RES)
 
-lib/%.go: src/%.og
-	@$(call run_and_test,$(CC) -o lib $?,Compiling $<)
+# lib/%.go: src/%.og
+# 	@$(call run_and_test,$(CC) -o lib $?,Compiling $<)

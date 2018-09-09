@@ -3,25 +3,28 @@ package og
 import (
 	"bufio"
 	"fmt"
+	tm "github.com/buger/goterm"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
 type OgConfig struct {
-	Blocks  bool
-	Dirty   bool
-	Print   bool
-	Compile bool
-	Ast     bool
-	Verbose bool
-	Paths   []string
-	Files   []string
-	Workers int
-	OutPath string
+	Blocks      bool
+	Dirty       bool
+	Print       bool
+	Compile     bool
+	Ast         bool
+	Verbose     bool
+	Interpreter bool
+	Paths       []string
+	Files       []string
+	Workers     int
+	OutPath     string
 }
 
 var (
@@ -37,11 +40,21 @@ func GetNewPath(filePath string) string {
 }
 func Compile(config_ OgConfig) error {
 	config = config_
+	if len(config.Paths) == 0 {
+		config.Paths = []string{"."}
+	}
 	for _, p := range config.Paths {
 		if err := filepath.Walk(p, walker); err != nil {
 			fmt.Println("Error", err)
 			return err
 		}
+	}
+	if len(config.Files) == 0 {
+		if config.Verbose {
+			tm.Print(tm.Color("~> ", tm.YELLOW), tm.Color("Oglang: ", tm.RED), tm.Color("Nothing to do.", tm.GREEN))
+			tm.Flush()
+		}
+		return nil
 	}
 	poolSize := config.Workers
 	if len(config.Files) < poolSize {
@@ -52,7 +65,24 @@ func Compile(config_ OgConfig) error {
 		pool.Queue(file)
 	}
 	pool.Run()
-	return nil
+	return goBuild()
+}
+func goBuild() error {
+	tm.Print("                                          \r")
+	tm.Println(" ", tm.Color("[", tm.RED), tm.Color(strconv.Itoa(len(config.Files)), tm.YELLOW), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(len(config.Files)), tm.GREEN), tm.Color("]", tm.RED), "Compiling go")
+	tm.MoveCursorUp(1)
+	tm.Flush()
+	cmd := exec.Command("go", "build")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(string(out))
+	} else if config.Verbose {
+		tm.MoveCursorUp(1)
+		tm.Print("                                          \r")
+		tm.Print(tm.Color("~> ", tm.YELLOW), tm.Color("Oglang: ", tm.RED), tm.Color("Compiled ", tm.GREEN), tm.Color(strconv.Itoa(len(config.Files)), tm.MAGENTA), tm.Color(" files.", tm.GREEN))
+		tm.Flush()
+	}
+	return err
 }
 func MustCompile(filePath string, info os.FileInfo) bool {
 	newPath := GetNewPath(filePath)
@@ -112,9 +142,9 @@ func ProcessFile(filePath string, data string, isInterpret bool) (string, error)
 	return format(res)
 }
 func finalizeFile(filePath string, data string) {
-	if config.Print {
+	if config.Ast || config.Print || config.Dirty || config.Blocks {
 		fmt.Println(data)
-	} else if !config.Ast && !config.Print && !config.Dirty && !config.Blocks {
+	} else {
 		writeFile(filePath, data)
 	}
 }

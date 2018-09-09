@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	og "og/lib"
+	"sync"
 
 	"testing"
 )
@@ -508,22 +509,34 @@ func voila() int {
 		`assignable_stmt`,
 	}
 
-	for i, p := range paths {
-		data, err := ioutil.ReadFile(fmt.Sprint("./exemples/", p, ".og"))
+	var wg sync.WaitGroup
 
-		if err != nil {
-			panic(err)
-		}
+	for i_, p_ := range paths {
+		p := p_
+		i := i_
 
-		res, err := og.ProcessFile(fmt.Sprint("./exemples/", p, ".og"), string(data), false)
+		wg.Add(1)
 
-		if err != nil {
-			panic(err)
-		}
+		go func() {
+			defer wg.Done()
+			data, err := ioutil.ReadFile(fmt.Sprint("./exemples/", p, ".og"))
 
-		if res != expected[i] {
-			panic(fmt.Sprint("Error: ", p, "\nGot: \n---\n", res, "\n---\nExpected: \n---\n", expected[i], "\n---\n"))
-		}
+			if err != nil {
+				panic(err)
+			}
+
+			res, err := og.ProcessFile(fmt.Sprint("./exemples/", p, ".og"), string(data), false)
+
+			if err != nil {
+				panic(err)
+			}
+
+			if res != expected[i] {
+				panic(fmt.Sprint("Error: ", p, "\nGot: \n---\n", res, "\n---\nExpected: \n---\n", expected[i], "\n---\n"))
+			}
+		}()
+
+		wg.Wait()
 	}
 }
 

@@ -14,14 +14,15 @@ func parseArgs(done func(og.OgConfig)) {
 
 	cli_.Action = func(c *cli.Context) error {
 		options := og.OgConfig{
-			Blocks:  c.Bool("b"),
-			Dirty:   c.Bool("d"),
-			Print:   c.Bool("p"),
-			Ast:     c.Bool("a"),
-			Verbose: c.Bool("v"),
-			Workers: c.Int("w"),
-			OutPath: c.String("o"),
-			Paths:   []string(c.Args()),
+			Blocks:      c.Bool("b"),
+			Dirty:       c.Bool("d"),
+			Print:       c.Bool("p"),
+			Ast:         c.Bool("a"),
+			Verbose:     c.Bool("v"),
+			Workers:     c.Int("w"),
+			OutPath:     c.String("o"),
+			Interpreter: c.Bool("i"),
+			Paths:       []string(c.Args()),
 		}
 
 		done(options)
@@ -83,14 +84,14 @@ COPYRIGHT:
 			Usage: "Output `directory`. If input is recursive folder, the tree is recreated",
 			Value: "./",
 		},
-		cli.BoolFlag{
-			Name:  "p, print",
-			Usage: "Print the file",
-		},
 		cli.IntFlag{
 			Name:  "w, workers",
 			Usage: "Set the number of jobs",
-			Value: 16,
+			Value: 8,
+		},
+		cli.BoolFlag{
+			Name:  "p, print",
+			Usage: "Print the file",
 		},
 		cli.BoolFlag{
 			Name:  "d, dirty",
@@ -103,6 +104,10 @@ COPYRIGHT:
 		cli.BoolFlag{
 			Name:  "a, ast",
 			Usage: "Print the generated AST",
+		},
+		cli.BoolFlag{
+			Name:  "i, interpreter",
+			Usage: "Run a small interpreter (ALPHA)",
 		},
 		cli.BoolFlag{
 			Name:  "v, verbose",

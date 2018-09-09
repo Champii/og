@@ -2,6 +2,7 @@
 
 import
 	time
+	strconv
 	"github.com/buger/goterm": tm
 
 struct Worker
@@ -33,9 +34,9 @@ struct Pool
 	In chan string
 	Out chan error
 	Verbose bool
-	lineSize []int
 
-	Queue(job string) -> @In <- job
+	Queue(job string) ->
+		@In <- job
 
 	Run ->
 		for _, worker in @Workers
@@ -56,17 +57,26 @@ struct Pool
 			@Finished++
 
 		ticker.Stop()
+		@Print()
 
 	Print ->
 		if !@Verbose
 			return
 
 		tm.Print("                                          \r")
-		tm.Println("[", @Finished, "/", @Total, "]")
+		tm.Println(" ", tm.Color("[", tm.RED), tm.Color(strconv.Itoa(@Finished), tm.YELLOW), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(@Total), tm.GREEN), tm.Color("]", tm.RED), "Building sources")
+
+		working := 0
 
 		for i, worker in @Workers
 			tm.Print("                                          \r")
-			tm.Println(i + 1, ":", worker.Processing)
+			if worker.Processing != "."
+				working++
+				tm.Println(tm.Color(strconv.Itoa(i + 1), tm.CYAN), tm.Color(":", tm.RED), tm.Color(worker.Processing, tm.MAGENTA))
+
+		for working < len(@Workers)
+			tm.Print("                                          \n")
+			working++
 
 		tm.MoveCursorUp(len(@Workers)+2)
 		tm.Flush()
