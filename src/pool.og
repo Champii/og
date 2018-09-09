@@ -1,0 +1,86 @@
+!og
+
+import
+	time
+	"github.com/buger/goterm": tm
+
+struct Worker
+	In chan string
+	Out chan error
+	Processing string
+	Job fn(string): error
+
+	*Run ->
+		for todo in @In
+			@Processing = todo
+			res := @Job(todo)
+			@Processing = "."
+			@Out <- res
+		@Processing = "."
+
+NewWorker(i chan string, out chan error, job fn(string): error): *Worker ->
+	&Worker
+		Processing: "."
+		In: i
+		Out: out
+		Job: job
+
+struct Pool
+	Size int
+	Workers []*Worker
+	Total int
+	Finished int
+	In chan string
+	Out chan error
+	Verbose bool
+	lineSize []int
+
+	Queue(job string) -> @In <- job
+
+	Run ->
+		for _, worker in @Workers
+			go worker.Run()
+
+		close(@In)
+
+		ticker := time.NewTicker(200 * time.Millisecond)
+		go ->
+			for true
+				<-ticker.C
+				@Print()
+
+		for @Finished < @Total
+			if err := <-@Out; err != nil
+				tm.Println(err)
+
+			@Finished++
+
+		ticker.Stop()
+
+	Print ->
+		if !@Verbose
+			return
+
+		tm.Print("                                          \r")
+		tm.Println("[", @Finished, "/", @Total, "]")
+
+		for i, worker in @Workers
+			tm.Print("                                          \r")
+			tm.Println(i + 1, ":", worker.Processing)
+
+		tm.MoveCursorUp(len(@Workers)+2)
+		tm.Flush()
+
+NewPool(size int, nbJobs int, verbose bool, cb fn(string): error): *Pool ->
+	pool := &Pool
+		Size: size
+		Total: nbJobs
+		Finished: 0
+		Verbose: verbose
+		In: make(chan string, nbJobs)
+		Out: make(chan error, nbJobs)
+
+	for i := 0; i < pool.Size; i++
+		pool.Workers = append(pool.Workers, NewWorker(pool.In, pool.Out, cb))
+
+	pool

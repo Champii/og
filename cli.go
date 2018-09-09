@@ -19,6 +19,7 @@ func parseArgs(done func(og.OgConfig)) {
 			Print:   c.Bool("p"),
 			Ast:     c.Bool("a"),
 			Verbose: c.Bool("v"),
+			Workers: c.Int("w"),
 			OutPath: c.String("o"),
 			Paths:   []string(c.Args()),
 		}
@@ -85,6 +86,11 @@ COPYRIGHT:
 		cli.BoolFlag{
 			Name:  "p, print",
 			Usage: "Print the file",
+		},
+		cli.IntFlag{
+			Name:  "w, workers",
+			Usage: "Set the number of jobs",
+			Value: 16,
 		},
 		cli.BoolFlag{
 			Name:  "d, dirty",

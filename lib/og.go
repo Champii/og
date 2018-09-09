@@ -19,6 +19,8 @@ type OgConfig struct {
 	Ast     bool
 	Verbose bool
 	Paths   []string
+	Files   []string
+	Workers int
 	OutPath string
 }
 
@@ -26,6 +28,13 @@ var (
 	config OgConfig
 )
 
+func GetNewPath(filePath string) string {
+	if config.OutPath != "./" {
+		splited := strings.SplitN(filePath, "/", 2)
+		filePath = splited[1]
+	}
+	return strings.Replace(path.Join(config.OutPath, filePath), ".og", ".go", 1)
+}
 func Compile(config_ OgConfig) error {
 	config = config_
 	for _, p := range config.Paths {
@@ -34,7 +43,24 @@ func Compile(config_ OgConfig) error {
 			return err
 		}
 	}
+	poolSize := config.Workers
+	if len(config.Files) < poolSize {
+		poolSize = len(config.Files)
+	}
+	pool := NewPool(poolSize, len(config.Files), config.Verbose, ReadAndProceed)
+	for _, file := range config.Files {
+		pool.Queue(file)
+	}
+	pool.Run()
 	return nil
+}
+func MustCompile(filePath string, info os.FileInfo) bool {
+	newPath := GetNewPath(filePath)
+	stat, err := os.Stat(newPath)
+	if err != nil {
+		return true
+	}
+	return info.ModTime().After(stat.ModTime())
 }
 func walker(filePath string, info os.FileInfo, err error) error {
 	if err != nil {
@@ -46,6 +72,18 @@ func walker(filePath string, info os.FileInfo, err error) error {
 	if path.Ext(filePath) != ".og" {
 		return nil
 	}
+	if !MustCompile(filePath, info) {
+		return nil
+	}
+	config.Files = append(config.Files, filePath)
+	return nil
+}
+
+var (
+	lastLength = 0
+)
+
+func ReadAndProceed(filePath string) error {
 	source, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return err
@@ -58,9 +96,6 @@ func walker(filePath string, info os.FileInfo, err error) error {
 	return nil
 }
 func ProcessFile(filePath string, data string, isInterpret bool) (string, error) {
-	if config.Verbose == true {
-		fmt.Print(filePath)
-	}
 	preprocessed := Preproc(string(data))
 	if config.Blocks {
 		return preprocessed, nil
@@ -84,16 +119,9 @@ func finalizeFile(filePath string, data string) {
 	}
 }
 func writeFile(filePath string, data string) {
-	if config.OutPath != "./" {
-		splited := strings.SplitN(filePath, "/", 2)
-		filePath = splited[1]
-	}
-	newPath := strings.Replace(path.Join(config.OutPath, filePath), ".og", ".go", 1)
+	newPath := GetNewPath(filePath)
 	os.MkdirAll(filepath.Dir(newPath), os.ModePerm)
 	ioutil.WriteFile(newPath, []byte(data), os.ModePerm)
-	if config.Verbose {
-		fmt.Println("->", newPath)
-	}
 }
 func format(str string) (string, error) {
 	cmd := exec.Command("gofmt")
