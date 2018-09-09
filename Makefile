@@ -40,9 +40,9 @@ endef
 
 SRC_PATH=src/
 SRC=$(wildcard $(SRC_PATH)*.og $(SRC_PATH)translator/*.og $(SRC_PATH)ast/*.og)
-RES=$(subst src/, lib/, $(SRC:.og=.go))
+RES=$(SRC:.og=.go)
 EXE=og
-CC=./og
+CC=og
 
 all: grammar build
 
@@ -52,14 +52,14 @@ parser/*.go: parser/Og.g4
 	@$(call run_and_test,go generate,Generating parser from $<)
 
 build:
-	@$(call title,Building from `$(CC) -V`)
-	@$(CC) -v -o lib src
-	@make $(EXE) -s --no-print-directory
+	@$(call title,Building from `$(CC) -v`)
+	@$(CC) -o lib src
+	@make test -s --no-print-directory
 
 $(EXE): $(SRC) $(RES)
-	@$(call section_title,Building Binary)
-	@go build
 	@make test --no-print-directory
+# 	@$(call section_title,Building Binary)
+# 	@go build
 
 re:
 	@$(call title,Full Re-Bootstrap)
@@ -70,7 +70,7 @@ re_: grammar
 	@make CC='./og' new --no-print-directory
 
 new:
-	@make CC='./og' clean all --no-print-directory
+	@make CC='./og' all --no-print-directory
 
 test:
 	@$(call section_title,Testing)

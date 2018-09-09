@@ -536,8 +536,8 @@ func voila() int {
 			}
 		}()
 
-		wg.Wait()
 	}
+	wg.Wait()
 }
 
 var res = ""

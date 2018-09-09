@@ -18,10 +18,12 @@ func parseArgs(done func(og.OgConfig)) {
 			Dirty:       c.Bool("d"),
 			Print:       c.Bool("p"),
 			Ast:         c.Bool("a"),
-			Verbose:     c.Bool("v"),
+			Quiet:       c.Bool("q"),
 			Workers:     c.Int("w"),
 			OutPath:     c.String("o"),
 			Interpreter: c.Bool("i"),
+			NoBuild:     c.Bool("no-build"),
+			Run:         c.Bool("r"),
 			Paths:       []string(c.Args()),
 		}
 
@@ -37,20 +39,19 @@ func setupCli() *cli.App {
 	cli.AppHelpTemplate = `NAME:
 	{{.Name}} - {{.Usage}}
 
+VERSION:
+	{{.Version}}
+
 USAGE:
 	{{if .VisibleFlags}}{{.HelpName}} [options] [folders...|files...]
 
-	By default it compiles the given files.
 	If a Print argument (-p, -b, -d, -a) is given, NO COMPILATION is done.
 
-	If run without any arguments, a small interpreter is spawn (ALPHA){{end}}
+	If run without files, it will compile and build '.'{{end}}
 	{{if len .Authors}}
 AUTHOR:
 	{{range .Authors}}{{ . }}{{end}}
 	{{end}}{{if .Commands}}
-VERSION:
-	{{.Version}}
-
 OPTIONS:
 	{{range .VisibleFlags}}{{.}}
 	{{end}}{{end}}{{if .Copyright }}
@@ -58,10 +59,11 @@ OPTIONS:
 COPYRIGHT:
 	{{.Copyright}}
 	{{end}}{{if .Version}}
-	{{end}}`
+	{{end}}
+`
 
 	cli.VersionFlag = cli.BoolFlag{
-		Name:  "V, version",
+		Name:  "v, version",
 		Usage: "Print version",
 	}
 
@@ -79,6 +81,10 @@ COPYRIGHT:
 	app.Usage = "Golang on steroids"
 
 	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:  "r",
+			Usage: "Run the binary",
+		},
 		cli.StringFlag{
 			Name:  "o, out",
 			Usage: "Output `directory`. If input is recursive folder, the tree is recreated",
@@ -86,7 +92,7 @@ COPYRIGHT:
 		},
 		cli.IntFlag{
 			Name:  "w, workers",
-			Usage: "Set the number of jobs",
+			Usage: "Set the number of `jobs`",
 			Value: 8,
 		},
 		cli.BoolFlag{
@@ -110,12 +116,16 @@ COPYRIGHT:
 			Usage: "Run a small interpreter (ALPHA)",
 		},
 		cli.BoolFlag{
-			Name:  "v, verbose",
-			Usage: "Show the filenames",
+			Name:  "q, quiet",
+			Usage: "Hide the progress output",
+		},
+		cli.BoolFlag{
+			Name:  "no-build",
+			Usage: "Dont run 'go build'",
 		},
 	}
 
-	app.UsageText = "og [options] folders|files"
+	app.UsageText = "og [options] [folders|files]"
 
 	return app
 }

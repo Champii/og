@@ -144,27 +144,29 @@ main ->
 NAME:
   Oglang - Golang on steroids
 
-USAGE:
-  og [options] [folders...|files...]
-
-  By default it compiles the given files.
-  If a Print argument (-p, -b, -d, -a) is given, NO COMPILATION is done.
-
-  If run without any arguments, a small interpreter is spawn (ALPHA)
-
 VERSION:
   DEV
 
+USAGE:
+  og [options] [folders...|files...]
+
+  If a Print argument (-p, -b, -d, -a) is given, NO COMPILATION is done.
+
+  If run without files, it will compile and execute '.'
+
 OPTIONS:
   -o directory, --out directory  Output directory. If input is recursive folder, the tree is recreated (default: "./")
-  -w value, --workers value      Set the number of jobs (default: 8)
+  -w jobs, --workers jobs        Set the number of jobs (default: 8)
   -p, --print                    Print the file
   -d, --dirty                    Print the file before going through 'go fmt'
   -b, --blocks                   Print the file after it goes to preprocessor. Shows only block-based indentation
   -a, --ast                      Print the generated AST
-  -v, --verbose                  Show the filenames
+  -i, --interpreter              Run a small interpreter (ALPHA)
+  -q, --quiet                    Hide the progress output
+  --no-build                     Dont run 'go build'
+  --no-run                       Dont run the binary
   -h, --help                     Print help
-  -V, --version                  Print version
+  -v, --version                  Print version
 ```
 
 ### Interpreter (ALPHA)
@@ -172,27 +174,29 @@ OPTIONS:
 Og embed a small interpreter that in fact compiles the given string into a `/tmp/main.go` skelton and run it. A better implementation will come.
 
 ```bash
-./og
+./og -i
 > 1+1
 2
 ```
 
 ### Basic file compilation
 
-With just a file name, the compiler will produce a `.go` file inside the same directory
+By default `Og` compile every `.og` file in the current folder `.` and produce `.go` files that are along their `Og` source. It will then run `go build` on the folder and try to run the created binary
+```bash
+./og
+```
 
+With just a file name, the compiler will produce a `.go` file inside the same directory
 ```bash
 ./og file.og
 ```
 
 You can give multiple files and folder that will be walked recursively
-
 ```bash
 ./og file.og folder/ anotherFile.og
 ```
 
 The output flag `-o` will save the files into another folder. The folder hierarchy is recreated. 
-
 ```bash
 ./og -o lib src/file.og
 ```
@@ -208,9 +212,11 @@ The `-d` (`--dirty`) option shows you the bare generated file from the parser, w
 
 The `-b` (`--block`) option prints the output of the preprocessor who's in charge to create the blocks from indentation. No compilation is done.
 
+The `-a` (`--ast`) option prints the generated AST from the parser
+
 # Build
 
-The current build time of the project is around 20s for all sources files with `./og src` alone, and around 60s for full rebootstrap with `make re` (That bootstraps from old version then rebootstraps from itself, with `go build` and `go test` each time). Tests take around 5s to pass. Need better perfs.
+The current build time of the project is around 5s for all sources files with `./og` alone, and around 15s for full rebootstrap with `make re` (That bootstraps from old version then rebootstraps from itself, with `go build` and `go test` each time). 
 
 Here is the procedure to regenerate the parser from the grammar if you want to make changes to it.
 
@@ -284,4 +290,4 @@ og exemples/import.og
 
 What we want `Og` to looks like in the futur
 
-[Utopia](https://github.com/champii/og/tree/master/tests/exemples/utopia.og)
+[Utopia](https://github.com/champii/og/tree/master/tests/exemples/utopia.og.exemple)

@@ -19,12 +19,14 @@ type OgConfig struct {
 	Print       bool
 	Compile     bool
 	Ast         bool
-	Verbose     bool
+	Quiet       bool
 	Interpreter bool
 	Paths       []string
 	Files       []string
 	Workers     int
 	OutPath     string
+	NoBuild     bool
+	Run         bool
 }
 
 var (
@@ -50,7 +52,10 @@ func Compile(config_ OgConfig) error {
 		}
 	}
 	if len(config.Files) == 0 {
-		if config.Verbose {
+		if config.Run {
+			return Run()
+		}
+		if !config.Quiet {
 			tm.Print(tm.Color("~> ", tm.YELLOW), tm.Color("Oglang: ", tm.RED), tm.Color("Nothing to do.", tm.GREEN))
 			tm.Flush()
 		}
@@ -60,12 +65,39 @@ func Compile(config_ OgConfig) error {
 	if len(config.Files) < poolSize {
 		poolSize = len(config.Files)
 	}
-	pool := NewPool(poolSize, len(config.Files), config.Verbose, ReadAndProceed)
+	pool := NewPool(poolSize, len(config.Files), !config.Quiet, ReadAndProceed)
 	for _, file := range config.Files {
 		pool.Queue(file)
 	}
 	pool.Run()
-	return goBuild()
+	if !config.NoBuild {
+		if err := goBuild(); err != nil {
+			return err
+		}
+	}
+	if config.Run {
+		if err := Run(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func Run() error {
+	dir, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+	current := path.Base(dir)
+	tm.Print(tm.Color("~> ", tm.YELLOW), tm.Color("Oglang: ", tm.RED), tm.Color("Running... \n", tm.GREEN))
+	tm.Flush()
+	cmd := exec.Command("./" + current)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err = cmd.Start(); err != nil {
+		return err
+	}
+	cmd.Wait()
+	return nil
 }
 func goBuild() error {
 	tm.Print("                                          \r")
@@ -76,7 +108,7 @@ func goBuild() error {
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(out))
-	} else if config.Verbose {
+	} else if !config.Quiet {
 		tm.MoveCursorUp(1)
 		tm.Print("                                          \r")
 		tm.Print(tm.Color("~> ", tm.YELLOW), tm.Color("Oglang: ", tm.RED), tm.Color("Compiled ", tm.GREEN), tm.Color(strconv.Itoa(len(config.Files)), tm.MAGENTA), tm.Color(" files.", tm.GREEN))
