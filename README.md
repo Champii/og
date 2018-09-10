@@ -43,7 +43,7 @@ See the [Src](https://github.com/champii/og/tree/master/src) folder for both `Og
 
 Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
 
-![Hello world](https://github.com/champii/og/tree/master/docs/hello_preview.gif)
+![Hello world](https://github.com/Champii/og/blob/master/docs/hello_preview.gif)
 
 ### Goal
 
@@ -141,7 +141,7 @@ main ->
 
 # Usage
 
-![Og](https://github.com/champii/og/tree/master/docs/og_preview.gif)
+![Og](https://github.com/Champii/og/blob/master/docs/og_preview.gif)
 
 
 ```
