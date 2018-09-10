@@ -2,6 +2,7 @@ package og
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	tm "github.com/buger/goterm"
 	"io/ioutil"
@@ -42,6 +43,9 @@ func GetNewPath(filePath string) string {
 }
 func Compile(config_ OgConfig) error {
 	config = config_
+	if config.Print || config.Ast || config.Dirty || config.Blocks {
+		config.Quiet = true
+	}
 	if len(config.Paths) == 0 {
 		config.Paths = []string{"."}
 	}
@@ -56,7 +60,7 @@ func Compile(config_ OgConfig) error {
 			return Run()
 		}
 		if !config.Quiet {
-			tm.Print(tm.Color("~> ", tm.YELLOW), tm.Color("Oglang: ", tm.RED), tm.Color("Nothing to do.", tm.GREEN))
+			tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Nothing to do.", tm.GREEN))
 			tm.Flush()
 		}
 		return nil
@@ -88,8 +92,10 @@ func Run() error {
 		return err
 	}
 	current := path.Base(dir)
-	tm.Print(tm.Color("~> ", tm.YELLOW), tm.Color("Oglang: ", tm.RED), tm.Color("Running... \n", tm.GREEN))
-	tm.Flush()
+	if !config.Quiet {
+		tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Running... \n", tm.GREEN))
+		tm.Flush()
+	}
 	cmd := exec.Command("./" + current)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -100,10 +106,12 @@ func Run() error {
 	return nil
 }
 func goBuild() error {
-	tm.Print("                                          \r")
-	tm.Println(" ", tm.Color("[", tm.RED), tm.Color(strconv.Itoa(len(config.Files)), tm.YELLOW), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(len(config.Files)), tm.GREEN), tm.Color("]", tm.RED), "Compiling go")
-	tm.MoveCursorUp(1)
-	tm.Flush()
+	if !config.Quiet {
+		tm.Print("                                          \r")
+		tm.Println(tm.Color("[", tm.RED), tm.Color(strconv.Itoa(len(config.Files)), tm.GREEN), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(len(config.Files)), tm.GREEN), tm.Color("]", tm.RED), tm.Color("Compiling go", tm.YELLOW))
+		tm.MoveCursorUp(1)
+		tm.Flush()
+	}
 	cmd := exec.Command("go", "build")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -111,7 +119,7 @@ func goBuild() error {
 	} else if !config.Quiet {
 		tm.MoveCursorUp(1)
 		tm.Print("                                          \r")
-		tm.Print(tm.Color("~> ", tm.YELLOW), tm.Color("Oglang: ", tm.RED), tm.Color("Compiled ", tm.GREEN), tm.Color(strconv.Itoa(len(config.Files)), tm.MAGENTA), tm.Color(" files.", tm.GREEN))
+		tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Compiled ", tm.GREEN), tm.Color(strconv.Itoa(len(config.Files)), tm.YELLOW), tm.Color(" files.", tm.GREEN))
 		tm.Flush()
 	}
 	return err
@@ -120,6 +128,9 @@ func MustCompile(filePath string, info os.FileInfo) bool {
 	newPath := GetNewPath(filePath)
 	stat, err := os.Stat(newPath)
 	if err != nil {
+		return true
+	}
+	if config.Print || config.Ast || config.Dirty || config.Blocks {
 		return true
 	}
 	return info.ModTime().After(stat.ModTime())
@@ -174,7 +185,7 @@ func ProcessFile(filePath string, data string, isInterpret bool) (string, error)
 	return format(res)
 }
 func finalizeFile(filePath string, data string) {
-	if config.Ast || config.Print || config.Dirty || config.Blocks {
+	if config.Print || config.Dirty || config.Blocks {
 		fmt.Println(data)
 	} else {
 		writeFile(filePath, data)
@@ -192,7 +203,7 @@ func format(str string) (string, error) {
 	stdin.Close()
 	final, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", err
+		return "", errors.New(string(final))
 	}
 	return string(final), nil
 }

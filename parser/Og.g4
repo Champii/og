@@ -454,7 +454,7 @@ typeSwitchStmt
     : 'switch' ( simpleStmt ';' )? typeSwitchGuard '{' typeCaseClause* '}'
     ;
 typeSwitchGuard
-    : ( IDENTIFIER '=' )? primaryExpr '.' '(' 'type' ')'
+    : ( IDENTIFIER ':=' )? primaryExpr '.' '(' 'type' ')'
     ;
 typeCaseClause
     : typeSwitchCase '=>' statementList
@@ -684,7 +684,7 @@ qualifiedIdent
 //Element       = Expression | LiteralValue .
 
 compositeLit
-    : literalType literalValue
+    : literalType templateSpec? literalValue
     ;
 
 literalType
@@ -724,7 +724,7 @@ element
 //AnonymousField = [ "*" ] TypeName .
 //Tag            = string_lit .
 structType
-    : ('struct' | 'class') IDENTIFIER? ('{' ( fieldDecl eos )* '}')?
+    : ('struct' | 'class') IDENTIFIER? templateSpec? ('{' ( fieldDecl eos )* '}')?
     ;
 
 fieldDecl

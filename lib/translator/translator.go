@@ -864,11 +864,15 @@ func (this *OgVisitor) VisitQualifiedIdent(ctx *parser.QualifiedIdentContext, de
 	return ctx.IDENTIFIER(0).GetText() + "." + ctx.IDENTIFIER(1).GetText()
 }
 func (this *OgVisitor) VisitCompositeLit(ctx *parser.CompositeLitContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return &CompositeLit{
+	node := &CompositeLit{
 		Node:         NewNode(ctx),
 		LiteralType:  this.VisitLiteralType(ctx.LiteralType().(*parser.LiteralTypeContext), delegate).(*LiteralType),
 		LiteralValue: this.VisitLiteralValue(ctx.LiteralValue().(*parser.LiteralValueContext), delegate).(*LiteralValue),
 	}
+	if ctx.TemplateSpec() != nil {
+		node.TemplateSpec = this.VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
+	}
+	return node
 }
 func (this *OgVisitor) VisitLiteralType(ctx *parser.LiteralTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &LiteralType{Node: NewNode(ctx)}
@@ -951,6 +955,9 @@ func (this *OgVisitor) VisitStructType(ctx *parser.StructTypeContext, delegate a
 		res = append(res, this.VisitFieldDecl(spec.(*parser.FieldDeclContext), delegate).(*FieldDecl))
 	}
 	node.Fields = res
+	if ctx.TemplateSpec() != nil {
+		node.TemplateSpec = this.VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
+	}
 	return node
 }
 func (this *OgVisitor) VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor) interface{} {

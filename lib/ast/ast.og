@@ -398,7 +398,7 @@ struct TypeSwitchGuard
 	PrimaryExpr *PrimaryExpr
 	Eval: string ->
 		res := ""
-		if len(@Name) > 0 => res += @Name + "="
+		if len(@Name) > 0 => res += @Name + ":="
 		res + @PrimaryExpr.Eval() + ".(type)"
 
 struct TypeCaseClause
@@ -674,6 +674,7 @@ struct OperandName
 struct CompositeLit
 	*Node
 	LiteralType  *LiteralType
+	TemplateSpec *TemplateSpec
 	LiteralValue *LiteralValue
 	Eval: string -> @LiteralType.Eval() + @LiteralValue.Eval()
 
@@ -735,6 +736,7 @@ struct Element
 struct StructType
 	*Node
 	Name string
+	TemplateSpec *TemplateSpec
 	Fields []*FieldDecl
 	Eval: string ->
 		res := @Name + " struct {\n"

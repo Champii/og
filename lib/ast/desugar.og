@@ -6,11 +6,11 @@ import
 	strings
 	"encoding/gob"
 
-struct TemplateFn
+struct Template
 	Name    string
 	Types   []string
 	UsedFor [][]string
-	FuncDecl *FunctionDecl
+	Node    INode
 
 struct GobRegister
 	AstWalker
@@ -26,7 +26,7 @@ RunGobRegister(tree INode) ->
 struct Desugar
 	AstWalker
 	root      INode
-	Templates map[string]*TemplateFn
+	Templates map[string]*Template
 
 	*GenerateTopFns ->
 		source := @root.(*SourceFile)
@@ -35,13 +35,11 @@ struct Desugar
 		for _, template in @Templates
 			topArr := source.TopLevels
 			for i, top in topArr
-				if top.FunctionDecl == template.FuncDecl
-					if len(topArr) - 1 == i
-						source.TopLevels = source.TopLevels[:i]
-					else if i == 0
-						source.TopLevels = source.TopLevels[1:]
-					else
-						source.TopLevels = append(source.TopLevels[0:i], source.TopLevels[i+1:]...)
+
+				if top.FunctionDecl == template.Node || (top.Declaration != nil && top.Declaration.TypeDecl != nil && top.Declaration.TypeDecl.StructType != nil && top.Declaration.TypeDecl.StructType == template.Node)
+					if len(topArr) - 1 == i => source.TopLevels = source.TopLevels[:i]
+					else if i == 0          => source.TopLevels = source.TopLevels[1:]
+					else                    => source.TopLevels = append(source.TopLevels[0:i], source.TopLevels[i+1:]...)
 					break
 
 			for _, usedFor in template.UsedFor
@@ -49,7 +47,7 @@ struct Desugar
 
 				var buf bytes.Buffer
 				enc := gob.NewEncoder(&buf)
-				if err := enc.Encode(&template.FuncDecl); err != nil
+				if err := enc.Encode(template.Node.(*FunctionDecl)); err != nil
 					fmt.Println("ERROR ENCODE", err)
 
 				dec := gob.NewDecoder(&buf)
@@ -82,6 +80,20 @@ struct Desugar
 
 		n
 
+	*StructType(n INode): INode ->
+		structType := n.(*StructType)
+		if structType.TemplateSpec != nil
+			types := []string{}
+			for _, t in structType.TemplateSpec.Result.Types
+				types = append(types, t.Eval())
+
+			@Templates[structType.Name] = &Template
+				Name: structType.Name
+				Types: types
+				UsedFor: [][]string{}
+				Node: structType
+		n
+
 	*Signature(n INode): INode ->
 		sig := n.(*Signature)
 		if sig.TemplateSpec != nil
@@ -93,11 +105,11 @@ struct Desugar
 				for _, t in sig.TemplateSpec.Result.Types
 					types = append(types, t.Eval())
 
-				@Templates[fDecl.Name] = &TemplateFn
+				@Templates[fDecl.Name] = &Template
 					Name: fDecl.Name
 					Types: types
 					UsedFor: [][]string{}
-					FuncDecl: fDecl
+					Node: fDecl
 		n
 
 	*VarDecl(n INode): INode ->
@@ -222,7 +234,7 @@ Block::*AddReturn() ->
 RunDesugar(ast INode): INode ->
 	desugar := Desugar
 		root:      ast
-		Templates: make(map[string]*TemplateFn)
+		Templates: make(map[string]*Template)
 
 	desugar.type_ = &desugar
 

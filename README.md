@@ -2,11 +2,12 @@ Og-Lang (Optimistic Golang)
 ===
 ### *DEV* ([CHANGELOG](https://github.com/champii/og/tree/master/CHANGELOG.md))
 
-<table>
-  <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em></td></tr>
-  <tr><td><b>"The Code like it should be. 5/7"</b></td><td>- <em>Mahatma Gandhi</em></td></tr>
-  <tr><td><b>"(..Recursive Facepalm..)"</b></td> <td>- <em>Google</em></td></tr>
-</table>
+# Disclamer
+
+<h3> This software is in its early stage.<br/>
+New features come fast, at the cost of breaking things often.<br />
+Testers and Contributors are most welcome
+</h3>
 
 # Index
 
@@ -15,34 +16,23 @@ Og-Lang (Optimistic Golang)
 1. [Install](#install)
 1. [Quick Overview](#quick-overview)
 1. [Usage](#usage)
+    1. [Basic file compilation](#basic-file-compilation)
+    1. [Debug](#debug)
     1. [Interpreter (ALPHA)](#interpreter-alpha)
-    2. [Basic file compilation](#basic-file-compilation)
-    3. [Debug](#debug)
 1. [Build](#build)
 1. [Todo](#todo)
 1. [Long term utopia](#long-term-utopia)
 
 # Intro
 
-<h3> Disclamer: This software is in its early stage.<br/>
-New features come fast, at the cost of breaking things often.<br />
-Testers and Contributors are most welcome
-</h3>
 
-![Hello world](https://github.com/Champii/og/blob/master/docs/hello_preview.gif)
-
-
-`Og` is to be pronounced `Oh-Jee` and stands for ~~`Orgasmic Granny`~~ `Optimistic Golang`
-
-`Oglang` is an indentation based language mainly inspired from [Livescript](http://livescript.net) that compiles to a subset of `GoLang`.
-
+`Og` is to be pronounced `Oh-Jee` and stands for ~~`Orgasmic Granny`~~ `Optimistic Golang`  
+It is an indentation based language mainly inspired from [Livescript](http://livescript.net) that compiles to `GoLang`.
 
 ### Bootstraped Language
 
-`Oglang` is written in itself. It is said to be a 'Bootstraped' language. In fact, `Oglang` needs the previous release of itself to build itself.
-
-See the [Src](https://github.com/champii/og/tree/master/src) folder for both `Oglang` and `Golang` sources.
-
+`Oglang` is written in itself. It is said to be a 'Bootstraped' language. In fact, `Oglang` needs the previous release of itself to build itself.  
+See the [Src](https://github.com/champii/og/tree/master/src) folder for both `Oglang` and `Golang` sources.  
 Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
 
 ### Goal
@@ -66,6 +56,12 @@ The main goal is to simplify the syntax, to borrow some concepts from Livescript
 - Generics (ALPHA)
 - Interpreter (ALPHA)
 
+<table>
+  <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em></td></tr>
+  <tr><td><b>"The Code like it should be. 5/7"</b></td><td>- <em>Mahatma Gandhi</em></td></tr>
+  <tr><td><b>"(..Recursive Facepalm..)"</b></td> <td>- <em>Google</em></td></tr>
+</table>
+
 
 # Install
 
@@ -74,15 +70,14 @@ The main goal is to simplify the syntax, to borrow some concepts from Livescript
 go get -u github.com/champii/og
 
 # If your `$PATH` includes `$GOPATH/bin` (and it should)
-og --version # or `og -V`
+og --version # or `og -v`
 ```
 
 # Quick Overview
 
 ### [Full overview here](https://github.com/champii/og/tree/master/docs/overview.md) with compiled comparison
 
-This is an quick overview of how `Oglang` looks like actualy. 
-
+This is an quick overview of how `Oglang` looks like actualy.  
 See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder or the [Src](https://github.com/champii/og/tree/master/src) folder for more exemples.
 
 ```go
@@ -140,10 +135,14 @@ main ->
   go -> doSomething()
 ```
 
+## Demo
+
+<p float="left">
+  <img height="220" src="https://github.com/Champii/og/blob/master/docs/hello_preview.gif" />
+  <img height="220" src="https://github.com/Champii/og/blob/master/docs/og_preview.gif" />
+</p>
+
 # Usage
-
-![Og](https://github.com/Champii/og/blob/master/docs/og_preview.gif)
-
 
 ```
 NAME:
@@ -174,26 +173,21 @@ OPTIONS:
   -v, --version                  Print version
 ```
 
-### Interpreter (ALPHA)
-
-Og embed a small interpreter that in fact compiles the given string into a `/tmp/main.go` skelton and run it. A better implementation will come.
-
-```bash
-./og -i
-> 1+1
-2
-```
-
 ### Basic file compilation
 
-By default `Og` compile every `.og` file in the current folder `.` and produce `.go` files that are along their `Og` source. It will then run `go build` on the folder and try to run the created binary
+By default `Og` recursively compile every `.og` file in the current folder `.` and produce `.go` files that are along their `Og` source. It will then run `go build` on the folder 
 ```bash
 ./og
 ```
 
-With just a file name, the compiler will produce a `.go` file inside the same directory
+To additionaly run the produces binary, you can add the `-r` flag
 ```bash
-./og file.og
+./og -r
+```
+
+With just a file name, the compiler will produce a single `.go` file inside the same directory
+```bash
+./og folder/file.og
 ```
 
 You can give multiple files and folder that will be walked recursively
@@ -219,14 +213,21 @@ The `-b` (`--block`) option prints the output of the preprocessor who's in charg
 
 The `-a` (`--ast`) option prints the generated AST from the parser
 
+
+### Interpreter (ALPHA)
+
+Og embed a small interpreter that in fact compiles the given string into a `/tmp/main.go` skelton and run it. A better implementation will come.
+
+```bash
+./og -i
+> 1+1
+2
+```
+
 # Build
 
-The current build time of the project is around 5s for all sources files with `./og` alone, and around 15s for full rebootstrap with `make re` (That bootstraps from old version then rebootstraps from itself, with `go build` and `go test` each time). 
-
-Here is the procedure to regenerate the parser from the grammar if you want to make changes to it.
-
-If you just want to (re)build the binary, you can call `make build` or just `go build` (needs a previously generated parser from grammar. See below)
-
+Here is the procedure to regenerate the parser from the grammar if you want to make changes to it.  
+If you just want to (re)build the binary, you can call `make build` or just `go build` (needs a previously generated parser from grammar. See below)  
 You will need `Java`, the Antlr4 library is in `./parser/antlr4-4.7.1-SNAPSHOT-complete.jar`
 
 ```bash
@@ -235,14 +236,14 @@ go get -u github.com/champii/og
 cd $GOPATH/src/github.com/champii/og
 
 # This will regenerate the grammar,
-# Compile the existing sources from the previous Og,
+# Compile the existing sources from the previous Og (`og lib`)
 # And run the tests.
 # Needs the last official `og` binary version at global scope.
 make
 
 # It cleans the `lib` folder,
-# Then compiles og from the previous global version
-# Then recomiles it from itself
+# Then compiles og from the previous global version (`og lib`)
+# Then recomiles it from itself (`./og lib`)
 # And run the tests
 make re
 
@@ -250,12 +251,13 @@ make re
 og exemples/import.og
 ```
 
+The current build time of the project is around 5s for all sources files with `./og` alone, and around 20s for full rebootstrap with `make re` (That bootstraps from old version then rebootstraps from itself, with `go build` and `go test` each time). 
+
+
 # TODO
 
 ## Golang basics
-- [ ] Ternary expression
 - [ ] Named return
-- [ ] Fix type switch assignement `switch t := v.(type)` 
 
 ## Syntaxic Sugar
 - [ ] Slices declaration without type `[1, 2, 3]`, `[]string` (need type inference)
@@ -271,15 +273,20 @@ og exemples/import.og
 - [ ] Auto setup package name with folder name if not specified
 - [ ] Error bubbling
 - [ ] Function currying
-- [ ] Function shorthand `(+ 10)`
+- [ ] Function shorthand `(+ 10)`, `map(structArr, (.SomeField))` 
 - [ ] Generics
 - [ ] Import pattern matching
 - [ ] Remove that `fn` keywork that diminish lisibility
 - [ ] Conditionnal expression like `res := getFirst() || getSecond()` that make `if` statements
 - [ ] Assignation and return for `for`, `switch`
 - [ ] `super` keyword
+- [ ] Default arguments `f := (i int = 2, s string = "foo") ->`
+- [ ] Extended arguments to set to this `Foo::bar(@someVar) -> `
+- [ ] Global type inference and auto-generic generation to access full parametric polymorphism
 
 ## Technical
+- [ ] Be quiet when printing files (enforce `-q`)
+- [ ] When printing, if file didn't changed we should show it instead of leaving.
 - [ ] Perfs !! (More specific rules, reduce size and workload of Walkers, remove ambiguity in grammar)
 - [ ] Do a single pass on AST instead of multiple walkers (for perfs)
 - [ ] Fix bad perfs for nested struct instantiation 
@@ -290,6 +297,11 @@ og exemples/import.og
 - [ ] VSCode extension
 - [ ] Adapt Golang tooling like `gofmt` or `golint`
 - [ ] Better error context (How to keep line number after preproc ?)
+- [ ] Parse all AST alltogether to perform type analysis and generics preprocessing
+- [ ] Avoid race when printing
+- [ ] Separate the print logic
+- [ ] Centralized error management
+- [ ] Allow to give arguments to finaly executed binary with `og -r -- arg1 arg2`
 
 # Long term utopia
 

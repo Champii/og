@@ -149,6 +149,7 @@ func autoIfReturn() int {
 func main() {
 	test := Foo{}
 	test.inc(42)
+	genericFunctionint(42)
 	var (
 		a int = func() int {
 			if true {
@@ -178,6 +179,9 @@ func main() {
 	go func() {
 		doSomething()
 	}()
+}
+func genericFunctionint(arg int) int {
+	return arg
 }
 ```
 

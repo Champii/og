@@ -1,7 +1,9 @@
 package og
 
 import (
+	"fmt"
 	tm "github.com/buger/goterm"
+	curs "github.com/k0kubun/go-ansi"
 	"strconv"
 	"time"
 )
@@ -39,12 +41,17 @@ type Pool struct {
 	In       chan string
 	Out      chan error
 	Verbose  bool
+	spinner  int
 }
 
 func (this Pool) Queue(job string) {
 	this.In <- job
 }
 func (this *Pool) Run() {
+	if this.Verbose {
+		curs.CursorHide()
+		defer curs.CursorShow()
+	}
 	for _, worker := range this.Workers {
 		go worker.Run()
 	}
@@ -53,12 +60,14 @@ func (this *Pool) Run() {
 	go func() {
 		for true {
 			<-ticker.C
+			this.spinner += 1
+			this.spinner %= 4
 			this.Print()
 		}
 	}()
 	for this.Finished < this.Total {
 		if err := <-this.Out; err != nil {
-			tm.Println(err)
+			fmt.Println(err)
 		}
 		this.Finished++
 	}
@@ -69,8 +78,14 @@ func (this Pool) Print() {
 	if !this.Verbose {
 		return
 	}
+	spinners := []string{
+		"|",
+		"/",
+		"-",
+		"\\",
+	}
 	tm.Print("                                          \r")
-	tm.Println(" ", tm.Color("[", tm.RED), tm.Color(strconv.Itoa(this.Finished), tm.YELLOW), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(this.Total), tm.GREEN), tm.Color("]", tm.RED), "Building sources")
+	tm.Println(spinners[this.spinner], tm.Color("[", tm.RED), tm.Color(strconv.Itoa(this.Finished), tm.YELLOW), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(this.Total), tm.GREEN), tm.Color("]", tm.RED), tm.Color("Building sources", tm.YELLOW))
 	working := 0
 	for i, worker := range this.Workers {
 		tm.Print("                                          \r")

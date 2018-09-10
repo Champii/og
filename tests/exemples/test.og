@@ -1,7 +1,8 @@
 !og
 
-a<T>(t T): T-> t
+struct Foo<T>
+  bar T
 
 main ->
-  fmt.Println(a<int>(1))
-  fmt.Println(a<string>(1))
+  a := Foo<int>
+    bar: 1

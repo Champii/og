@@ -50,6 +50,11 @@ type ErrorListener struct {
 }
 
 func (this *ErrorListener) SyntaxError(rec antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, e antlr.RecognitionException) {
+	for i := 0; i < 8; i++ {
+		tm.Println("                                                                          ")
+	}
+	tm.MoveCursorUp(9)
+	tm.Flush()
 	fileInfo := fmt.Sprintf("%s (%s:%s)", green(this.filePath), yellow(line), yellow(column))
 	badToken := offendingSymbol.(antlr.Token).GetText()
 	fmt.Printf("%s: %s '%s'\n", fileInfo, red("Unexpected"), magenta(badToken))
@@ -57,13 +62,6 @@ func (this *ErrorListener) SyntaxError(rec antlr.Recognizer, offendingSymbol int
 	badLine = cyan(badLine[:column]) + magenta(badToken) + cyan(badLine[column+len(badToken):])
 	fmt.Println(badLine)
 	fmt.Print(blue("%"+strconv.Itoa(column+1)+"s\n\n", "^"))
-	tm.MoveCursorUp(1)
-	for i := 0; i < 8; i++ {
-		tm.Println("                                                                          ")
-		tm.Flush()
-	}
-	tm.MoveCursorUp(8)
-	tm.Flush()
 }
 func NewErrorListener(filePath, source string) *ErrorListener {
 	return &ErrorListener{
@@ -79,14 +77,17 @@ func parserInit(filePath, str string) *parser.OgParser {
 	p := parser.NewOgParser(stream)
 	p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
 	p.RemoveErrorListeners()
+	p.SetErrorHandler(NewErrorHandler())
 	p.AddErrorListener(NewErrorListener(filePath, str))
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-	p.SetErrorHandler(antlr.NewBailErrorStrategy())
 	return p
 }
 func Parse(filePath, str string) string {
 	p := parserInit(filePath, str)
 	res := p.SourceFile()
+	if res == nil {
+		return ""
+	}
 	t := new(translator.OgVisitor)
 	tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
 	if config.Ast {

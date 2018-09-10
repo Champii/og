@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-type TemplateFn struct {
-	Name     string
-	Types    []string
-	UsedFor  [][]string
-	FuncDecl *FunctionDecl
+type Template struct {
+	Name    string
+	Types   []string
+	UsedFor [][]string
+	Node    INode
 }
 type GobRegister struct {
 	AstWalker
@@ -30,7 +30,7 @@ func RunGobRegister(tree INode) {
 type Desugar struct {
 	AstWalker
 	root      INode
-	Templates map[string]*TemplateFn
+	Templates map[string]*Template
 }
 
 func (this *Desugar) GenerateTopFns() {
@@ -39,7 +39,7 @@ func (this *Desugar) GenerateTopFns() {
 	for _, template := range this.Templates {
 		topArr := source.TopLevels
 		for i, top := range topArr {
-			if top.FunctionDecl == template.FuncDecl {
+			if top.FunctionDecl == template.Node || (top.Declaration != nil && top.Declaration.TypeDecl != nil && top.Declaration.TypeDecl.StructType != nil && top.Declaration.TypeDecl.StructType == template.Node) {
 				if len(topArr)-1 == i {
 					source.TopLevels = source.TopLevels[:i]
 				} else if i == 0 {
@@ -56,7 +56,7 @@ func (this *Desugar) GenerateTopFns() {
 				buf bytes.Buffer
 			)
 			enc := gob.NewEncoder(&buf)
-			if err := enc.Encode(&template.FuncDecl); err != nil {
+			if err := enc.Encode(template.Node.(*FunctionDecl)); err != nil {
 				fmt.Println("ERROR ENCODE", err)
 			}
 			dec := gob.NewDecoder(&buf)
@@ -84,6 +84,22 @@ func (this *Desugar) Arguments(n INode) INode {
 	}
 	return n
 }
+func (this *Desugar) StructType(n INode) INode {
+	structType := n.(*StructType)
+	if structType.TemplateSpec != nil {
+		types := []string{}
+		for _, t := range structType.TemplateSpec.Result.Types {
+			types = append(types, t.Eval())
+		}
+		this.Templates[structType.Name] = &Template{
+			Name:    structType.Name,
+			Types:   types,
+			UsedFor: [][]string{},
+			Node:    structType,
+		}
+	}
+	return n
+}
 func (this *Desugar) Signature(n INode) INode {
 	sig := n.(*Signature)
 	if sig.TemplateSpec != nil {
@@ -93,11 +109,11 @@ func (this *Desugar) Signature(n INode) INode {
 			for _, t := range sig.TemplateSpec.Result.Types {
 				types = append(types, t.Eval())
 			}
-			this.Templates[fDecl.Name] = &TemplateFn{
-				Name:     fDecl.Name,
-				Types:    types,
-				UsedFor:  [][]string{},
-				FuncDecl: fDecl,
+			this.Templates[fDecl.Name] = &Template{
+				Name:    fDecl.Name,
+				Types:   types,
+				UsedFor: [][]string{},
+				Node:    fDecl,
 			}
 		}
 	}
@@ -241,7 +257,7 @@ func (this *Block) AddReturn() {
 func RunDesugar(ast INode) INode {
 	desugar := Desugar{
 		root:      ast,
-		Templates: make(map[string]*TemplateFn),
+		Templates: make(map[string]*Template),
 	}
 	desugar.type_ = &desugar
 	res := desugar.Walk(ast)

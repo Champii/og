@@ -630,7 +630,7 @@ type TypeSwitchGuard struct {
 func (this TypeSwitchGuard) Eval() string {
 	res := ""
 	if len(this.Name) > 0 {
-		res += this.Name + "="
+		res += this.Name + ":="
 	}
 	return res + this.PrimaryExpr.Eval() + ".(type)"
 }
@@ -1070,6 +1070,7 @@ func (this OperandName) Eval() string {
 type CompositeLit struct {
 	*Node
 	LiteralType  *LiteralType
+	TemplateSpec *TemplateSpec
 	LiteralValue *LiteralValue
 }
 
@@ -1171,8 +1172,9 @@ func (this Element) Eval() string {
 
 type StructType struct {
 	*Node
-	Name   string
-	Fields []*FieldDecl
+	Name         string
+	TemplateSpec *TemplateSpec
+	Fields       []*FieldDecl
 }
 
 func (this *StructType) Eval() string {

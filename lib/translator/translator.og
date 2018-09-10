@@ -956,10 +956,15 @@ struct OgVisitor
     ctx.IDENTIFIER(0).GetText() + "." + ctx.IDENTIFIER(1).GetText()
 
   VisitCompositeLit(ctx *parser.CompositeLitContext, delegate antlr.ParseTreeVisitor): interface ->
-    &CompositeLit
+    node := &CompositeLit
       Node: NewNode(ctx)
       LiteralType: @VisitLiteralType(ctx.LiteralType().(*parser.LiteralTypeContext), delegate).(*LiteralType)
       LiteralValue: @VisitLiteralValue(ctx.LiteralValue().(*parser.LiteralValueContext), delegate).(*LiteralValue)
+
+    if ctx.TemplateSpec() != nil
+      node.TemplateSpec = @VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
+
+    node
 
   VisitLiteralType(ctx *parser.LiteralTypeContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &LiteralType
@@ -1056,6 +1061,9 @@ struct OgVisitor
       res = append(res, @VisitFieldDecl(spec.(*parser.FieldDeclContext), delegate).(*FieldDecl))
 
     node.Fields = res
+
+    if ctx.TemplateSpec() != nil
+      node.TemplateSpec = @VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
 
     node
 

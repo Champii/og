@@ -256,6 +256,12 @@ func main() {
 	default:
 		"other"
 	}
+	switch res := t.(type) {
+	case string:
+		res
+	default:
+		"other"
+	}
 }
 `,
 		// this.og

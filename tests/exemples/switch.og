@@ -11,3 +11,7 @@ main ->
 	switch t.(type)
 		string => "string"
 		_      => "other"
+
+	switch res := t.(type)
+		string => res
+		_      => "other"

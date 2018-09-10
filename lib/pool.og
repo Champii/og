@@ -1,9 +1,11 @@
 !og
 
 import
+	fmt
 	time
 	strconv
 	"github.com/buger/goterm": tm
+	"github.com/k0kubun/go-ansi": curs
 
 struct Worker
 	In chan string
@@ -34,11 +36,16 @@ struct Pool
 	In chan string
 	Out chan error
 	Verbose bool
+	spinner int
 
 	Queue(job string) ->
 		@In <- job
 
 	Run ->
+		if @Verbose
+			curs.CursorHide()
+			defer curs.CursorShow()
+
 		for _, worker in @Workers
 			go worker.Run()
 
@@ -48,11 +55,13 @@ struct Pool
 		go ->
 			for true
 				<-ticker.C
+				@spinner += 1
+				@spinner %= 4
 				@Print()
 
 		for @Finished < @Total
 			if err := <-@Out; err != nil
-				tm.Println(err)
+				fmt.Println(err)
 
 			@Finished++
 
@@ -63,8 +72,9 @@ struct Pool
 		if !@Verbose
 			return
 
+		spinners := []string{"|", "/", "-", "\\"}
 		tm.Print("                                          \r")
-		tm.Println(" ", tm.Color("[", tm.RED), tm.Color(strconv.Itoa(@Finished), tm.YELLOW), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(@Total), tm.GREEN), tm.Color("]", tm.RED), "Building sources")
+		tm.Println(spinners[@spinner], tm.Color("[", tm.RED), tm.Color(strconv.Itoa(@Finished), tm.YELLOW), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(@Total), tm.GREEN), tm.Color("]", tm.RED), tm.Color("Building sources", tm.YELLOW))
 
 		working := 0
 

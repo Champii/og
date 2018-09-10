@@ -1,8 +1,13 @@
 # Changelog
 
 ## DEV: Current version
-
-## v0.6.1
+  - Be `--quiet` when either `-p`, `-d`, `-b` or `-a`
+  - Force recompile if `-p`, `-d`, `-b` or `-a`
+  - Hide and show cursor while compiling
+  - Show a spinner
+  - Fix `switch res := t.(type)`
+  - Go format error is no more swallowed
+  - Add template syntax for `struct Foo<T>` but not implemented yet (needed that switch fix)
 
 ## v0.6.0
   - Generics that are produced at compile time
