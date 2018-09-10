@@ -1,6 +1,6 @@
 # Changelog
 
-## DEV: Current version
+## v0.6.1: Current version
 
 ## v0.6.0
   - Generics that are produced at compile time
