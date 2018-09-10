@@ -1,6 +1,6 @@
 Og-Lang (Optimistic Golang)
 ===
-### *v0.6.1* ([CHANGELOG](https://github.com/champii/og/tree/master/CHANGELOG.md))
+### *DEV* ([CHANGELOG](https://github.com/champii/og/tree/master/CHANGELOG.md))
 
 <table>
   <tr><td><b>"Golang On Steroids"</b></td>         <td>- <em>Socrates</em></td></tr>
@@ -149,7 +149,7 @@ NAME:
   Oglang - Golang on steroids
 
 VERSION:
-  v0.6.1
+  DEV
 
 USAGE:
   og [options] [folders...|files...]
