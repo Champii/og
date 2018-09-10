@@ -43,6 +43,8 @@ See the [Src](https://github.com/champii/og/tree/master/src) folder for both `Og
 
 Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
 
+![Hello world](https://github.com/champii/og/tree/master/docs/hello_preview.gif)
+
 ### Goal
 
 The main goal is to simplify the syntax, to borrow some concepts from Livescript and other functional languages, to implement Generics and macro processing, as well as some syntaxic sugar to avoid all the boilerplate code Golang forces us into.
@@ -138,6 +140,9 @@ main ->
 ```
 
 # Usage
+
+![Og](https://github.com/champii/og/tree/master/docs/og_preview.gif)
+
 
 ```
 NAME:
