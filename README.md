@@ -29,6 +29,8 @@ New features come fast, at the cost of breaking things often.<br />
 Testers and Contributors are most welcome
 </h3>
 
+![Hello world](https://github.com/Champii/og/blob/master/docs/hello_preview.gif)
+
 
 `Og` is to be pronounced `Oh-Jee` and stands for ~~`Orgasmic Granny`~~ `Optimistic Golang`
 
@@ -42,8 +44,6 @@ Testers and Contributors are most welcome
 See the [Src](https://github.com/champii/og/tree/master/src) folder for both `Oglang` and `Golang` sources.
 
 Built with [Antlr4](https://github.com/antlr/antlr4) from their `Golang` grammar.
-
-![Hello world](https://github.com/Champii/og/blob/master/docs/hello_preview.gif)
 
 ### Goal
 
@@ -65,6 +65,7 @@ The main goal is to simplify the syntax, to borrow some concepts from Livescript
 - CLI tool to parse and debug your files
 - Generics (ALPHA)
 - Interpreter (ALPHA)
+
 
 # Install
 
