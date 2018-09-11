@@ -1,4 +1,4 @@
-Og-Lang *DEV* (Optimistic Golang)
+Og-Lang *v0.6.2* (Optimistic Golang)
 ===
 
 ### [Documentation]()
