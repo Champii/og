@@ -76,6 +76,9 @@ test:
 	@$(call section_title,Testing)
 	@go test og/tests
 
+doc:
+	@docsify serve ./docs
+
 clean:
 	@$(call section_title,Cleaning src folder)
 	@rm -f $(RES)

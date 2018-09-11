@@ -1,4 +1,4 @@
-Og-Lang *v0.6.3* (Optimistic Golang)
+Og-Lang *DEV* (Optimistic Golang)
 ===
 
 ### [Documentation](https://champii.github.io/og)
@@ -18,8 +18,8 @@ Testers and Contributors are most welcome
 ## Demo
 
 <p float="left">
-  <img height="220" src="https://github.com/Champii/og/raw/master/docs/hello_preview.gif" />
-  <img height="220" src="https://github.com/Champii/og/raw/master/docs/og_preview.gif" />
+  <img height="220" src="https://github.com/Champii/og/raw/master/docs/_media/hello_preview.gif" />
+  <img height="220" src="https://github.com/Champii/og/raw/master/docs/_media/og_preview.gif" />
 </p>
 
 

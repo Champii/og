@@ -21,7 +21,7 @@ Simply call
 make
 ```
 Calling `make` will regenerate the grammar,  
-Compile the existing sources from the previous Og (`og lib`)  
+Compile the existing sources from the previous Og (`$> og lib`)  
 And run the tests.  
 Needs the last official `og` binary version at global scope.  
 
@@ -31,11 +31,11 @@ make re
 ```
 
 This cleans the `lib` folder,  
-Then compiles og from the previous global version (`og lib`)  
-Then recomiles it from itself (`./og lib`)  
+Then compiles og from the previous global version (`$> og lib`)  
+Then recomiles it from itself (`$> ./og lib`)  
 And run the tests  
 
-![make](https://github.com/Champii/og/raw/master/docs/_media/og_preview.png)
+![make](https://github.com/Champii/og/raw/master/docs/_media/og_preview.gif)
 
 ### Simple test
 ```bash

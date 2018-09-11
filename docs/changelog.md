@@ -4,9 +4,13 @@
 
 ## v0.6.3
   - Generics for Struct
-    ```go
+    ```og
       struct Foo<T>
         bar T
+
+      main ->
+        foo := Foo<int>
+          bar: 2
     ```
 
 ## v0.6.2

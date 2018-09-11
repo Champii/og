@@ -5,12 +5,30 @@
 'Og' is to be pronounced `Oh-Jee` and stands for ~~`Orgasmic Granny`~~ `Optimistic Golang`  
 It is an indentation based language mainly inspired from [Livescript](http://livescript.net) that compiles to GoLang.
 
+```og
+!main
+
+class Oglang<T>
+  Foo T
+  GetFoo: T -> @T
+
+main ->
+  foo := Oglang<int>
+    Foo: 42
+
+  foo.GetFoo()
+```
+
+Go to the [Features](/features.md) section for more exemples of code.
+
 ### Bootstraped Language
 ---
 
-Oglang is written in itself. It is said to be a 'Bootstraped' language. In fact, Oglang needs the previous release of itself to build itself.
+Oglang is written in itself. It is said to be a 'Bootstraped' language. In fact, Oglang needs the previous release of itself to build itself.  
+See the [Build](/build.md) section for more details
 
-See the [Src](https://github.com/champii/og/tree/master/src) folder for both Oglang and Golang sources.  
+Go to the [./lib](https://github.com/champii/og/tree/master/lib) folder on github for both Oglang and compiled Golang sources.  
+
 Built with [Antlr4](https://github.com/antlr/antlr4) from their Golang grammar.
 
 ### Goal
