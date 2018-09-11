@@ -87,7 +87,7 @@ COPYRIGHT:
 		},
 		cli.StringFlag{
 			Name:  "o, out",
-			Usage: "Output `directory`. If input is recursive folder, the tree is recreated",
+			Usage: "Output destination `directory`.",
 			Value: "./",
 		},
 		cli.IntFlag{
@@ -105,7 +105,7 @@ COPYRIGHT:
 		},
 		cli.BoolFlag{
 			Name:  "b, blocks",
-			Usage: "Print the file after it goes to preprocessor. Shows only block-based indentation",
+			Usage: "Print the file after it goes to preprocessor.",
 		},
 		cli.BoolFlag{
 			Name:  "a, ast",

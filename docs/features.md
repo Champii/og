@@ -1,27 +1,28 @@
+# Features
+---
+
+- Indentation based
+- Transpile to `Golang`
+- No brackets (almost)
+- Clean and nice syntax
+- Auto return the last statement in a block
+- Returnable/Assignable statements (`if` only for the moment)
+- Inline method declaration in `struct`
+- One-liners
+- Syntaxic sugars
+- Bootstraped language
+- Antlr4 parser
+- Multithreaded compilation
+- CLI tool to parse and debug your files
+- Generics (ALPHA)
+- Interpreter (ALPHA)
+
 # Overview
-
-## Index
-
-1. [Global](#global)
-2. [Detail](#detail)
-    1. [Package](#package)
-    1. [Import](#import)
-    1. [Top Level Function](#top-level-function)
-    1. [Function literal](#function-literal)
-    1. [If / Else](#if-/-else)
-    1. [For](#for)
-    1. [Goroutine](#goroutine)
-    1. [Slice](#slice)
-    1. [Swtch/Case](#switch/case)
-    1. [Select](#select)
-    1. [Struct](#struct)
-    1. [Interface](#interface)
-    1. [Generic](#generic)
-    1. [Label](#Label)
+---
 
 # Global
 
-```go
+```og
 !main // package shorthand
 
 // No parenthesis and single word can omit quotes
@@ -191,7 +192,7 @@ func genericFunctionint(arg int) int {
 
 #### Og
 
-```go
+```og
 !main
 // Or
 package main
@@ -207,7 +208,7 @@ package main
 
 #### Og
 
-```go
+```og
 // Single import
 import fmt
 
@@ -249,7 +250,7 @@ import (
 
 #### Og
 
-```go
+```og
 // Empty online function
 f -> ;
 
@@ -290,7 +291,7 @@ func multi(a, b int) (int, bool) {
 
 #### Og
 
-```go
+```og
 // `fn` keyword to denote the function type
 struct Foo
   Bar fn(int): string
@@ -328,7 +329,7 @@ var g = func (a int) error {
 
 #### Og
 
-```go
+```og
 // Classical
 if foo == bar
   foo.Do()
@@ -402,7 +403,7 @@ func f() int {
 
 #### Og
 
-```go
+```og
 // Infinite loop
 for
   do()
@@ -444,7 +445,7 @@ for i := 0; i < 10; i++ {
 
 #### Og
 
-```go
+```og
 // classical
 go some.Func()
 
@@ -466,7 +467,7 @@ go func() {
 
 #### Og
 
-```go
+```og
 a := []string
   "a"
   "b"
@@ -487,7 +488,7 @@ a := []string{
 
 #### Og
 
-```go
+```og
 // Switch case with default
 switch value
   42 => do()
@@ -521,7 +522,7 @@ default:
 
 #### Og
 
-```go
+```og
 select
   <-c      => do()
   x := <-c => doWith(x)
@@ -548,7 +549,7 @@ default:
 
 #### Og
 
-```go
+```og
 // Struct type with internal method
 struct Foo
   Bar int
@@ -602,7 +603,7 @@ func NewMyMethod() *MyMethod {
 
 #### Og
 
-```go
+```og
 // Empty interface
 interface Foo
 
@@ -625,7 +626,7 @@ type Bar interface {
 
 #### Og
 
-```go
+```og
 genericFunction<T>(arg T): T -> arg
 
 main ->
@@ -654,7 +655,7 @@ func main() {
 
 #### Og
 
-```go
+```og
 main ->
   ~here:
   goto here

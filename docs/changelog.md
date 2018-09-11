@@ -18,7 +18,7 @@
 
 ## v0.6.0
   - Generics that are produced at compile time
-    ```go
+    ```og
       genericFunction<T>(arg T): T -> arg
 
       main ->
@@ -47,13 +47,13 @@
   - Makefile now compiles with the previous released version by default instead of the last compiled one. New rule `make new` that compiles itself with the last present `og`
   - Fix a bug on ParameterDecl that wanted a name for each type
   - Auto return for `if` statement
-    ```go
+    ```og
       someFunc: int ->
         if true => 42
         else    => 0
     ```
   - Assignation for `if` statement
-    ```go
+    ```og
       var a int = 
         if true => 42
         else    => 0
@@ -62,7 +62,7 @@
 
 ## v0.4.2
   - Auto return for function with no return keyword (only for simple statement yet)
-    ```go
+    ```og
       someFunc: int -> 2
     ```
 
@@ -71,7 +71,7 @@
   - `-a` CLI option to show the AST
   - Disambiguation of `for`, `if` and `else if` statements with a `;` before the block
   - Empty statement and empty onliner-function body with `;`
-    ```go
+    ```og
       foobar -> ;
 
       if foo == bar => ;
@@ -81,20 +81,20 @@
   - New AST system for more flexibility
   - Switched to SLL prediction mode to greatly improve performances
   - Multiline `type`, `const` and `var` declaration
-    ```go
+    ```og
       var (
         foo string
         bar = 2
       )
     ```
   - Disambiguation character `~` for `label` statements
-    ```go
+    ```og
       ~myLabel: something()
     ```
 
 ## v0.3.0
   - Allow single line If statement
-    ```go
+    ```og
       if b == 0 => 0
       else      => 1
     ```
@@ -109,26 +109,26 @@
 
 ## v0.2.0
   - Variadic arguments
-    ```go
+    ```og
       someFunc(a ...int) -> fmt.Println(a)
       main -> someFunc([]int{1, 2, 3}...)
     ```
   - Parenthesis allowed for import declaration
-    ```go
+    ```og
       import (
         fmt
         strings
       )
     ```
   - For statement with 3 flavors
-    ```go
+    ```og
       for _, i in a
       for i < 10
       for i := 0; i < 10; i++
     ```
   - Bitwise operators `&`, `|`, `^`, `&^`, `<<`, `>>`
   - Import renaming
-    ```go
+    ```og
       import
         fmt
         strings
@@ -138,14 +138,14 @@
 
 ## v0.1.11
   - Function literal but with a mandatory desambiguation symbol `fn`
-    ```go
+    ```og
       a := fn              -> fmt.Println(1)
       b := fn (a int)      -> fmt.Println(a)
       c := fn (a int) :int -> return a
       a := fn         :int -> return 1
     ```
   - Function Type with the same mandatory `fn`
-    ```go
+    ```og
       a(arg fn: int) -> fmt.Println(arg())
       main          -> a(fn: int -> return 2)
     ```
@@ -153,19 +153,19 @@
 ## v0.1.10
   - Better `Makefile` that cares about whether a file has changed or not before applying rules
   - Proper Anonymous field in structs
-    ```go
+    ```og
       struct Foo
         *SomeClass
         a int
     ```
   - Channel Send and Receive
-    ```go
+    ```og
       c := make(chan int)
       c <- 1
       x := <-c
     ```
   - Select statement
-    ```go
+    ```og
       select
         <-c1      => something()
         x := <-c1 => something()
@@ -175,7 +175,7 @@
         _         => defaultCase()
     ```
   - Pointer type for receiver in methods
-    ```go
+    ```og
       // inline
       struct Foo
         nonPointer       : int -> return 1
@@ -187,7 +187,7 @@
     ```
   - External CHANGELOG
   - Function literal (Big performance issue caused by the grammar that keeps increasing in complexity, disabled until it's sorted out)
-    ```go
+    ```og
       a := -> fmt.Println(1)
       a := (a int) -> fmt.Println(a)
     ```
@@ -212,13 +212,13 @@
   - Forced `Go` syntax highlight on `Og` files for `Github`
   - Rework translator to adapt to new method syntax and `@` alias
   - No need to specify the `{}` in `interface{}` for arguments types (not for return values yet)
-    ```go
+    ```og
       fn(a interface): interface{} -> a
     ```
 
 ## v0.1.4
   - Class-like method declaration (nested into the struct)
-    ```go
+    ```og
       struct Foo
         bar int
         f : int -> return @bar
@@ -226,37 +226,37 @@
 
 ## v0.1.3
   - Slice manipulation
-      ```go
+      ```og
       someArr[1:x]
       ```
   - Interfaces
-      ```go
+      ```og
       interface Foo
         Fn(a ArgType): ResType
       ```
   - Alias `@` => `this`
-    ```go
+    ```og
       Foo::bar : SomeType -> return @someProp
     ```
 ## v0.1.2
   - Support for simple `struct ID {}` declaration. Still support `type ID struct {}`.
-    ```go
+    ```og
       // Equivalent
       struct Foo {}
       type Foo struct {}
     ```
   - Alias `class` => `struct`.
-    ```go
+    ```og
       // Equivalent
       struct Foo {}
       class Foo {}
     ```
   - Allow empty `class` declaration
-    ```go
+    ```og
       struct Foo
     ```
   - Shorthand for `package main` => `!main`.
-    ```go
+    ```og
       // Equivalent
       !main
       package main
@@ -266,7 +266,7 @@
       og -o lib src
     ```
   - External method declaration
-    ```go
+    ```og
       struct Foo
       Foo::bar -> doSomething()
     ```
