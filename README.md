@@ -1,7 +1,7 @@
-Og-Lang *v0.6.2* (Optimistic Golang)
+Og-Lang *v0.6.3* (Optimistic Golang)
 ===
 
-### [Documentation]()
+### [Documentation](https://champii.github.io/og)
 
 # Disclamer
 
@@ -15,66 +15,11 @@ Testers and Contributors are most welcome
 
 ![Overview](https://github.com/Champii/og/raw/master/docs/_media/overview_color.png)
 
-```go
-!main
-
-import
-  fmt
-  strings
-  "some/repo"
-
-struct Foo
-  bar int
-  getBar: int    -> @bar
-  *setBar(i int) -> @bar = i
-
-Foo::inc    (foo int): int -> @bar + foo
-Foo::*setInc(foo int)      -> @bar = @bar + foo
-
-interface Bar
-  Foo()
-  Bar(i int): SomeType
-
-otherFunc(a string): string -> a
-
-autoIfReturn: int ->
-  if true => 1
-  else    => 0
-
-genericFunction<T>(arg T): T -> arg
-
-main ->
-  test := Foo{}
-  test.inc(42)
-
-  genericFunction<int>(42)
-
-  var a int = 
-    if true => 1
-    else    => 0
-
-  someArr := []string
-    "value1"
-    "value2"
-
-  for i, v in someArray
-    fmt.Println(i, v)
-
-  switch test.getBar()
-    42 => doSomething()
-    _  => doDefault()
-
-  callback := fn (arg int): int -> arg + 1
-
-  go someFunc()
-  go -> doSomething()
-```
-
 ## Demo
 
 <p float="left">
-  <img height="220" src="https://github.com/Champii/og/blob/master/docs/hello_preview.gif" />
-  <img height="220" src="https://github.com/Champii/og/blob/master/docs/og_preview.gif" />
+  <img height="220" src="https://github.com/Champii/og/raw/master/docs/hello_preview.gif" />
+  <img height="220" src="https://github.com/Champii/og/raw/master/docs/og_preview.gif" />
 </p>
 
 
