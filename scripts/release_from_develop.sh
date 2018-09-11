@@ -55,6 +55,8 @@ echo "Releasing $NEW_TAG to master"
 
 git checkout master
 
+git pull origin master
+
 git pull origin develop
 
 git push origin master
