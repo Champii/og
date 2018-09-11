@@ -27,16 +27,78 @@ func RunGobRegister(tree INode) {
 	p.Walk(tree)
 }
 
+type Templates struct {
+	names     []string
+	templates []*Template
+}
+
+func (this *Templates) Add(name string, template *Template) {
+	this.names = append(this.names, name)
+	this.templates = append(this.templates, template)
+}
+func (this *Templates) Get(name string) *Template {
+	for i, n := range this.names {
+		if n == name {
+			return this.templates[i]
+		}
+	}
+	return nil
+}
+
 type Desugar struct {
 	AstWalker
 	root      INode
-	Templates map[string]*Template
+	Templates Templates
 }
 
-func (this *Desugar) GenerateTopFns() {
+func (this *Desugar) GenerateStruct(template *Template) {
+	source := this.root.(*SourceFile)
+	for _, usedFor := range template.UsedFor {
+		other := &StructType{}
+		var (
+			buf bytes.Buffer
+		)
+		enc := gob.NewEncoder(&buf)
+		if err := enc.Encode(template.Node.(*StructType)); err != nil {
+			fmt.Println("ERROR ENCODE", err)
+		}
+		dec := gob.NewDecoder(&buf)
+		if err := dec.Decode(&other); err != nil {
+			fmt.Println("ERROR DECODE", err)
+		}
+		newStruct := RunTemplateGen(other, template.Types, usedFor).(*StructType)
+		newStruct.Name += strings.Join(usedFor, "")
+		topLevel := &TopLevel{Declaration: &Declaration{TypeDecl: &TypeDecl{StructType: newStruct},
+		},
+		}
+		source.TopLevels = append(source.TopLevels, topLevel)
+	}
+}
+func (this *Desugar) GenerateTopFns(template *Template) {
+	source := this.root.(*SourceFile)
+	for _, usedFor := range template.UsedFor {
+		other := &FunctionDecl{}
+		var (
+			buf bytes.Buffer
+		)
+		enc := gob.NewEncoder(&buf)
+		if err := enc.Encode(template.Node.(*FunctionDecl)); err != nil {
+			fmt.Println("ERROR ENCODE", err)
+		}
+		dec := gob.NewDecoder(&buf)
+		if err := dec.Decode(&other); err != nil {
+			fmt.Println("ERROR DECODE", err)
+		}
+		newFn := RunTemplateGen(other, template.Types, usedFor).(*FunctionDecl)
+		newFn.Name += strings.Join(usedFor, "")
+		topLevel := &TopLevel{FunctionDecl: newFn}
+		source.TopLevels = append(source.TopLevels, topLevel)
+	}
+}
+func (this *Desugar) GenerateGenerics() {
 	source := this.root.(*SourceFile)
 	RunGobRegister(source)
-	for _, template := range this.Templates {
+	for _, template := range this.Templates.templates {
 		topArr := source.TopLevels
 		for i, top := range topArr {
 			if top.FunctionDecl == template.Node || (top.Declaration != nil && top.Declaration.TypeDecl != nil && top.Declaration.TypeDecl.StructType != nil && top.Declaration.TypeDecl.StructType == template.Node) {
@@ -50,23 +112,11 @@ func (this *Desugar) GenerateTopFns() {
 				break
 			}
 		}
-		for _, usedFor := range template.UsedFor {
-			other := &FunctionDecl{}
-			var (
-				buf bytes.Buffer
-			)
-			enc := gob.NewEncoder(&buf)
-			if err := enc.Encode(template.Node.(*FunctionDecl)); err != nil {
-				fmt.Println("ERROR ENCODE", err)
-			}
-			dec := gob.NewDecoder(&buf)
-			if err := dec.Decode(&other); err != nil {
-				fmt.Println("ERROR DECODE", err)
-			}
-			newFn := RunTemplateGen(other, template.Types, usedFor).(*FunctionDecl)
-			newFn.Name += strings.Join(usedFor, "")
-			topLevel := &TopLevel{FunctionDecl: newFn}
-			source.TopLevels = append(source.TopLevels, topLevel)
+		switch template.Node.(type) {
+		case *FunctionDecl:
+			this.GenerateTopFns(template)
+		case *StructType:
+			this.GenerateStruct(template)
 		}
 	}
 }
@@ -79,8 +129,24 @@ func (this *Desugar) Arguments(n INode) INode {
 		for _, t := range args.TemplateSpec.Result.Types {
 			types = append(types, t.Eval())
 		}
-		this.Templates[calleeName].UsedFor = append(this.Templates[calleeName].UsedFor, types)
+		template := this.Templates.Get(calleeName)
+		template.UsedFor = append(template.UsedFor, types)
 		callee.OperandName.Name = calleeName + strings.Join(types, "")
+	}
+	return n
+}
+func (this *Desugar) CompositeLit(n INode) INode {
+	composite := n.(*CompositeLit)
+	if composite.TemplateSpec != nil {
+		callee := composite.LiteralType
+		calleeName := callee.Eval()
+		types := []string{}
+		for _, t := range composite.TemplateSpec.Result.Types {
+			types = append(types, t.Eval())
+		}
+		template := this.Templates.Get(calleeName)
+		template.UsedFor = append(template.UsedFor, types)
+		callee.Type = calleeName + strings.Join(types, "")
 	}
 	return n
 }
@@ -91,12 +157,12 @@ func (this *Desugar) StructType(n INode) INode {
 		for _, t := range structType.TemplateSpec.Result.Types {
 			types = append(types, t.Eval())
 		}
-		this.Templates[structType.Name] = &Template{
+		this.Templates.Add(structType.Name, &Template{
 			Name:    structType.Name,
 			Types:   types,
 			UsedFor: [][]string{},
 			Node:    structType,
-		}
+		})
 	}
 	return n
 }
@@ -109,12 +175,12 @@ func (this *Desugar) Signature(n INode) INode {
 			for _, t := range sig.TemplateSpec.Result.Types {
 				types = append(types, t.Eval())
 			}
-			this.Templates[fDecl.Name] = &Template{
+			this.Templates.Add(fDecl.Name, &Template{
 				Name:    fDecl.Name,
 				Types:   types,
 				UsedFor: [][]string{},
 				Node:    fDecl,
-			}
+			})
 		}
 	}
 	return n
@@ -255,12 +321,9 @@ func (this *Block) AddReturn() {
 	}
 }
 func RunDesugar(ast INode) INode {
-	desugar := Desugar{
-		root:      ast,
-		Templates: make(map[string]*Template),
-	}
+	desugar := Desugar{root: ast}
 	desugar.type_ = &desugar
 	res := desugar.Walk(ast)
-	desugar.GenerateTopFns()
+	desugar.GenerateGenerics()
 	return res
 }

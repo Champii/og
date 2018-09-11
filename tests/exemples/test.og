@@ -4,5 +4,8 @@ struct Foo<T>
   bar T
 
 main ->
+  switch template.Node.(type)
+    *FunctionDecl => @GenerateTopFns(template);
+    *StructType => @GenerateStruct(template)
   a := Foo<int>
     bar: 1

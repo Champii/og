@@ -274,7 +274,6 @@ The current build time of the project is around 5s for all sources files with `.
 - [ ] Error bubbling
 - [ ] Function currying
 - [ ] Function shorthand `(+ 10)`, `map(structArr, (.SomeField))` 
-- [ ] Generics
 - [ ] Import pattern matching
 - [ ] Remove that `fn` keywork that diminish lisibility
 - [ ] Conditionnal expression like `res := getFirst() || getSecond()` that make `if` statements
@@ -302,6 +301,12 @@ The current build time of the project is around 5s for all sources files with `.
 - [ ] Separate the print logic
 - [ ] Centralized error management
 - [ ] Allow to give arguments to finaly executed binary with `og -r -- arg1 arg2`
+- [ ] Fix typeswitch that cannot allow a pointer as second case without `;`
+    ```go
+      switch template.Node.(type)
+        *FunctionDecl => @GenerateTopFns(template); // <- that `;` is needed here
+        *StructType => @GenerateStruct(template)
+    ```
 
 # Long term utopia
 

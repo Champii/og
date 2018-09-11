@@ -1,6 +1,11 @@
 # Changelog
 
 ## DEV: Current version
+  - Generics for Struct
+    ```go
+      struct Foo<T>
+        bar T
+    ```
 
 ## v0.6.2
   - Be `--quiet` when either `-p`, `-d`, `-b` or `-a`

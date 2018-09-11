@@ -22,17 +22,80 @@ RunGobRegister(tree INode) ->
 	p.type_ = &p
 	p.Walk(tree)
 
+struct Templates
+	names     []string
+	templates []*Template
+
+	*Add(name string, template *Template) ->
+		@names = append(@names, name)
+		@templates = append(@templates, template)
+
+	Get(name string): *Template ->
+		for i, n in @names
+			if n == name
+				return @templates[i]
+
+		return nil
 
 struct Desugar
 	AstWalker
 	root      INode
-	Templates map[string]*Template
+	Templates Templates
 
-	*GenerateTopFns ->
+	*GenerateStruct(template *Template) ->
+		source := @root.(*SourceFile)
+
+		for _, usedFor in template.UsedFor
+			other := &StructType{}
+
+			var buf bytes.Buffer
+			enc := gob.NewEncoder(&buf)
+			if err := enc.Encode(template.Node.(*StructType)); err != nil
+				fmt.Println("ERROR ENCODE", err)
+
+			dec := gob.NewDecoder(&buf)
+			if err := dec.Decode(&other); err != nil
+				fmt.Println("ERROR DECODE", err)
+
+			newStruct := RunTemplateGen(other, template.Types, usedFor).(*StructType)
+
+			newStruct.Name += strings.Join(usedFor, "")
+
+			topLevel := &TopLevel
+				Declaration: &Declaration
+					TypeDecl: &TypeDecl
+						StructType: newStruct
+
+			source.TopLevels = append(source.TopLevels, topLevel)
+
+	*GenerateTopFns(template *Template) ->
+		source := @root.(*SourceFile)
+
+		for _, usedFor in template.UsedFor
+			other := &FunctionDecl{}
+
+			var buf bytes.Buffer
+			enc := gob.NewEncoder(&buf)
+			if err := enc.Encode(template.Node.(*FunctionDecl)); err != nil
+				fmt.Println("ERROR ENCODE", err)
+
+			dec := gob.NewDecoder(&buf)
+			if err := dec.Decode(&other); err != nil
+				fmt.Println("ERROR DECODE", err)
+
+			newFn := RunTemplateGen(other, template.Types, usedFor).(*FunctionDecl)
+
+			newFn.Name += strings.Join(usedFor, "")
+
+			topLevel := &TopLevel{FunctionDecl: newFn}
+
+			source.TopLevels = append(source.TopLevels, topLevel)
+
+	*GenerateGenerics ->
 		source := @root.(*SourceFile)
 		RunGobRegister(source)
 
-		for _, template in @Templates
+		for _, template in @Templates.templates
 			topArr := source.TopLevels
 			for i, top in topArr
 
@@ -42,25 +105,9 @@ struct Desugar
 					else                    => source.TopLevels = append(source.TopLevels[0:i], source.TopLevels[i+1:]...)
 					break
 
-			for _, usedFor in template.UsedFor
-				other := &FunctionDecl{}
-
-				var buf bytes.Buffer
-				enc := gob.NewEncoder(&buf)
-				if err := enc.Encode(template.Node.(*FunctionDecl)); err != nil
-					fmt.Println("ERROR ENCODE", err)
-
-				dec := gob.NewDecoder(&buf)
-				if err := dec.Decode(&other); err != nil
-					fmt.Println("ERROR DECODE", err)
-
-				newFn := RunTemplateGen(other, template.Types, usedFor).(*FunctionDecl)
-
-				newFn.Name += strings.Join(usedFor, "")
-
-				topLevel := &TopLevel{FunctionDecl: newFn}
-
-				source.TopLevels = append(source.TopLevels, topLevel)
+			switch template.Node.(type)
+				*FunctionDecl => @GenerateTopFns(template);
+				*StructType   => @GenerateStruct(template)
 
 	*Arguments(n INode): INode ->
 		args := n.(*Arguments)
@@ -75,8 +122,28 @@ struct Desugar
 			for _, t in args.TemplateSpec.Result.Types
 				types = append(types, t.Eval())
 
-			@Templates[calleeName].UsedFor = append(@Templates[calleeName].UsedFor, types)
+			template := @Templates.Get(calleeName)
+			template.UsedFor = append(template.UsedFor, types)
 			callee.OperandName.Name = calleeName + strings.Join(types, "")
+
+		n
+
+	*CompositeLit(n INode): INode ->
+		composite := n.(*CompositeLit)
+
+		if composite.TemplateSpec != nil
+			callee := composite.LiteralType
+
+			calleeName := callee.Eval()
+
+			types := []string{}
+
+			for _, t in composite.TemplateSpec.Result.Types
+				types = append(types, t.Eval())
+
+			template := @Templates.Get(calleeName)
+			template.UsedFor = append(template.UsedFor, types)
+			callee.Type = calleeName + strings.Join(types, "")
 
 		n
 
@@ -87,11 +154,12 @@ struct Desugar
 			for _, t in structType.TemplateSpec.Result.Types
 				types = append(types, t.Eval())
 
-			@Templates[structType.Name] = &Template
+			@Templates.Add(structType.Name, &Template
 				Name: structType.Name
 				Types: types
 				UsedFor: [][]string{}
 				Node: structType
+			)
 		n
 
 	*Signature(n INode): INode ->
@@ -105,11 +173,12 @@ struct Desugar
 				for _, t in sig.TemplateSpec.Result.Types
 					types = append(types, t.Eval())
 
-				@Templates[fDecl.Name] = &Template
+				@Templates.Add(fDecl.Name, &Template
 					Name: fDecl.Name
 					Types: types
 					UsedFor: [][]string{}
 					Node: fDecl
+				)
 		n
 
 	*VarDecl(n INode): INode ->
@@ -234,12 +303,11 @@ Block::*AddReturn() ->
 RunDesugar(ast INode): INode ->
 	desugar := Desugar
 		root:      ast
-		Templates: make(map[string]*Template)
 
 	desugar.type_ = &desugar
 
 	res := desugar.Walk(ast)
 
-	desugar.GenerateTopFns()
+	desugar.GenerateGenerics()
 
 	res
