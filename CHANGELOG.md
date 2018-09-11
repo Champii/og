@@ -1,6 +1,6 @@
 # Changelog
 
-## DEV: Current version
+## v0.6.2: Current version
   - Be `--quiet` when either `-p`, `-d`, `-b` or `-a`
   - Force recompile if `-p`, `-d`, `-b` or `-a`
   - Hide and show cursor while compiling
