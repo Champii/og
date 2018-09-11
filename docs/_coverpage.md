@@ -1,4 +1,4 @@
-# <b>Og</b>lang <small>v0.6.2</small>
+# <b>Og</b>lang <small>v0.6.3</small>
 
 ## <i>Optimistic Golang</i>
 
