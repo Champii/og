@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.6.2: Current version
+## v0.6.2DEV: Current version
+
+## 
   - Generics for Struct
     ```go
       struct Foo<T>
