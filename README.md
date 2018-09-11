@@ -80,60 +80,7 @@ og --version # or `og -v`
 This is an quick overview of how `Oglang` looks like actualy.  
 See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder or the [Src](https://github.com/champii/og/tree/master/src) folder for more exemples.
 
-```go
-!main
-
-import
-  fmt
-  strings
-  "some/repo"
-
-struct Foo
-  bar int
-  getBar: int    -> @bar
-  *setBar(i int) -> @bar = i
-
-Foo::inc    (foo int): int -> @bar + foo
-Foo::*setInc(foo int)      -> @bar = @bar + foo
-
-interface Bar
-  Foo()
-  Bar(i int): SomeType
-
-otherFunc(a string): string -> a
-
-autoIfReturn: int ->
-  if true => 1
-  else    => 0
-
-genericFunction<T>(arg T): T -> arg
-
-main ->
-  test := Foo{}
-  test.inc(42)
-
-  genericFunction<int>(42)
-
-  var a int = 
-    if true => 1
-    else    => 0
-
-  someArr := []string
-    "value1"
-    "value2"
-
-  for i, v in someArray
-    fmt.Println(i, v)
-
-  switch test.getBar()
-    42 => doSomething()
-    _  => doDefault()
-
-  callback := fn (arg int): int -> arg + 1
-
-  go someFunc()
-  go -> doSomething()
-```
+![OverviewOg](https://github.com/Champii/og/blob/master/docs/overview_color.png)
 
 ## Demo
 
@@ -284,19 +231,16 @@ The current build time of the project is around 5s for all sources files with `.
 - [ ] Global type inference and auto-generic generation to access full parametric polymorphism
 
 ## Technical
-- [ ] Be quiet when printing files (enforce `-q`)
-- [ ] When printing, if file didn't changed we should show it instead of leaving.
 - [ ] Perfs !! (More specific rules, reduce size and workload of Walkers, remove ambiguity in grammar)
 - [ ] Do a single pass on AST instead of multiple walkers (for perfs)
-- [ ] Fix bad perfs for nested struct instantiation 
+- [ ] Fix bad perfs for nested struct instantiation and if/else block
 - [ ] Simple type checker to catch errors before Golang formater/compiler does
-- [ ] Don't recompile files that didn't change
 - [ ] Language extensions ?
 - [ ] Make tests truly executable
 - [ ] VSCode extension
 - [ ] Adapt Golang tooling like `gofmt` or `golint`
 - [ ] Better error context (How to keep line number after preproc ?)
-- [ ] Parse all AST alltogether to perform type analysis and generics preprocessing
+- [ ] Parse all AST alltogether to perform type analysis and generics preprocessing across files
 - [ ] Avoid race when printing
 - [ ] Separate the print logic
 - [ ] Centralized error management
