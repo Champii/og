@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="vendor/themes/dark.css">
+  <style>
+    .sidebar, body {
+      background-color: #303030;
+    }
+    .sidebar {
+      border-right-width: 3px;
+    }
+    .lang-og > .token.lol {
+      color: hsl(0, 0%, 100%);
+    }
+    .lang-og > .token.boolean {
+      color: hsl(184, 75%, 51%);
+    }
+    .lang-og > .token.number {
+      color: hsl(283, 100%, 50%);
+    }
+    .lang-og > .token.this {
+      color: hsl(295, 100%, 50%);
+    }
+    .lang-og > .token.thisProp {
+      color: hsl(44, 99%, 33%);
+    }
+    .lang-og > .token.keyword {
+      color: hsl(0, 100%, 50%);
+    }
+    .lang-og > .token.returnType,
+    .lang-og > .token.argType,
+    .lang-og > .token.structInst,
+    .lang-og > .token.className,
+    .lang-og > .token.externalReceiver,
+    .lang-og > .token.builtin {
+      color: hsl(66, 76%, 53%);
+    }
+    .lang-og > .token.operator, .lang-og > .token.package, .lang-og > .token.parens {
+      color: hsl(24, 100%, 50%);
+    }
+    .lang-og > .token.packageName {
+      color: hsl(313, 77%, 44%);
+    }
+    .lang-og > .token.trolol {
+      color: hsl(24, 55%, 48%);
+    }
+    .lang-og > .token.assign, .markdown-section pre>code.lang-og {
+      color: hsl(116, 98%, 34%);
+    }
+    .lang-og > .token.funcName,
+    .lang-og > .token.secondary,
+    .lang-og > .token.funcCall,
+    .lang-og > .token.externalMethod {
+      color: hsl(238, 90%, 72%);
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      coverpage: true,
+      name: 'Oglang',
+      repo: 'https://github.com/Champii/og/',
+      loadSidebar: true,
+      autoHeader: true,
+      subMaxLevel: 3,
+      // themeColor: '#ff2222'
+    }
+  </script>
+  <script src="vendor/docsify.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-go.min.js"></script>
+  <script src="//unpkg.com/prismjs/components/prism-bash.min.js"></script>
+  <script src="vendor/prism-og.js"></script>
+</body>
+</html>

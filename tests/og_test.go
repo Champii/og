@@ -485,12 +485,17 @@ func voila() int {
 func main() {
 	fmt.Println(aint(1))
 	fmt.Println(astring(1))
+	a := Fooint{bar: 1}
 }
 func aint(t int) int {
 	return t
 }
 func astring(t string) string {
 	return t
+}
+
+type Fooint struct {
+	bar int
 }
 `,
 	}
