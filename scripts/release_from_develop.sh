@@ -75,6 +75,8 @@ go get github.com/champii/og
 
 git checkout develop
 
+git pull origin master
+
 echo "Release of $NEW_TAG OK"
 
 echo "Restoring DEV tag in develop"
