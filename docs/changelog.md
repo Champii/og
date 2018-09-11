@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.6.4: Current version
+## DEV: Current version
+
+## v0.6.4
 
 ## v0.6.3
   - Generics for Struct
