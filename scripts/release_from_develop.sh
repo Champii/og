@@ -41,7 +41,11 @@ NEW_TAG="$VNUM1.$VNUM2.$VNUM3"
 
 echo "Preparing next version: $NEW_TAG"
 
-sed -i -e "s/DEV: Current version/$NEW_TAG: Current version/g" CHANGELOG.md
+sed -i -e "s/DEV: Current version/$NEW_TAG: Current version/g" docs/changelog.md
+
+sed -i -e "s/DEV/$NEW_TAG/g" docs/usage.md
+
+sed -i -e "s/DEV/$NEW_TAG/g" docs/_coverpage.md
 
 sed -i -e "s/DEV/$NEW_TAG/g" README.md
 
@@ -75,7 +79,11 @@ echo "Release of $NEW_TAG OK"
 
 echo "Restoring DEV tag in develop"
 
-sed -i -e "s/$NEW_TAG: Current version/DEV: Current version\\n\\n## $NEW_TAG/g" CHANGELOG.md
+sed -i -e "s/$NEW_TAG: Current version/DEV: Current version\\n\\n## $NEW_TAG/g" docs/changelog.md
+
+sed -i -e "s/$NEW_TAG/DEV/g" docs/_coverpage.md
+
+sed -i -e "s/$NEW_TAG/DEV/g" docs/usage.md
 
 sed -i -e "s/$NEW_TAG/DEV/g" README.md
 
