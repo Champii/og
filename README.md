@@ -78,7 +78,7 @@ og --version # or `og -v`
 ### [Full overview here](https://github.com/champii/og/tree/master/docs/overview.md) with compiled comparison
 
 This is an quick overview of how `Oglang` looks like actualy.  
-See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder or the [Src](https://github.com/champii/og/tree/master/src) folder for more exemples.
+See the [Examples](https://github.com/champii/og/tree/master/tests/exemples) folder or the [Src](https://github.com/champii/og/tree/master/src) folder for more examples.
 
 ```go
 !main
@@ -305,6 +305,6 @@ The current build time of the project is around 5s for all sources files with `.
 
 # Long term utopia
 
-What we want `Og` to looks like in the futur
+What we want `Og` to looks like in the future:
 
 [Utopia](https://github.com/champii/og/tree/master/tests/exemples/utopia.og.exemple)
