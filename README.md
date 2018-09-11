@@ -82,7 +82,7 @@ og --version # or `og -V`
 
 This is an quick overview of how `Oglang` looks like actualy. 
 
-See the [Exemples](https://github.com/champii/og/tree/master/tests/exemples) folder or the [Src](https://github.com/champii/og/tree/master/src) folder for more exemples.
+See the [Examples](https://github.com/champii/og/tree/master/tests/exemples) folder or the [Src](https://github.com/champii/og/tree/master/src) folder for more examples.
 
 ```go
 !main
@@ -292,6 +292,6 @@ og exemples/import.og
 
 # Long term utopia
 
-What we want `Og` to looks like in the futur
+What we want `Og` to looks like in the future:
 
 [Utopia](https://github.com/champii/og/tree/master/tests/exemples/utopia.og.exemple)
