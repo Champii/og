@@ -1,0 +1,21 @@
+!og
+
+struct OgConfig
+  Blocks      bool
+  Dirty       bool
+  Print       bool
+  Force       bool
+  Ast         bool
+  Quiet       bool
+  Interpreter bool
+  Paths       []string // from command line
+  Workers     int
+  OutPath     string
+  NoBuild     bool
+  Run         bool
+
+NewOgConfig: *OgConfig ->
+  &OgConfig
+    Workers: 8
+    Interpreter: false
+    OutPath: "./"

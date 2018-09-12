@@ -48,12 +48,12 @@ func (this *Templates) Get(name string) *Template {
 
 type Desugar struct {
 	AstWalker
-	root      ast.INode
+	Root      ast.INode
 	Templates Templates
 }
 
 func (this *Desugar) GenerateStruct(template *Template) {
-	source := this.root.(*ast.SourceFile)
+	source := this.Root.(*ast.SourceFile)
 	for _, usedFor := range template.UsedFor {
 		other := &ast.StructType{}
 		var (
@@ -76,7 +76,7 @@ func (this *Desugar) GenerateStruct(template *Template) {
 	}
 }
 func (this *Desugar) GenerateTopFns(template *Template) {
-	source := this.root.(*ast.SourceFile)
+	source := this.Root.(*ast.SourceFile)
 	for _, usedFor := range template.UsedFor {
 		other := &ast.FunctionDecl{}
 		var (
@@ -97,7 +97,7 @@ func (this *Desugar) GenerateTopFns(template *Template) {
 	}
 }
 func (this *Desugar) GenerateGenerics() {
-	source := this.root.(*ast.SourceFile)
+	source := this.Root.(*ast.SourceFile)
 	RunGobRegister(source)
 	for _, template := range this.Templates.templates {
 		topArr := source.TopLevels
@@ -230,9 +230,14 @@ func (this *Desugar) Function(n ast.INode) ast.INode {
 	return n
 }
 func RunDesugar(tree ast.INode) ast.INode {
-	desugar := Desugar{root: tree}
+	desugar := Desugar{Root: tree}
 	desugar.type_ = &desugar
 	res := desugar.Walk(tree)
 	desugar.GenerateGenerics()
 	return res
+}
+func NewDesugar() *Desugar {
+	desugar := &Desugar{}
+	desugar.type_ = desugar
+	return desugar
 }

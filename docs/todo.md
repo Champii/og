@@ -35,6 +35,9 @@
 ## Technical
 ---
 
+- [ ] Early checks like import validity or undefined references based on first pass analysis of the project
+- [ ] Interoperable Generics on differents Og projects
+- [ ] Recursive Generics
 - [ ] Fix: Cannot have a function literal other than last argument in function (actual workaround is to define a `type` and to pass it instead)
 - [ ] Perfs !! (More specific rules, reduce size and workload of Walkers, remove ambiguity in grammar)
 - [ ] Do a single pass on AST instead of multiple walkers (for perfs)

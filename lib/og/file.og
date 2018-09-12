@@ -1,0 +1,61 @@
+!og
+
+import
+  os
+  fmt
+  path
+  errors
+  "os/exec"
+  "io/ioutil"
+  "path/filepath"
+  "github.com/champii/og/lib/ast"
+
+struct File
+  Path    string
+  OutPath string
+  Name    string
+  Ast     ast.INode
+  Output  string
+  Source  []byte
+  Write ->
+    os.MkdirAll(filepath.Dir(@OutPath), os.ModePerm);
+    ioutil.WriteFile(@OutPath, []byte(@Output), os.ModePerm)
+
+  *Format: error ->
+    cmd := exec.Command("gofmt")
+
+    stdin, _ := cmd.StdinPipe()
+
+    stdin.Write([]byte(@Output))
+    stdin.Close()
+
+    final, err := cmd.CombinedOutput()
+
+    if err != nil
+      fmt.Println("!!! THIS IS A BUG !!!\n")
+      fmt.Println("If you see this text, Oglang have generated an invalid Go code")
+      fmt.Println("and cannot go through the go formater.")
+      fmt.Println("You should report this as an issue along with the file that produced that error")
+      fmt.Println("https://github.com/Champii/og/issues")
+      return errors.New(@Path + ": " + string(final))
+
+    @Output = string(final)
+
+    return nil
+
+
+NewFile(filePath, outPath string): *File ->
+  name := path.Base(filePath)
+
+  source, err := ioutil.ReadFile(filePath)
+
+  if err != nil
+    return nil
+
+  &File
+    Path:    filePath
+    OutPath: outPath
+    Name:    name
+    Source:  source
+    Output:  ""
+

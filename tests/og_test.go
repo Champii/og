@@ -2,14 +2,12 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"og/lib/og"
-	"sync"
 
 	"testing"
 )
 
-func TestMain(*testing.T) {
+func TestMain(t *testing.T) {
 	expected := []string{
 		// package.og
 		`package main
@@ -535,37 +533,24 @@ type Fooint struct {
 		`generics`,
 	}
 
-	var wg sync.WaitGroup
-
 	config := og.NewOgConfig()
+
+	config.Force = true
+
+	for _, p := range paths {
+		config.Paths = append(config.Paths, "./exemples/"+p+".og")
+	}
+
 	printer := og.NewPrinter(config)
 	compiler := og.NewOgCompiler(config, printer)
 
-	for i_, p_ := range paths {
-		p := p_
-		i := i_
-
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-			data, err := ioutil.ReadFile(fmt.Sprint("./exemples/", p, ".og"))
-
-			if err != nil {
-				panic(err)
-			}
-
-			res, err := compiler.ProcessFile(fmt.Sprint("./exemples/", p, ".og"), string(data))
-
-			if err != nil {
-				panic(err)
-			}
-
-			if res != expected[i] {
-				panic(fmt.Sprint("Error: ", p, "\nGot: \n---\n", res, "\n---\nExpected: \n---\n", expected[i], "\n---\n"))
-			}
-		}()
-
+	if err := compiler.Compile(); err != nil {
+		t.Fatalf(err.Error())
 	}
-	wg.Wait()
+
+	for i, file := range compiler.Files {
+		if file.Output != expected[i] {
+			t.Fatalf(fmt.Sprint("Error: ", file.Path, "\nGot: \n---\n", file.Output, "\n---\nExpected: \n---\n", expected[i], "\n---\n"))
+		}
+	}
 }

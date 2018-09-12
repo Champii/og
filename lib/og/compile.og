@@ -1,0 +1,136 @@
+!og
+
+import
+  fmt
+  os
+  path
+  strings
+  "path/filepath"
+  "github.com/champii/og/lib/ast/walker"
+
+struct OgCompiler
+  Config   *OgConfig
+  Parser   *OgParser
+  Preproc  *OgPreproc
+  Printer  *Printer
+  Files    []*File
+
+  *Compile: error ->
+    for _, p in @Config.Paths
+      if err := filepath.Walk(p, @walker); err != nil
+        fmt.Println("Error", err)
+
+        return err
+
+    if len(@Files) == 0
+      if @Config.Run
+        return nil
+
+    poolSize := @Config.Workers
+
+    if len(@Files) < poolSize
+      poolSize = len(@Files)
+
+    pool := NewPool(poolSize, len(@Files), @Printer, @ParseFile)
+
+    for _, file in @Files
+      pool.Queue(file)
+
+    if err := pool.Run(); err != nil
+      return err
+
+    if @Config.Blocks
+      return nil
+
+    @desugar()
+
+    @outputFiles()
+
+  *outputFiles: error ->
+    for _, file in @Files
+      file.Output = file.Ast.Eval()
+
+      if @Config.Print || @Config.Dirty || @Config.Blocks
+        fmt.Println(file.Output)
+      else
+        if !@Config.Dirty
+          if err := file.Format(); err != nil
+            return err
+
+        file.Write()
+    nil
+
+  *desugar ->
+    desugar := walker.NewDesugar()
+
+    for _, file in @Files
+      desugar.Root = file.Ast
+      file.Ast = desugar.Walk(file.Ast)
+
+    desugar.GenerateGenerics()
+
+  *walker(filePath string, info os.FileInfo, err error): error ->
+    if err != nil
+      return err
+
+    if info.IsDir()
+      return nil
+
+    if path.Ext(filePath) != ".og"
+      return nil
+
+    if !@Config.Force && !@mustCompile(filePath, info)
+      return nil
+
+    @Files = append(@Files, NewFile(filePath, @getNewPath(filePath)))
+
+    nil
+
+  mustCompile(filePath string, info os.FileInfo): bool ->
+    newPath := @getNewPath(filePath)
+
+    stat, err := os.Stat(newPath)
+    if err != nil
+      return true
+
+    if @Config.Print || @Config.Ast || @Config.Dirty || @Config.Blocks
+      return true
+
+    return info.ModTime().After(stat.ModTime())
+
+  *ParseFile(file *File): error ->
+    @Preproc.Run(file)
+
+    if @Config.Blocks
+      fmt.Println(file.Output)
+      return nil
+
+    var err error
+    if !@Config.Interpreter
+      err = @Parser.Parse(file)
+    else
+      err = @Parser.ParseInterpret(file)
+
+    if err != nil
+      return err
+
+    return nil
+
+    // if @Config.Dirty
+    //   return res, nil
+
+    // return @format(res)
+
+  getNewPath(filePath string): string ->
+    if @Config.OutPath != "./"
+      splited := strings.SplitN(filePath, "/", 2)
+      filePath = splited[1]
+
+    strings.Replace(path.Join(@Config.OutPath, filePath), ".og", ".go", 1)
+
+NewOgCompiler(config *OgConfig, printer *Printer): *OgCompiler ->
+  &OgCompiler
+    Config: config
+    Printer: printer
+    Parser: NewOgParser(config)
+    Preproc: NewOgPreproc()

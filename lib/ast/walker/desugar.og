@@ -40,11 +40,11 @@ struct Templates
 
 struct Desugar
 	AstWalker
-	root      ast.INode
+	Root      ast.INode
 	Templates Templates
 
 	*GenerateStruct(template *Template) ->
-		source := @root.(*ast.SourceFile)
+		source := @Root.(*ast.SourceFile)
 
 		for _, usedFor in template.UsedFor
 			other := &ast.StructType{}
@@ -70,7 +70,7 @@ struct Desugar
 			source.TopLevels = append(source.TopLevels, topLevel)
 
 	*GenerateTopFns(template *Template) ->
-		source := @root.(*ast.SourceFile)
+		source := @Root.(*ast.SourceFile)
 
 		for _, usedFor in template.UsedFor
 			other := &ast.FunctionDecl{}
@@ -93,7 +93,7 @@ struct Desugar
 			source.TopLevels = append(source.TopLevels, topLevel)
 
 	*GenerateGenerics ->
-		source := @root.(*ast.SourceFile)
+		source := @Root.(*ast.SourceFile)
 		RunGobRegister(source)
 
 		for _, template in @Templates.templates
@@ -185,6 +185,7 @@ struct Desugar
 		varDecl := n.(*ast.VarDecl)
 		for _, varSpec in varDecl.VarSpecs
 			statement := varSpec.Statement
+
 			if statement == nil
 				continue
 
@@ -297,7 +298,7 @@ struct Desugar
 
 RunDesugar(tree ast.INode): ast.INode ->
 	desugar := Desugar
-		root:      tree
+		Root:      tree
 
 	desugar.type_ = &desugar
 
@@ -306,3 +307,10 @@ RunDesugar(tree ast.INode): ast.INode ->
 	desugar.GenerateGenerics()
 
 	res
+
+NewDesugar: *Desugar ->
+	desugar := &Desugar{}
+
+	desugar.type_ = desugar
+
+	desugar
