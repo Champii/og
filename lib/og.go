@@ -1,17 +1,10 @@
 package og
 
 import (
-	"bufio"
-	"errors"
 	"fmt"
-	tm "github.com/buger/goterm"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
-	"path/filepath"
-	"strconv"
-	"strings"
 )
 
 type OgConfig struct {
@@ -30,72 +23,69 @@ type OgConfig struct {
 	Run         bool
 }
 
-var (
-	config OgConfig
-)
-
-func GetNewPath(filePath string) string {
-	if config.OutPath != "./" {
-		splited := strings.SplitN(filePath, "/", 2)
-		filePath = splited[1]
-	}
-	return strings.Replace(path.Join(config.OutPath, filePath), ".og", ".go", 1)
+func NewOgConfig() *OgConfig {
+	return &OgConfig{}
 }
-func Compile(config_ OgConfig) error {
-	config = config_
-	if config.Print || config.Ast || config.Dirty || config.Blocks {
-		config.Quiet = true
+
+type Og struct {
+	Config   *OgConfig
+	Compiler *OgCompiler
+	Printer  *Printer
+	Files    []string
+}
+
+func (this Og) Run() error {
+	if this.Config.Print || this.Config.Ast || this.Config.Dirty || this.Config.Blocks {
+		this.Config.Quiet = true
 	}
-	if len(config.Paths) == 0 {
-		config.Paths = []string{"."}
+	if len(this.Config.Paths) == 0 {
+		this.Config.Paths = []string{"."}
 	}
-	for _, p := range config.Paths {
-		if err := filepath.Walk(p, walker); err != nil {
-			fmt.Println("Error", err)
-			return err
-		}
-	}
-	if len(config.Files) == 0 {
-		if config.Run {
-			return Run()
-		}
-		if !config.Quiet {
-			tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Nothing to do.", tm.GREEN))
-			tm.Flush()
-		}
+	if this.Config.Interpreter {
+		RunInterpreter(this.Compiler)
 		return nil
 	}
-	poolSize := config.Workers
-	if len(config.Files) < poolSize {
-		poolSize = len(config.Files)
+	if err := this.Compiler.Compile(); err != nil {
+		return err
 	}
-	pool := NewPool(poolSize, len(config.Files), !config.Quiet, ReadAndProceed)
-	for _, file := range config.Files {
-		pool.Queue(file)
+	if len(this.Config.Files) == 0 {
+		this.Printer.NothingToDo()
+		if !this.Config.Run {
+			return nil
+		}
 	}
-	pool.Run()
-	if !config.NoBuild {
-		if err := goBuild(); err != nil {
+	if !this.Config.NoBuild {
+		if err := this.Build(); err != nil {
 			return err
 		}
 	}
-	if config.Run {
-		if err := Run(); err != nil {
+	if this.Config.Run {
+		if err := this.RunBinary(); err != nil {
 			return err
 		}
 	}
 	return nil
 }
-func Run() error {
+func (this Og) Build() error {
+	this.Printer.Compiling()
+	cmd := exec.Command("go", "build")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(string(out))
+		return err
+	}
+	if len(this.Config.Files) > 0 {
+		this.Printer.Compiled()
+	}
+	return nil
+}
+func (this Og) RunBinary() error {
 	dir, err := os.Getwd()
 	if err != nil {
 		return err
 	}
 	current := path.Base(dir)
-	if !config.Quiet {
-		tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Running... \n", tm.GREEN))
-		tm.Flush()
-	}
+	this.Printer.Running()
 	cmd := exec.Command("./" + current)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -105,143 +95,11 @@ func Run() error {
 	cmd.Wait()
 	return nil
 }
-func goBuild() error {
-	if !config.Quiet {
-		tm.Print("                                          \r")
-		tm.Println(tm.Color("[", tm.RED), tm.Color(strconv.Itoa(len(config.Files)), tm.GREEN), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(len(config.Files)), tm.GREEN), tm.Color("]", tm.RED), tm.Color("Compiling go", tm.YELLOW))
-		tm.MoveCursorUp(1)
-		tm.Flush()
+func NewOg(config *OgConfig) *Og {
+	printer := NewPrinter(config)
+	return &Og{
+		Config:   config,
+		Compiler: NewOgCompiler(config, printer),
+		Printer:  printer,
 	}
-	cmd := exec.Command("go", "build")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(string(out))
-	} else if !config.Quiet {
-		tm.MoveCursorUp(1)
-		tm.Print("                                          \r")
-		tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Compiled ", tm.GREEN), tm.Color(strconv.Itoa(len(config.Files)), tm.YELLOW), tm.Color(" files.", tm.GREEN))
-		tm.Flush()
-	}
-	return err
-}
-func MustCompile(filePath string, info os.FileInfo) bool {
-	newPath := GetNewPath(filePath)
-	stat, err := os.Stat(newPath)
-	if err != nil {
-		return true
-	}
-	if config.Print || config.Ast || config.Dirty || config.Blocks {
-		return true
-	}
-	return info.ModTime().After(stat.ModTime())
-}
-func walker(filePath string, info os.FileInfo, err error) error {
-	if err != nil {
-		return err
-	}
-	if info.IsDir() {
-		return nil
-	}
-	if path.Ext(filePath) != ".og" {
-		return nil
-	}
-	if !MustCompile(filePath, info) {
-		return nil
-	}
-	config.Files = append(config.Files, filePath)
-	return nil
-}
-
-var (
-	lastLength = 0
-)
-
-func ReadAndProceed(filePath string) error {
-	source, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return err
-	}
-	res, err := ProcessFile(filePath, string(source), false)
-	if err != nil {
-		return err
-	}
-	finalizeFile(filePath, res)
-	return nil
-}
-func ProcessFile(filePath string, data string, isInterpret bool) (string, error) {
-	preprocessed := Preproc(string(data))
-	if config.Blocks {
-		return preprocessed, nil
-	}
-	res := ""
-	if !isInterpret {
-		res = Parse(filePath, string(preprocessed))
-	} else {
-		res = ParseInterpret(filePath, string(preprocessed))
-	}
-	if config.Dirty {
-		return res, nil
-	}
-	return format(res)
-}
-func finalizeFile(filePath string, data string) {
-	if config.Print || config.Dirty || config.Blocks {
-		fmt.Println(data)
-	} else {
-		writeFile(filePath, data)
-	}
-}
-func writeFile(filePath string, data string) {
-	newPath := GetNewPath(filePath)
-	os.MkdirAll(filepath.Dir(newPath), os.ModePerm)
-	ioutil.WriteFile(newPath, []byte(data), os.ModePerm)
-}
-func format(str string) (string, error) {
-	cmd := exec.Command("gofmt")
-	stdin, _ := cmd.StdinPipe()
-	stdin.Write([]byte(str))
-	stdin.Close()
-	final, err := cmd.CombinedOutput()
-	if err != nil {
-		return "", errors.New(string(final))
-	}
-	return string(final), nil
-}
-func RunInterpreter() {
-	running := true
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanLines)
-	for running {
-		fmt.Print("> ")
-		if !scanner.Scan() {
-			return
-		}
-		ln := scanner.Text()
-		if len(ln) == 0 {
-			continue
-		}
-		str, err := ProcessFile("STDIN", ln, true)
-		if err != nil {
-			fmt.Println(err)
-		} else {
-			execCode(str)
-		}
-	}
-}
-func execCode(str string) {
-	skelton := `package main
-  import "fmt"
-  func main() {
-  fmt.Print(` + str[:len(str)-1] + `)
-  }`
-	ioutil.WriteFile("/tmp/main.go", []byte(skelton), os.ModePerm)
-	cmd := exec.Command("go", "run", "/tmp/main.go")
-	stdin, _ := cmd.StdinPipe()
-	stdin.Write([]byte(str))
-	stdin.Close()
-	final, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(string(final))
 }

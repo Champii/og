@@ -66,6 +66,9 @@ struct AstWalker
 					if valueField.Index(j).Kind() == reflect.String
 						continue
 
+					if !valueField.Index(j).IsValid()
+						continue
+
 					res, ok := @Trigger(valueField.Index(j), valueField.Index(j), ast)
 					if ok
 						valueField.Index(j).Set(res)

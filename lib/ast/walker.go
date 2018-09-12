@@ -58,6 +58,9 @@ func (this *AstWalker) Walk(ast INode) INode {
 				if valueField.Index(j).Kind() == reflect.String {
 					continue
 				}
+				if !valueField.Index(j).IsValid() {
+					continue
+				}
 				res, ok := this.Trigger(valueField.Index(j), valueField.Index(j), ast)
 				if ok {
 					valueField.Index(j).Set(res)

@@ -70,7 +70,12 @@ func NewErrorListener(filePath, source string) *ErrorListener {
 		source:               strings.Split(source, "\n"),
 	}
 }
-func parserInit(filePath, str string) *parser.OgParser {
+
+type OgParser struct {
+	Config *OgConfig
+}
+
+func (this *OgParser) parserInit(filePath, str string) *parser.OgParser {
 	input := antlr.NewInputStream(str)
 	lexer := parser.NewOgLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
@@ -82,8 +87,8 @@ func parserInit(filePath, str string) *parser.OgParser {
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 	return p
 }
-func Parse(filePath, str string) string {
-	p := parserInit(filePath, str)
+func (this *OgParser) Parse(config *OgConfig, filePath, str string) string {
+	p := this.parserInit(filePath, str)
 	res := p.SourceFile()
 	if res == nil {
 		return ""
@@ -98,16 +103,19 @@ func Parse(filePath, str string) string {
 	final := tree.Eval()
 	return final
 }
-func ParseStmt(filePath, str string) *ast.Statement {
-	p := parserInit(filePath, str)
+func (this *OgParser) ParseStmt(filePath, str string) *ast.Statement {
+	p := this.parserInit(filePath, str)
 	res := p.Statement()
 	t := new(translator.OgVisitor)
 	return t.VisitStatement(res.(*parser.StatementContext), t).(*ast.Statement)
 }
-func ParseInterpret(filePath, str string) string {
-	p := parserInit(filePath, str)
+func (this *OgParser) ParseInterpret(filePath, str string) string {
+	p := this.parserInit(filePath, str)
 	res := p.Interp()
 	t := new(translator.OgVisitor)
 	final := t.VisitInterp(res.(*parser.InterpContext), t).(*ast.Interpret).Eval()
 	return final
+}
+func NewOgParser(config *OgConfig) *OgParser {
+	return &OgParser{Config: config}
 }

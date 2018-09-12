@@ -2,75 +2,79 @@
 
 import "strings"
 
-indentCount(str string): int ->
-  for i in str
-    if str[i] != ' ' && str[i] != '\t'
-      return i
+struct OgPreproc
+  indentCount(str string): int ->
+    for i in str
+      if str[i] != ' ' && str[i] != '\t'
+        return i
 
-  0
+    0
 
-Preproc(str string): string ->
-  // lineCount = 0
-  rawLines := strings.Split(str, "\n")
+  Run(str string): string ->
+    // lineCount = 0
+    rawLines := strings.Split(str, "\n")
 
-  lines := []string{}
+    lines := []string{}
 
-  for _, v in rawLines
-    if len(v) > 0
-      lines = append(lines, v)
+    for _, v in rawLines
+      if len(v) > 0
+        lines = append(lines, v)
 
-  res := []string{}
+    res := []string{}
 
-  lastIndent := 0
-  indentSize := 0
+    lastIndent := 0
+    indentSize := 0
 
-  for i in lines
-    // if len(lines[i]) == 0
-    //   res = append(res, ";")
-    //   continue
-    indent := indentCount(lines[i])
+    for i in lines
+      // if len(lines[i]) == 0
+      //   res = append(res, ";")
+      //   continue
+      indent := @indentCount(lines[i])
 
-    token := "=>"
-    eqIf := "= if "
+      token := "=>"
+      eqIf := "= if "
 
-    // SEMI-COLUMN
-    if len(lines[i]) > indent + 4 && lines[i][indent:indent+4] == "for "
-      lines[i] += ";"
+      // SEMI-COLUMN
+      if len(lines[i]) > indent + 4 && lines[i][indent:indent+4] == "for "
+        lines[i] += ";"
 
-    if len(lines[i]) > indent + 3 && lines[i][indent:indent+3] == "if " && !strings.Contains(lines[i], token)
-      lines[i] += ";"
+      if len(lines[i]) > indent + 3 && lines[i][indent:indent+3] == "if " && !strings.Contains(lines[i], token)
+        lines[i] += ";"
 
-    if len(lines[i]) > indent + 3 && strings.Contains(lines[i], eqIf) && !strings.Contains(lines[i], token)
-      lines[i] += ";"
+      if len(lines[i]) > indent + 3 && strings.Contains(lines[i], eqIf) && !strings.Contains(lines[i], token)
+        lines[i] += ";"
 
-    if len(lines[i]) > indent + 5 && lines[i][indent:indent+5] == "else " && !strings.Contains(lines[i], token)
-      lines[i] += ";"
-
-
-    // INDENT
-
-    if indentSize == 0 && indent != lastIndent
-      indentSize = indent
-
-    //&& lines[i-1][len(lines[i-1])-1] != '='
-    if indent > lastIndent
-      res[len(res)-1] = res[len(res)-1] + " {"
-    else if indent < lastIndent
-      indentBuff := lastIndent - indent
-
-      for indentBuff > 0
-        res = append(res, "}")
-        indentBuff -= indentSize
-
-    lastIndent = indent
+      if len(lines[i]) > indent + 5 && lines[i][indent:indent+5] == "else " && !strings.Contains(lines[i], token)
+        lines[i] += ";"
 
 
-    res = append(res, lines[i])
+      // INDENT
 
-  for lastIndent > 0
-    res = append(res, "}")
-    lastIndent -= indentSize
+      if indentSize == 0 && indent != lastIndent
+        indentSize = indent
 
-  joined := strings.Join(res, "\n") + "\n"
+      //&& lines[i-1][len(lines[i-1])-1] != '='
+      if indent > lastIndent
+        res[len(res)-1] = res[len(res)-1] + " {"
+      else if indent < lastIndent
+        indentBuff := lastIndent - indent
 
-  joined
+        for indentBuff > 0
+          res = append(res, "}")
+          indentBuff -= indentSize
+
+      lastIndent = indent
+
+
+      res = append(res, lines[i])
+
+    for lastIndent > 0
+      res = append(res, "}")
+      lastIndent -= indentSize
+
+    joined := strings.Join(res, "\n") + "\n"
+
+    joined
+
+NewOgPreproc: *OgPreproc ->
+  &OgPreproc{}

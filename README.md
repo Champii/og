@@ -1,7 +1,8 @@
 Og-Lang *DEV* (Optimistic Golang)
 ===
 
-### [Documentation](https://champii.github.io/og)
+### [Documentation Website](https://champii.github.io/og)
+### [GoDoc](https://godoc.org/github.com/Champii/og)
 
 # Disclamer
 

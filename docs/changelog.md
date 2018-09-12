@@ -1,8 +1,12 @@
 # Changelog
 
 ## DEV: Current version
+  - Warning when go format fails
+  - Warning on the interpreter about its uselessness
+  - Exit the program on exiting the interpreter
 
 ## v0.6.4
+  - Skipped
 
 ## v0.6.3
   - Generics for Struct

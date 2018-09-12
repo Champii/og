@@ -537,6 +537,10 @@ type Fooint struct {
 
 	var wg sync.WaitGroup
 
+	config := og.NewOgConfig()
+	printer := og.NewPrinter(config)
+	compiler := og.NewOgCompiler(config, printer)
+
 	for i_, p_ := range paths {
 		p := p_
 		i := i_
@@ -551,7 +555,7 @@ type Fooint struct {
 				panic(err)
 			}
 
-			res, err := og.ProcessFile(fmt.Sprint("./exemples/", p, ".og"), string(data), false)
+			res, err := compiler.ProcessFile(fmt.Sprint("./exemples/", p, ".og"), string(data))
 
 			if err != nil {
 				panic(err)
@@ -564,21 +568,4 @@ type Fooint struct {
 
 	}
 	wg.Wait()
-}
-
-var res = ""
-
-func BenchmarkMain8(b *testing.B) {
-	test := `!og
-main ->
-	if true => 1
-	else    => 2
-`
-	var r = ""
-
-	for i := 0; i < b.N; i++ {
-		r, _ = og.ProcessFile("STDIN", string(test), false)
-	}
-
-	res = r
 }

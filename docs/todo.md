@@ -35,6 +35,7 @@
 ## Technical
 ---
 
+- [ ] Fix: Cannot have a function literal other than last argument in function (actual workaround is to define a `type` and to pass it instead)
 - [ ] Perfs !! (More specific rules, reduce size and workload of Walkers, remove ambiguity in grammar)
 - [ ] Do a single pass on AST instead of multiple walkers (for perfs)
 - [ ] Fix bad perfs for nested struct instantiation and if/else block

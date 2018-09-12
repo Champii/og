@@ -46,3 +46,18 @@ og exemples/import.og
 ---
 The current build time of the project is around 5s for all sources files with `./og` alone, and around 20s for full rebootstrap with `make re`.  
 That bootstraps from old version then rebootstraps from itself, with `go build` and `go test` each time. 
+
+
+### The Doc
+
+This beautiful documentation is generated with [https://docsify.js.org](https://docsify.js.org) from markdown language
+
+Check the [./docs](https://github.com/Champii/og/tree/master/docs) folder for the sources
+
+To launch the doc on `localhost:3000`, just run
+
+```bash
+make doc
+```
+
+It has an auto-reload feature to ease the edition of the doc

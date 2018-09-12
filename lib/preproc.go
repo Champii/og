@@ -4,7 +4,10 @@ import (
 	"strings"
 )
 
-func indentCount(str string) int {
+type OgPreproc struct {
+}
+
+func (this OgPreproc) indentCount(str string) int {
 	for i := range str {
 		if str[i] != ' ' && str[i] != '\t' {
 			return i
@@ -12,7 +15,7 @@ func indentCount(str string) int {
 	}
 	return 0
 }
-func Preproc(str string) string {
+func (this OgPreproc) Run(str string) string {
 	rawLines := strings.Split(str, "\n")
 	lines := []string{}
 	for _, v := range rawLines {
@@ -24,7 +27,7 @@ func Preproc(str string) string {
 	lastIndent := 0
 	indentSize := 0
 	for i := range lines {
-		indent := indentCount(lines[i])
+		indent := this.indentCount(lines[i])
 		token := "=>"
 		eqIf := "= if "
 		if len(lines[i]) > indent+4 && lines[i][indent:indent+4] == "for " {
@@ -60,4 +63,7 @@ func Preproc(str string) string {
 	}
 	joined := strings.Join(res, "\n") + "\n"
 	return joined
+}
+func NewOgPreproc() *OgPreproc {
+	return &OgPreproc{}
 }

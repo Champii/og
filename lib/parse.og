@@ -65,64 +65,71 @@ NewErrorListener(filePath, source string): *ErrorListener ->
     filePath: filePath
     source: strings.Split(source, "\n")
 
-parserInit(filePath, str string): *parser.OgParser ->
-  input := antlr.NewInputStream(str)
-  lexer := parser.NewOgLexer(input)
+struct OgParser
+  Config *OgConfig
 
-  stream := antlr.NewCommonTokenStream(lexer, 0)
+  parserInit(filePath, str string): *parser.OgParser ->
+    input := antlr.NewInputStream(str)
+    lexer := parser.NewOgLexer(input)
 
-  p := parser.NewOgParser(stream)
+    stream := antlr.NewCommonTokenStream(lexer, 0)
 
-  p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
+    p := parser.NewOgParser(stream)
+
+    p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
 
 
-  p.RemoveErrorListeners()
-  p.SetErrorHandler(NewErrorHandler())
-  p.AddErrorListener(NewErrorListener(filePath, str))
-  p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-  // p.SetErrorHandler(antlr.NewBailErrorStrategy())
+    p.RemoveErrorListeners()
+    p.SetErrorHandler(NewErrorHandler())
+    p.AddErrorListener(NewErrorListener(filePath, str))
+    p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+    // p.SetErrorHandler(antlr.NewBailErrorStrategy())
 
-  p
+    p
 
-Parse(filePath, str string): string ->
-  p := parserInit(filePath, str)
+  Parse(config *OgConfig, filePath, str string): string ->
+    p := @parserInit(filePath, str)
 
-  res := p.SourceFile()
+    res := p.SourceFile()
 
-  if res == nil
-    return ""
+    if res == nil
+      return ""
 
-  t := new(translator.OgVisitor)
+    t := new(translator.OgVisitor)
 
-  tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
+    tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
 
-  if config.Ast
-    ast.Print(tree)
+    if config.Ast
+      ast.Print(tree)
 
-  ast.TypeCheck(tree)
+    ast.TypeCheck(tree)
 
-  tree = ast.RunDesugar(tree).(*ast.SourceFile)
+    tree = ast.RunDesugar(tree).(*ast.SourceFile)
 
-  final := tree.Eval()
+    final := tree.Eval()
 
-  final
+    final
 
-ParseStmt(filePath, str string): *ast.Statement ->
-  p := parserInit(filePath, str)
+  ParseStmt(filePath, str string): *ast.Statement ->
+    p := @parserInit(filePath, str)
 
-  res := p.Statement()
+    res := p.Statement()
 
-  t := new(translator.OgVisitor)
+    t := new(translator.OgVisitor)
 
-  t.VisitStatement(res.(*parser.StatementContext), t).(*ast.Statement)
+    t.VisitStatement(res.(*parser.StatementContext), t).(*ast.Statement)
 
-ParseInterpret(filePath, str string): string ->
-  p := parserInit(filePath, str)
+  ParseInterpret(filePath, str string): string ->
+    p := @parserInit(filePath, str)
 
-  res := p.Interp()
+    res := p.Interp()
 
-  t := new(translator.OgVisitor)
+    t := new(translator.OgVisitor)
 
-  final := t.VisitInterp(res.(*parser.InterpContext), t).(*ast.Interpret).Eval()
+    final := t.VisitInterp(res.(*parser.InterpContext), t).(*ast.Interpret).Eval()
 
-  final
+    final
+
+NewOgParser(config *OgConfig): *OgParser ->
+  &OgParser
+    Config: config

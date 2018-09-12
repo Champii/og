@@ -9,10 +9,10 @@ You just have to `go get` the repo
 go get -u github.com/champii/og
 ```
 
-If your `$PATH` includes `$GOPATH/bin` (and it should)
+If your `$PATH` includes `$GOPATH/bin` (and it should), you can print the version
 
 ```bash
-og --version # or `og -v`
+og -v
 ```
 
 ## Hello world
@@ -68,6 +68,7 @@ func main() {
 
 ## Full Exemple
 
+
 ```og
 !main
 
@@ -122,3 +123,8 @@ main ->
   go someFunc()
   go -> doSomething()
 ```
+
+This example, while producing a valid Go syntax, calls some undefined function and serves only as a showcase of the features of the language.  
+If you want to compile it to Golang anyway, you must use the `og -n` option that does not build the go files after compilation.
+
+Go to the [Build](/build.md) section for more informations about the options

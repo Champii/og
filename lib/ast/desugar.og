@@ -98,7 +98,6 @@ struct Desugar
 		for _, template in @Templates.templates
 			topArr := source.TopLevels
 			for i, top in topArr
-
 				if top.FunctionDecl == template.Node || (top.Declaration != nil && top.Declaration.TypeDecl != nil && top.Declaration.TypeDecl.StructType != nil && top.Declaration.TypeDecl.StructType == template.Node)
 					if len(topArr) - 1 == i => source.TopLevels = source.TopLevels[:i]
 					else if i == 0          => source.TopLevels = source.TopLevels[1:]

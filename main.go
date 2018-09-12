@@ -10,12 +10,10 @@ import (
 //go:generate ./scripts/fix_parser_imports.sh
 func main() {
 	parseArgs(func(options og.OgConfig) {
-		if options.Interpreter {
-			og.RunInterpreter()
-		}
-		if err := og.Compile(options); err != nil {
+		ogLang := og.NewOg(&options)
+
+		if err := ogLang.Run(); err != nil {
 			fmt.Println(err)
 		}
 	})
-
 }
