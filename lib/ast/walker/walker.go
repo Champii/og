@@ -1,6 +1,7 @@
-package ast
+package walker
 
 import (
+	"github.com/champii/og/lib/ast"
 	"reflect"
 )
 
@@ -20,8 +21,8 @@ func (this *AstWalker) callDelegate(name string, arg reflect.Value) ([]reflect.V
 	}
 	return []reflect.Value{reflect.Zero(arg.Type())}, false
 }
-func (this *AstWalker) Trigger(arg reflect.Value, parentField reflect.Value, parentNode INode) (reflect.Value, bool) {
-	node := arg.Interface().(INode)
+func (this *AstWalker) Trigger(arg reflect.Value, parentField reflect.Value, parentNode ast.INode) (reflect.Value, bool) {
+	node := arg.Interface().(ast.INode)
 	if node == nil {
 		return reflect.Zero(arg.Type()), false
 	}
@@ -31,21 +32,21 @@ func (this *AstWalker) Trigger(arg reflect.Value, parentField reflect.Value, par
 	this.callDelegate("Before"+name, arg)
 	res, ok := this.callDelegate("Each", arg)
 	if ok {
-		node = res[0].Interface().(INode)
+		node = res[0].Interface().(ast.INode)
 		parentField.Set(reflect.ValueOf(node))
 	}
 	this.callDelegate(name, arg)
 	parentField.Set(reflect.ValueOf(this.Walk(node)))
 	res, ok = this.callDelegate("After", arg)
 	if ok {
-		node = res[0].Interface().(INode)
+		node = res[0].Interface().(ast.INode)
 		parentField.Set(reflect.ValueOf(node))
 	}
 	this.callDelegate("After"+name, arg)
 	return reflect.ValueOf(node), true
 }
-func (this *AstWalker) Walk(ast INode) INode {
-	val := reflect.ValueOf(ast).Elem()
+func (this *AstWalker) Walk(tree ast.INode) ast.INode {
+	val := reflect.ValueOf(tree).Elem()
 	for i := 0; i < val.NumField(); i++ {
 		valueField := val.Field(i)
 		valueType := val.Type().Field(i)
@@ -61,7 +62,7 @@ func (this *AstWalker) Walk(ast INode) INode {
 				if !valueField.Index(j).IsValid() {
 					continue
 				}
-				res, ok := this.Trigger(valueField.Index(j), valueField.Index(j), ast)
+				res, ok := this.Trigger(valueField.Index(j), valueField.Index(j), tree)
 				if ok {
 					valueField.Index(j).Set(res)
 				}
@@ -71,10 +72,10 @@ func (this *AstWalker) Walk(ast INode) INode {
 		if valueField.IsNil() {
 			continue
 		}
-		res, ok := this.Trigger(valueField, val.Field(i), ast)
+		res, ok := this.Trigger(valueField, val.Field(i), tree)
 		if ok {
 			val.Field(i).Set(res)
 		}
 	}
-	return ast
+	return tree
 }

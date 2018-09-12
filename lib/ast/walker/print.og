@@ -1,24 +1,25 @@
-!ast
+!walker
 
 import
 	fmt
 	reflect
 	strings
+	"github.com/champii/og/lib/ast"
 
 struct Printer
 	AstWalker
 	indent int
 
-	*Before(n INode) -> @indent++
-	*After(n INode) -> @indent--
+	*Before(n ast.INode) -> @indent++
+	*After(n ast.INode) -> @indent--
 
-	*Each(n INode): INode ->
+	*Each(n ast.INode): ast.INode ->
 		name := reflect.TypeOf(n).String()[5:]
 
 		fmt.Printf("%s\n", strings.Repeat(" ", @indent) + name)
 		n
 
-Print(ast INode) ->
+Print(ast ast.INode) ->
 	p := Printer{}
 
 	p.type_ = &p

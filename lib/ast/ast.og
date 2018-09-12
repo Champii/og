@@ -196,6 +196,22 @@ struct Block
 			res += spec.Eval() + "\n"
 		res + "}"
 
+	*AddReturn ->
+		last := @Statements[len(@Statements)-1]
+
+		if last.ReturnStmt == nil
+			if last.IfStmt != nil
+				last.IfStmt.AddReturn()
+			if last.SimpleStmt != nil
+				@Statements[len(@Statements)-1] = &Statement
+					Node: NewNodeNoCtx()
+					ReturnStmt: &ReturnStmt
+						Node: NewNodeNoCtx()
+						Expressions: &ExpressionList
+							Node: NewNodeNoCtx()
+							Expressions: []*Expression{last.SimpleStmt.Expression}
+
+
 struct Statement
 	*Node
 	SimpleStmt      *SimpleStmt
@@ -333,6 +349,68 @@ struct IfStmt
 		if @BlockElse  != nil => res += "else " + @BlockElse.Eval()
 		if @IfStmt     != nil => res += "else " + @IfStmt.Eval()
 		res
+
+	*AddReturn ->
+		if @Block     != nil => @Block.AddReturn()
+		if @IfStmt    != nil => @IfStmt.AddReturn()
+		if @BlockElse != nil => @BlockElse.AddReturn()
+
+	*MakeReturnClosureStatement(t *Type): *Statement ->
+		@AddReturn()
+
+		/* FIXME: Problem with large nested struct decl */
+		funcLit := &FunctionLit
+			Node: NewNodeNoCtx()
+			Function: &Function
+				Node: NewNodeNoCtx()
+				Signature: &Signature
+					Node: NewNodeNoCtx()
+					Parameters: &Parameters
+						Node: NewNodeNoCtx()
+						List: []*Parameter{}
+					Result: &Result
+						Node: NewNodeNoCtx()
+						Types: []*Type{t}
+				Block: &Block
+					Node: NewNodeNoCtx()
+					Statements: []*Statement
+						&Statement
+							Node: NewNodeNoCtx()
+							IfStmt: @
+
+		primary := &PrimaryExpr
+			Node: NewNodeNoCtx()
+			Operand: &Operand
+				Node: NewNodeNoCtx()
+				Literal: &Literal
+					Node: NewNodeNoCtx()
+					FunctionLit: funcLit
+
+		unary := &UnaryExpr
+			Node: NewNodeNoCtx()
+			PrimaryExpr: &PrimaryExpr
+				Node: NewNodeNoCtx()
+				PrimaryExpr: primary
+				SecondaryExpr: &SecondaryExpr
+					Node: NewNodeNoCtx()
+					Arguments: &Arguments
+						Node: NewNodeNoCtx()
+
+		expr := &Expression
+			Node: NewNodeNoCtx()
+			UnaryExpr: unary
+
+		stmt := &Statement
+			Node: NewNodeNoCtx()
+			SimpleStmt: &SimpleStmt
+				Node: NewNodeNoCtx()
+				Expression: expr
+
+		return stmt
+		/* TODO: Fixme: without return the parser think this is `@AddReturn() & Statement` */
+		/* return &Statement */
+		// Node: NewNodeNoCtx()
+
 
 struct SwitchStmt
 	*Node

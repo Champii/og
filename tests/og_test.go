@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	og "og/lib"
+	"og/lib/og"
 	"sync"
 
 	"testing"

@@ -1,4 +1,8 @@
-package ast
+package walker
+
+import (
+	"github.com/champii/og/lib/ast"
+)
 
 type TemplateGen struct {
 	AstWalker
@@ -6,8 +10,8 @@ type TemplateGen struct {
 	typeDest []string
 }
 
-func (this *TemplateGen) Type(n INode) INode {
-	t := n.(*Type)
+func (this *TemplateGen) Type(n ast.INode) ast.INode {
+	t := n.(*ast.Type)
 	tName := t.Eval()
 	for i, ty := range this.typeSrc {
 		if tName == ty {
@@ -18,7 +22,7 @@ func (this *TemplateGen) Type(n INode) INode {
 	}
 	return n
 }
-func RunTemplateGen(ast INode, typeSrc []string, typeDest []string) INode {
+func RunTemplateGen(ast ast.INode, typeSrc []string, typeDest []string) ast.INode {
 	templateGen := TemplateGen{
 		typeSrc:  typeSrc,
 		typeDest: typeDest,

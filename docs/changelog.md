@@ -4,6 +4,8 @@
   - Warning when go format fails
   - Warning on the interpreter about its uselessness
   - Exit the program on exiting the interpreter
+  - OOP everywhere
+  - Printer class to handle the printing job (you don't say)
 
 ## v0.6.4
   - Skipped

@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	og "github.com/champii/og/lib"
+	"github.com/champii/og/lib/og"
 
 	"github.com/urfave/cli"
 )

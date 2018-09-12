@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	og "github.com/champii/og/lib"
+	"github.com/champii/og/lib/og"
 )
 
 //go:generate java -Xmx500M -cp "./parser/antlr4-4.7.2-SNAPSHOT-complete.jar" org.antlr.v4.Tool -Dlanguage=Go ./parser/Og.g4 -visitor -o .

@@ -1,4 +1,8 @@
-package ast
+package walker
+
+import (
+	"github.com/champii/og/lib/ast"
+)
 
 type FuncSig struct {
 	name      string
@@ -68,22 +72,22 @@ type TypeChecker struct {
 	stack *Stack
 }
 
-func (this *TypeChecker) VarSpec(n INode) INode {
+func (this *TypeChecker) VarSpec(n ast.INode) ast.INode {
 	return n
 }
-func (this *TypeChecker) Assignment(n INode) INode {
+func (this *TypeChecker) Assignment(n ast.INode) ast.INode {
 	return n
 }
-func (this *TypeChecker) BeforeBlock(n INode) {
+func (this *TypeChecker) BeforeBlock(n ast.INode) {
 	this.stack.PushScope()
 }
-func (this *TypeChecker) AfterBlock(n INode) {
+func (this *TypeChecker) AfterBlock(n ast.INode) {
 	this.stack.PopScope()
 }
-func (this *TypeChecker) Each(n INode) INode {
+func (this *TypeChecker) Each(n ast.INode) ast.INode {
 	return n
 }
-func TypeCheck(ast INode) {
+func TypeCheck(ast ast.INode) {
 	t := TypeChecker{stack: &Stack{}}
 	t.stack.PushScope()
 	t.type_ = &t

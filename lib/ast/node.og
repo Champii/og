@@ -7,6 +7,7 @@ interface INode
 	Eval: string
 	Text: string
 	SetParent(n INode)
+	GetParent: INode
 
 struct Node
 	Text_     string
@@ -15,7 +16,8 @@ struct Node
 
 	Eval: string ->  ""
 	Text: string -> @Text_
-	*SetParent(n INode) -> if @parent == nil => @parent = n
+	*SetParent(n INode) -> if @parent == nil => @parent = n;
+	*GetParent: INode -> @parent
 
 NewNode(ctx antlr.RuleContext): *Node ->
 	&Node

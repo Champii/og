@@ -1,7 +1,7 @@
-!ast
+!walker
 
-// import
-// 	fmt
+import
+	"github.com/champii/og/lib/ast"
 
 struct FuncSig
 	name      string
@@ -57,28 +57,28 @@ struct TypeChecker
 	AstWalker
 	stack *Stack
 
-	*VarSpec(n INode): INode ->
+	*VarSpec(n ast.INode): ast.INode ->
 		// fmt.Printf("VarSpec %#v\n", n)
 		n
 
-	*Assignment(n INode): INode ->
+	*Assignment(n ast.INode): ast.INode ->
 		// fmt.Printf("ASSIGN %#v\n", n)
 		n
 
-	*BeforeBlock(n INode) ->
+	*BeforeBlock(n ast.INode) ->
 		// fmt.Println("PUSH")
 		@stack.PushScope()
 
-	*AfterBlock(n INode) ->
+	*AfterBlock(n ast.INode) ->
 		// fmt.Println("POP")
 		@stack.PopScope()
 
-	*Each(n INode): INode -> n
+	*Each(n ast.INode): ast.INode -> n
 	// name := reflect.TypeOf(n).String()[5:]
 
 	// fmt.Printf("%s\n", strings.Repeat(" ", @indent) + name)
 
-TypeCheck(ast INode) ->
+TypeCheck(ast ast.INode) ->
 	t := TypeChecker
 		stack: &Stack{}
 

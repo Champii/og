@@ -1,22 +1,23 @@
-!ast
+!walker
 
 import
 	fmt
 	bytes
 	strings
 	"encoding/gob"
+	"github.com/champii/og/lib/ast"
 
 struct Template
 	Name    string
 	Types   []string
 	UsedFor [][]string
-	Node    INode
+	Node    ast.INode
 
 struct GobRegister
 	AstWalker
-	*Each(n INode) -> gob.Register(n)
+	*Each(n ast.INode) -> gob.Register(n)
 
-RunGobRegister(tree INode) ->
+RunGobRegister(tree ast.INode) ->
 	p := GobRegister{}
 	gob.Register(tree)
 	p.type_ = &p
@@ -39,60 +40,60 @@ struct Templates
 
 struct Desugar
 	AstWalker
-	root      INode
+	root      ast.INode
 	Templates Templates
 
 	*GenerateStruct(template *Template) ->
-		source := @root.(*SourceFile)
+		source := @root.(*ast.SourceFile)
 
 		for _, usedFor in template.UsedFor
-			other := &StructType{}
+			other := &ast.StructType{}
 
 			var buf bytes.Buffer
 			enc := gob.NewEncoder(&buf)
-			if err := enc.Encode(template.Node.(*StructType)); err != nil
+			if err := enc.Encode(template.Node.(*ast.StructType)); err != nil
 				fmt.Println("ERROR ENCODE", err)
 
 			dec := gob.NewDecoder(&buf)
 			if err := dec.Decode(&other); err != nil
 				fmt.Println("ERROR DECODE", err)
 
-			newStruct := RunTemplateGen(other, template.Types, usedFor).(*StructType)
+			newStruct := RunTemplateGen(other, template.Types, usedFor).(*ast.StructType)
 
 			newStruct.Name += strings.Join(usedFor, "")
 
-			topLevel := &TopLevel
-				Declaration: &Declaration
-					TypeDecl: &TypeDecl
+			topLevel := &ast.TopLevel
+				Declaration: &ast.Declaration
+					TypeDecl: &ast.TypeDecl
 						StructType: newStruct
 
 			source.TopLevels = append(source.TopLevels, topLevel)
 
 	*GenerateTopFns(template *Template) ->
-		source := @root.(*SourceFile)
+		source := @root.(*ast.SourceFile)
 
 		for _, usedFor in template.UsedFor
-			other := &FunctionDecl{}
+			other := &ast.FunctionDecl{}
 
 			var buf bytes.Buffer
 			enc := gob.NewEncoder(&buf)
-			if err := enc.Encode(template.Node.(*FunctionDecl)); err != nil
+			if err := enc.Encode(template.Node.(*ast.FunctionDecl)); err != nil
 				fmt.Println("ERROR ENCODE", err)
 
 			dec := gob.NewDecoder(&buf)
 			if err := dec.Decode(&other); err != nil
 				fmt.Println("ERROR DECODE", err)
 
-			newFn := RunTemplateGen(other, template.Types, usedFor).(*FunctionDecl)
+			newFn := RunTemplateGen(other, template.Types, usedFor).(*ast.FunctionDecl)
 
 			newFn.Name += strings.Join(usedFor, "")
 
-			topLevel := &TopLevel{FunctionDecl: newFn}
+			topLevel := &ast.TopLevel{FunctionDecl: newFn}
 
 			source.TopLevels = append(source.TopLevels, topLevel)
 
 	*GenerateGenerics ->
-		source := @root.(*SourceFile)
+		source := @root.(*ast.SourceFile)
 		RunGobRegister(source)
 
 		for _, template in @Templates.templates
@@ -105,14 +106,14 @@ struct Desugar
 					break
 
 			switch template.Node.(type)
-				*FunctionDecl => @GenerateTopFns(template);
-				*StructType   => @GenerateStruct(template)
+				*ast.FunctionDecl => @GenerateTopFns(template);
+				*ast.StructType   => @GenerateStruct(template)
 
-	*Arguments(n INode): INode ->
-		args := n.(*Arguments)
+	*Arguments(n ast.INode): ast.INode ->
+		args := n.(*ast.Arguments)
 
 		if args.TemplateSpec != nil
-			callee := args.parent.(*SecondaryExpr).parent.(*PrimaryExpr).PrimaryExpr.Operand
+			callee := args.GetParent().(*ast.SecondaryExpr).GetParent().(*ast.PrimaryExpr).PrimaryExpr.Operand
 
 			calleeName := callee.Eval()
 
@@ -127,8 +128,8 @@ struct Desugar
 
 		n
 
-	*CompositeLit(n INode): INode ->
-		composite := n.(*CompositeLit)
+	*CompositeLit(n ast.INode): ast.INode ->
+		composite := n.(*ast.CompositeLit)
 
 		if composite.TemplateSpec != nil
 			callee := composite.LiteralType
@@ -146,8 +147,8 @@ struct Desugar
 
 		n
 
-	*StructType(n INode): INode ->
-		structType := n.(*StructType)
+	*StructType(n ast.INode): ast.INode ->
+		structType := n.(*ast.StructType)
 		if structType.TemplateSpec != nil
 			types := []string{}
 			for _, t in structType.TemplateSpec.Result.Types
@@ -161,12 +162,12 @@ struct Desugar
 			)
 		n
 
-	*Signature(n INode): INode ->
-		sig := n.(*Signature)
+	*Signature(n ast.INode): ast.INode ->
+		sig := n.(*ast.Signature)
 		if sig.TemplateSpec != nil
 
-			if f, ok := sig.parent.(*Function); ok
-				fDecl := f.parent.(*FunctionDecl)
+			if f, ok := sig.GetParent().(*ast.Function); ok
+				fDecl := f.GetParent().(*ast.FunctionDecl)
 
 				types := []string{}
 				for _, t in sig.TemplateSpec.Result.Types
@@ -180,8 +181,8 @@ struct Desugar
 				)
 		n
 
-	*VarDecl(n INode): INode ->
-		varDecl := n.(*VarDecl)
+	*VarDecl(n ast.INode): ast.INode ->
+		varDecl := n.(*ast.VarDecl)
 		for _, varSpec in varDecl.VarSpecs
 			statement := varSpec.Statement
 			if statement == nil
@@ -199,8 +200,8 @@ struct Desugar
 
 		varDecl
 
-	*Function(n INode): INode ->
-		function := n.(*Function)
+	*Function(n ast.INode): ast.INode ->
+		function := n.(*ast.Function)
 		sig := function.Signature
 
 		/* No signature means no return type */
@@ -223,89 +224,84 @@ struct Desugar
 
 		n
 
-IfStmt::*MakeReturnClosureStatement(t *Type): *Statement ->
-	@AddReturn()
+// IfStmt::*MakeReturnClosureStatement(t *ast.Type): *Statement ->
+// 	@AddReturn()
 
-	/* FIXME: Problem with large nested struct decl */
-	funcLit := &FunctionLit
-		Node: NewNodeNoCtx()
-		Function: &Function
-			Node: NewNodeNoCtx()
-			Signature: &Signature
-				Node: NewNodeNoCtx()
-				Parameters: &Parameters
-					Node: NewNodeNoCtx()
-					List: []*Parameter{}
-				Result: &Result
-					Node: NewNodeNoCtx()
-					Types: []*Type{t}
-			Block: &Block
-				Node: NewNodeNoCtx()
-				Statements: []*Statement
-					&Statement
-						Node: NewNodeNoCtx()
-						IfStmt: @
+// 	/* FIXME: Problem with large nested struct decl */
+// 	funcLit := &ast.FunctionLit
+// 		Node: NewNodeNoCtx()
+// 		Function: &ast.Function
+// 			Node: NewNodeNoCtx()
+// 			Signature: &ast.Signature
+// 				Node: NewNodeNoCtx()
+// 				Parameters: &ast.Parameters
+// 					Node: NewNodeNoCtx()
+// 					List: []*ast.Parameter{}
+// 				Result: &ast.Result
+// 					Node: NewNodeNoCtx()
+// 					Types: []*ast.Type{t}
+// 			Block: &ast.Block
+// 				Node: NewNodeNoCtx()
+// 				Statements: []*ast.Statement
+// 					&ast.Statement
+// 						Node: NewNodeNoCtx()
+// 						IfStmt: @
 
-	primary := &PrimaryExpr
-		Node: NewNodeNoCtx()
-		Operand: &Operand
-			Node: NewNodeNoCtx()
-			Literal: &Literal
-				Node: NewNodeNoCtx()
-				FunctionLit: funcLit
+// 	primary := &ast.PrimaryExpr
+// 		Node: NewNodeNoCtx()
+// 		Operand: &ast.Operand
+// 			Node: NewNodeNoCtx()
+// 			Literal: &ast.Literal
+// 				Node: NewNodeNoCtx()
+// 				FunctionLit: funcLit
 
-	unary := &UnaryExpr
-		Node: NewNodeNoCtx()
-		PrimaryExpr: &PrimaryExpr
-			Node: NewNodeNoCtx()
-			PrimaryExpr: primary
-			SecondaryExpr: &SecondaryExpr
-				Node: NewNodeNoCtx()
-				Arguments: &Arguments
-					Node: NewNodeNoCtx()
+// 	unary := &ast.UnaryExpr
+// 		Node: NewNodeNoCtx()
+// 		PrimaryExpr: &ast.PrimaryExpr
+// 			Node: NewNodeNoCtx()
+// 			PrimaryExpr: primary
+// 			SecondaryExpr: &ast.SecondaryExpr
+// 				Node: NewNodeNoCtx()
+// 				Arguments: &ast.Arguments
+// 					Node: NewNodeNoCtx()
 
-	expr := &Expression
-		Node: NewNodeNoCtx()
-		UnaryExpr: unary
+// 	expr := &ast.Expression
+// 		Node: NewNodeNoCtx()
+// 		UnaryExpr: unary
 
-	stmt := &Statement
-		Node: NewNodeNoCtx()
-		SimpleStmt: &SimpleStmt
-			Node: NewNodeNoCtx()
-			Expression: expr
+// 	stmt := &ast.Statement
+// 		Node: NewNodeNoCtx()
+// 		SimpleStmt: &ast.SimpleStmt
+// 			Node: NewNodeNoCtx()
+// 			Expression: expr
 
-	return stmt
-	/* TODO: Fixme: without return the parser think this is `@AddReturn() & Statement` */
-	/* return &Statement */
-	// Node: NewNodeNoCtx()
+// 	return stmt
+// /* TODO: Fixme: without return the parser think this is `@AddReturn() & Statement` */
+// /* return &Statement */
+// // Node: NewNodeNoCtx()
 
-IfStmt::*AddReturn() ->
-	if @Block     != nil => @Block.AddReturn()
-	if @IfStmt    != nil => @IfStmt.AddReturn()
-	if @BlockElse != nil => @BlockElse.AddReturn()
+// Block::*AddReturn() ->
+// 	last := @Statements[len(@Statements)-1]
 
-Block::*AddReturn() ->
-	last := @Statements[len(@Statements)-1]
+// 	if last.ReturnStmt == nil
+// 		if last.IfStmt != nil
+// 			last.IfStmt.AddReturn()
+// 		if last.SimpleStmt != nil
+// 			@Statements[len(@Statements)-1] = &Statement
+// 				Node: NewNodeNoCtx()
+// 				ReturnStmt: &ReturnStmt
+// 					Node: NewNodeNoCtx()
+// 					Expressions: &ExpressionList
+// 						Node: NewNodeNoCtx()
+// 						Expressions: []*Expression{last.SimpleStmt.Expression}
 
-	if last.ReturnStmt == nil
-		if last.IfStmt != nil
-			last.IfStmt.AddReturn()
-		if last.SimpleStmt != nil
-			@Statements[len(@Statements)-1] = &Statement
-				Node: NewNodeNoCtx()
-				ReturnStmt: &ReturnStmt
-					Node: NewNodeNoCtx()
-					Expressions: &ExpressionList
-						Node: NewNodeNoCtx()
-						Expressions: []*Expression{last.SimpleStmt.Expression}
-
-RunDesugar(ast INode): INode ->
+RunDesugar(tree ast.INode): ast.INode ->
 	desugar := Desugar
-		root:      ast
+		root:      tree
 
 	desugar.type_ = &desugar
 
-	res := desugar.Walk(ast)
+	res := desugar.Walk(tree)
 
 	desugar.GenerateGenerics()
 

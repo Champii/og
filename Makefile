@@ -39,7 +39,7 @@ define run_and_test
 endef
 
 SRC_PATH=lib/
-SRC=$(wildcard $(SRC_PATH)*.og $(SRC_PATH)translator/*.og $(SRC_PATH)ast/*.og)
+SRC=$(wildcard $(SRC_PATH)og/*.og $(SRC_PATH)translator/*.og $(SRC_PATH)ast/*.og $(SRC_PATH)ast/walker/*.og)
 RES=$(SRC:.og=.go)
 EXE=og
 CC=og

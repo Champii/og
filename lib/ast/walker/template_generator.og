@@ -1,7 +1,7 @@
-!ast
+!walker
 
-// import
-// 	fmt
+import
+	"github.com/champii/og/lib/ast"
 // reflect
 
 struct TemplateGen
@@ -9,8 +9,8 @@ struct TemplateGen
 	typeSrc []string
 	typeDest []string
 
-	*Type(n INode): INode ->
-		t := n.(*Type)
+	*Type(n ast.INode): ast.INode ->
+		t := n.(*ast.Type)
 		tName := t.Eval()
 		for i, ty in @typeSrc
 			if tName == ty
@@ -19,7 +19,7 @@ struct TemplateGen
 				t.Type = nil
 		n
 
-RunTemplateGen(ast INode, typeSrc []string, typeDest []string): INode ->
+RunTemplateGen(ast ast.INode, typeSrc []string, typeDest []string): ast.INode ->
 	templateGen := TemplateGen
 		typeSrc:  typeSrc
 		typeDest:  typeDest

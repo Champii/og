@@ -8,6 +8,7 @@ type INode interface {
 	Eval() string
 	Text() string
 	SetParent(n INode)
+	GetParent() INode
 }
 type Node struct {
 	Text_    string
@@ -25,6 +26,9 @@ func (this *Node) SetParent(n INode) {
 	if this.parent == nil {
 		this.parent = n
 	}
+}
+func (this *Node) GetParent() INode {
+	return this.parent
 }
 func NewNode(ctx antlr.RuleContext) *Node {
 	return &Node{Text_: ctx.GetText()}

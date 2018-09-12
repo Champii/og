@@ -1,8 +1,9 @@
-!ast
+!walker
 
 import
 	// fmt
 	reflect
+	"github.com/champii/og/lib/ast"
 
 struct AstWalker
 	type_ interface
@@ -19,8 +20,8 @@ struct AstWalker
 
 		return []reflect.Value{reflect.Zero(arg.Type())}, false
 
-	*Trigger(arg reflect.Value, parentField reflect.Value, parentNode INode): reflect.Value, bool->
-		node := arg.Interface().(INode)
+	*Trigger(arg reflect.Value, parentField reflect.Value, parentNode ast.INode): reflect.Value, bool->
+		node := arg.Interface().(ast.INode)
 
 		if node == nil
 			return reflect.Zero(arg.Type()), false
@@ -34,7 +35,7 @@ struct AstWalker
 
 		res, ok := @callDelegate("Each", arg)
 		if ok
-			node = res[0].Interface().(INode)
+			node = res[0].Interface().(ast.INode)
 			parentField.Set(reflect.ValueOf(node))
 
 		@callDelegate(name, arg)
@@ -42,15 +43,15 @@ struct AstWalker
 		parentField.Set(reflect.ValueOf(@Walk(node)))
 		res, ok = @callDelegate("After", arg)
 		if ok
-			node = res[0].Interface().(INode)
+			node = res[0].Interface().(ast.INode)
 			parentField.Set(reflect.ValueOf(node))
 
 		@callDelegate("After" + name, arg)
 
 		return reflect.ValueOf(node), true
 
-	*Walk(ast INode): INode ->
-		val := reflect.ValueOf(ast).Elem()
+	*Walk(tree ast.INode): ast.INode ->
+		val := reflect.ValueOf(tree).Elem()
 
 		for i := 0; i < val.NumField(); i++
 			valueField := val.Field(i)
@@ -69,7 +70,7 @@ struct AstWalker
 					if !valueField.Index(j).IsValid()
 						continue
 
-					res, ok := @Trigger(valueField.Index(j), valueField.Index(j), ast)
+					res, ok := @Trigger(valueField.Index(j), valueField.Index(j), tree)
 					if ok
 						valueField.Index(j).Set(res)
 
@@ -78,8 +79,8 @@ struct AstWalker
 			if valueField.IsNil()
 				continue
 
-			res, ok := @Trigger(valueField, val.Field(i), ast)
+			res, ok := @Trigger(valueField, val.Field(i), tree)
 			if ok
 				val.Field(i).Set(res)
 
-		ast
+		tree
