@@ -10,7 +10,7 @@ It is an indentation based language mainly inspired from [Livescript](http://liv
 
 class Oglang<T>
   Foo T
-  GetFoo: T -> @T
+  GetFoo: T -> @Foo
 
 main ->
   foo := Oglang<int>
