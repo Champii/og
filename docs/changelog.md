@@ -1,6 +1,8 @@
 # Changelog
 
-## v0.7.0: Current version
+## DEV: Current version
+
+## v0.7.0
   - Warning when go format fails
   - Warning on the interpreter about its uselessness
   - Exit the program on exiting the interpreter
