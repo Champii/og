@@ -1,4 +1,4 @@
-# <b>Og</b>lang <small>v0.7.1</small>
+# <b>Og</b>lang <small>DEV</small>
 
 ## <i>Optimistic Golang</i>
 
