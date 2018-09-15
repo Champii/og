@@ -1,6 +1,6 @@
 # Changelog
 
-## DEV: Current version
+## v0.7.1: Current version
   - Fix `-p` that showed the non-formated output 
   - Add `-f` for force compilation even if nothing has changed
   - Fix printing problems

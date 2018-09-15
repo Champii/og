@@ -1,4 +1,4 @@
-Og-Lang *DEV* (Optimistic Golang)
+Og-Lang *v0.7.1* (Optimistic Golang)
 ===
 
 ### [Documentation Website](https://champii.github.io/og)
