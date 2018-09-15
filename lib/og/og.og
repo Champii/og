@@ -12,9 +12,6 @@ struct Og
   Printer  *Printer
 
   Run: error ->
-    if @Config.Print || @Config.Ast || @Config.Dirty || @Config.Blocks
-      @Config.Quiet = true
-
     if len(@Config.Paths) == 0
       @Config.Paths = []string{"."}
 
@@ -29,6 +26,9 @@ struct Og
       @Printer.NothingToDo()
       if !@Config.Run
         return nil
+
+    if @Config.Print || @Config.Ast || @Config.Blocks || @Config.Dirty
+      return nil
 
     if !@Config.NoBuild
       if err := @Build(); err != nil

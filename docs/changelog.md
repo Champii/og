@@ -1,6 +1,10 @@
 # Changelog
 
 ## DEV: Current version
+  - Fix `-p` that showed the non-formated output 
+  - Add `-f` for force compilation even if nothing has changed
+  - Fix printing problems
+  - Templates are now generated once for each type in each package. We still cannot generate them cross package.
 
 ## v0.7.0
   - Warning when go format fails

@@ -6,6 +6,7 @@ import
   path
   strings
   "path/filepath"
+  "github.com/champii/og/lib/common"
   "github.com/champii/og/lib/ast/walker"
 
 struct OgCompiler
@@ -13,7 +14,7 @@ struct OgCompiler
   Parser   *OgParser
   Preproc  *OgPreproc
   Printer  *Printer
-  Files    []*File
+  Files    []*common.File
 
   *Compile: error ->
     for _, p in @Config.Paths
@@ -42,7 +43,7 @@ struct OgCompiler
     if @Config.Blocks
       return nil
 
-    @desugar()
+    walker.NewDesugar().Run(@Files)
 
     @outputFiles()
 
@@ -50,24 +51,16 @@ struct OgCompiler
     for _, file in @Files
       file.Output = file.Ast.Eval()
 
+      if !@Config.Dirty
+        if err := file.Format(); err != nil
+          return err
+
       if @Config.Print || @Config.Dirty || @Config.Blocks
         fmt.Println(file.Output)
       else
-        if !@Config.Dirty
-          if err := file.Format(); err != nil
-            return err
-
         file.Write()
+
     nil
-
-  *desugar ->
-    desugar := walker.NewDesugar()
-
-    for _, file in @Files
-      desugar.Root = file.Ast
-      file.Ast = desugar.Walk(file.Ast)
-
-    desugar.GenerateGenerics()
 
   *walker(filePath string, info os.FileInfo, err error): error ->
     if err != nil
@@ -79,10 +72,10 @@ struct OgCompiler
     if path.Ext(filePath) != ".og"
       return nil
 
-    if !@Config.Force && !@mustCompile(filePath, info)
+    if !@mustCompile(filePath, info)
       return nil
 
-    @Files = append(@Files, NewFile(filePath, @getNewPath(filePath)))
+    @Files = append(@Files, common.NewFile(filePath, @getNewPath(filePath)))
 
     nil
 
@@ -93,12 +86,12 @@ struct OgCompiler
     if err != nil
       return true
 
-    if @Config.Print || @Config.Ast || @Config.Dirty || @Config.Blocks
+    if @Config.Ast || @Config.Print || @Config.Dirty || @Config.Blocks || @Config.Force
       return true
 
     return info.ModTime().After(stat.ModTime())
 
-  *ParseFile(file *File): error ->
+  *ParseFile(file *common.File): error ->
     @Preproc.Run(file)
 
     if @Config.Blocks
@@ -116,11 +109,6 @@ struct OgCompiler
 
     return nil
 
-    // if @Config.Dirty
-    //   return res, nil
-
-    // return @format(res)
-
   getNewPath(filePath string): string ->
     if @Config.OutPath != "./"
       splited := strings.SplitN(filePath, "/", 2)
@@ -130,7 +118,8 @@ struct OgCompiler
 
 NewOgCompiler(config *OgConfig, printer *Printer): *OgCompiler ->
   &OgCompiler
-    Config: config
+    Config:  config
     Printer: printer
-    Parser: NewOgParser(config)
+    Parser:  NewOgParser(config)
     Preproc: NewOgPreproc()
+    Files:   []*common.File{}

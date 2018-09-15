@@ -3,6 +3,7 @@ package og
 import (
 	"fmt"
 	"github.com/champii/og/lib/ast/walker"
+	"github.com/champii/og/lib/common"
 	"os"
 	"path"
 	"path/filepath"
@@ -14,7 +15,7 @@ type OgCompiler struct {
 	Parser  *OgParser
 	Preproc *OgPreproc
 	Printer *Printer
-	Files   []*File
+	Files   []*common.File
 }
 
 func (this *OgCompiler) Compile() error {
@@ -43,32 +44,24 @@ func (this *OgCompiler) Compile() error {
 	if this.Config.Blocks {
 		return nil
 	}
-	this.desugar()
+	walker.NewDesugar().Run(this.Files)
 	return this.outputFiles()
 }
 func (this *OgCompiler) outputFiles() error {
 	for _, file := range this.Files {
 		file.Output = file.Ast.Eval()
+		if !this.Config.Dirty {
+			if err := file.Format(); err != nil {
+				return err
+			}
+		}
 		if this.Config.Print || this.Config.Dirty || this.Config.Blocks {
 			fmt.Println(file.Output)
 		} else {
-			if !this.Config.Dirty {
-				if err := file.Format(); err != nil {
-					return err
-				}
-			}
 			file.Write()
 		}
 	}
 	return nil
-}
-func (this *OgCompiler) desugar() {
-	desugar := walker.NewDesugar()
-	for _, file := range this.Files {
-		desugar.Root = file.Ast
-		file.Ast = desugar.Walk(file.Ast)
-	}
-	desugar.GenerateGenerics()
 }
 func (this *OgCompiler) walker(filePath string, info os.FileInfo, err error) error {
 	if err != nil {
@@ -80,10 +73,10 @@ func (this *OgCompiler) walker(filePath string, info os.FileInfo, err error) err
 	if path.Ext(filePath) != ".og" {
 		return nil
 	}
-	if !this.Config.Force && !this.mustCompile(filePath, info) {
+	if !this.mustCompile(filePath, info) {
 		return nil
 	}
-	this.Files = append(this.Files, NewFile(filePath, this.getNewPath(filePath)))
+	this.Files = append(this.Files, common.NewFile(filePath, this.getNewPath(filePath)))
 	return nil
 }
 func (this OgCompiler) mustCompile(filePath string, info os.FileInfo) bool {
@@ -92,12 +85,12 @@ func (this OgCompiler) mustCompile(filePath string, info os.FileInfo) bool {
 	if err != nil {
 		return true
 	}
-	if this.Config.Print || this.Config.Ast || this.Config.Dirty || this.Config.Blocks {
+	if this.Config.Ast || this.Config.Print || this.Config.Dirty || this.Config.Blocks || this.Config.Force {
 		return true
 	}
 	return info.ModTime().After(stat.ModTime())
 }
-func (this *OgCompiler) ParseFile(file *File) error {
+func (this *OgCompiler) ParseFile(file *common.File) error {
 	this.Preproc.Run(file)
 	if this.Config.Blocks {
 		fmt.Println(file.Output)
@@ -129,5 +122,6 @@ func NewOgCompiler(config *OgConfig, printer *Printer) *OgCompiler {
 		Printer: printer,
 		Parser:  NewOgParser(config),
 		Preproc: NewOgPreproc(),
+		Files:   []*common.File{},
 	}
 }

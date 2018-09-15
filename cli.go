@@ -24,6 +24,7 @@ func parseArgs(done func(og.OgConfig)) {
 			Interpreter: c.Bool("i"),
 			NoBuild:     c.Bool("n"),
 			Run:         c.Bool("r"),
+			Force:       c.Bool("f"),
 			Paths:       []string(c.Args()),
 		}
 
@@ -45,7 +46,7 @@ VERSION:
 USAGE:
 	{{if .VisibleFlags}}{{.HelpName}} [options] [folders...|files...]
 
-	If a Print argument (-p, -b, -d, -a) is given, NO COMPILATION is done.
+	If a Print argument (-p, -b, -d, -a) is given, no write on disk is done.
 
 	If run without files, it will compile and build '.'{{end}}
 	{{if len .Authors}}
@@ -94,6 +95,10 @@ COPYRIGHT:
 			Name:  "w, workers",
 			Usage: "Set the number of `jobs`",
 			Value: 8,
+		},
+		cli.BoolFlag{
+			Name:  "f, force",
+			Usage: "Force the compilation even if no changes",
 		},
 		cli.BoolFlag{
 			Name:  "p, print",

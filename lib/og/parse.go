@@ -7,6 +7,7 @@ import (
 	tm "github.com/buger/goterm"
 	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/ast/walker"
+	"github.com/champii/og/lib/common"
 	"github.com/champii/og/lib/translator"
 	"github.com/champii/og/parser"
 	"github.com/fatih/color"
@@ -77,7 +78,7 @@ type OgParser struct {
 	Config *OgConfig
 }
 
-func (this *OgParser) parserInit(file *File) *parser.OgParser {
+func (this *OgParser) parserInit(file *common.File) *parser.OgParser {
 	input := antlr.NewInputStream(string(file.Output))
 	lexer := parser.NewOgLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
@@ -89,7 +90,7 @@ func (this *OgParser) parserInit(file *File) *parser.OgParser {
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
 	return p
 }
-func (this *OgParser) Parse(file *File) error {
+func (this *OgParser) Parse(file *common.File) error {
 	p := this.parserInit(file)
 	res := p.SourceFile()
 	if res == nil {
@@ -103,14 +104,14 @@ func (this *OgParser) Parse(file *File) error {
 	file.Ast = tree
 	return nil
 }
-func (this *OgParser) ParseStmt(file *File) error {
+func (this *OgParser) ParseStmt(file *common.File) error {
 	p := this.parserInit(file)
 	res := p.Statement()
 	t := new(translator.OgVisitor)
 	file.Ast = t.VisitStatement(res.(*parser.StatementContext), t).(*ast.Statement)
 	return nil
 }
-func (this *OgParser) ParseInterpret(file *File) error {
+func (this *OgParser) ParseInterpret(file *common.File) error {
 	p := this.parserInit(file)
 	res := p.Interp()
 	t := new(translator.OgVisitor)

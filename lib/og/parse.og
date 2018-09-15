@@ -6,13 +6,14 @@ import
   strings
   strconv
   errors
+  "github.com/fatih/color"
   "github.com/buger/goterm": tm
+  "github.com/champii/og/parser"
   "github.com/champii/og/lib/ast"
+  "github.com/champii/og/lib/common"
   "github.com/champii/og/lib/ast/walker"
   "github.com/champii/og/lib/translator"
-  "github.com/champii/og/parser"
   "github.com/antlr/antlr4/runtime/Go/antlr"
-  "github.com/fatih/color"
 
 var yellow = color.New(color.FgHiYellow).SprintFunc()
 var red = color.New(color.FgHiRed).SprintFunc()
@@ -70,7 +71,7 @@ NewErrorListener(filePath, source string): *ErrorListener ->
 struct OgParser
   Config *OgConfig
 
-  parserInit(file *File): *parser.OgParser ->
+  parserInit(file *common.File): *parser.OgParser ->
     input := antlr.NewInputStream(string(file.Output))
     lexer := parser.NewOgLexer(input)
 
@@ -88,7 +89,7 @@ struct OgParser
 
     p
 
-  Parse(file *File): error ->
+  Parse(file *common.File): error ->
     p := @parserInit(file)
 
     res := p.SourceFile()
@@ -114,7 +115,7 @@ struct OgParser
 
     // final
 
-  ParseStmt(file *File): error ->
+  ParseStmt(file *common.File): error ->
     p := @parserInit(file)
 
     res := p.Statement()
@@ -125,7 +126,7 @@ struct OgParser
 
     nil
 
-  ParseInterpret(file *File): error ->
+  ParseInterpret(file *common.File): error ->
     p := @parserInit(file)
 
     res := p.Interp()

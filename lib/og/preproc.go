@@ -1,6 +1,7 @@
 package og
 
 import (
+	"github.com/champii/og/lib/common"
 	"strings"
 )
 
@@ -15,7 +16,7 @@ func (this OgPreproc) indentCount(str string) int {
 	}
 	return 0
 }
-func (this *OgPreproc) Run(file *File) {
+func (this *OgPreproc) Run(file *common.File) {
 	rawLines := strings.Split(string(file.Source), "\n")
 	lines := []string{}
 	for _, v := range rawLines {

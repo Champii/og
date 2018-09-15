@@ -1,0 +1,51 @@
+!walker
+
+import
+	strings
+	"github.com/champii/og/lib/ast"
+
+struct TemplateUsage
+	AstWalker
+	Root      ast.INode
+	Templates *Templates
+
+	*computeTypes(callee ast.INode, templateSpec *ast.TemplateSpec): string ->
+		calleeName := callee.Eval()
+
+		types := []string{}
+
+		for _, t in templateSpec.Result.Types
+			types = append(types, t.Eval())
+
+		template := @Templates.Get(calleeName)
+
+		template.AddUsedFor(types)
+
+		calleeName + strings.Join(types, "")
+
+	*Arguments(n ast.INode): ast.INode ->
+		args := n.(*ast.Arguments)
+
+		if args.TemplateSpec != nil
+			callee := args.GetParent().(*ast.SecondaryExpr).GetParent().(*ast.PrimaryExpr).PrimaryExpr.Operand
+			callee.OperandName.Name = @computeTypes(callee, args.TemplateSpec)
+
+		n
+
+	*CompositeLit(n ast.INode): ast.INode ->
+		composite := n.(*ast.CompositeLit)
+
+		if composite.TemplateSpec != nil
+			callee := composite.LiteralType
+			callee.Type = @computeTypes(callee, composite.TemplateSpec)
+
+		n
+
+RunTemplateUsage(tree ast.INode, templates *Templates) ->
+	templateUsage := TemplateUsage
+		Root: tree
+		Templates: templates
+
+	templateUsage.type_ = &templateUsage
+
+	templateUsage.Walk(tree)

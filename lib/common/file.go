@@ -1,4 +1,4 @@
-package og
+package common
 
 import (
 	"errors"

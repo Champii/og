@@ -1,0 +1,28 @@
+!walker
+
+import
+	"github.com/champii/og/lib/ast"
+
+struct TemplateApply
+	AstWalker
+	typeSrc []string
+	typeDest []string
+
+	*Type(n ast.INode): ast.INode ->
+		t := n.(*ast.Type)
+		tName := t.Eval()
+		for i, ty in @typeSrc
+			if tName == ty
+				t.TypeName = @typeDest[i]
+				t.TypeLit = nil
+				t.Type = nil
+		n
+
+RunTemplateApply(tree ast.INode, typeSrc []string, typeDest []string): ast.INode ->
+	templateApply := TemplateApply
+		typeSrc:  typeSrc
+		typeDest:  typeDest
+
+	templateApply.type_ = &templateApply
+
+	templateApply.Walk(tree)

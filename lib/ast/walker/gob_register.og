@@ -1,0 +1,15 @@
+!walker
+
+import
+	"encoding/gob"
+	"github.com/champii/og/lib/ast"
+
+struct GobRegister
+	AstWalker
+	*Each(n ast.INode) -> gob.Register(n)
+
+RunGobRegister(tree ast.INode) ->
+	p := GobRegister{}
+	gob.Register(tree)
+	p.type_ = &p
+	p.Walk(tree)

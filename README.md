@@ -4,6 +4,9 @@ Og-Lang *DEV* (Optimistic Golang)
 ### [Documentation Website](https://champii.github.io/og)
 ### [GoDoc](https://godoc.org/github.com/Champii/og)
 
+We are looking for a better name !  
+[Renaming Og](https://github.com/Champii/og/issues/7)
+
 # Disclamer
 
 <h3> This software is in its early stage.<br/>
@@ -11,8 +14,9 @@ New features come fast, at the cost of breaking things often.<br />
 Testers and Contributors are most welcome
 </h3>
 
-
 # Quick overview
+
+This is a quick and dirty syntactic coloration made by hand in optic to highlight main features of the language, please don't judge me  (Or better, please contribute to make a better one :] )
 
 ![Overview](https://github.com/Champii/og/raw/master/docs/_media/overview_color.png)
 

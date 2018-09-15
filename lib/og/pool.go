@@ -1,14 +1,15 @@
 package og
 
 import (
+	"github.com/champii/og/lib/common"
 	"time"
 )
 
-type WorkerCallback (func(*File) error)
+type WorkerCallback (func(*common.File) error)
 type Worker struct {
-	In         chan *File
+	In         chan *common.File
 	Out        chan error
-	Processing *File
+	Processing *common.File
 	Job        WorkerCallback
 }
 
@@ -20,7 +21,7 @@ func (this *Worker) Run() {
 		this.Out <- res
 	}
 }
-func NewWorker(i chan *File, out chan error, job WorkerCallback) *Worker {
+func NewWorker(i chan *common.File, out chan error, job WorkerCallback) *Worker {
 	return &Worker{
 		Processing: nil,
 		In:         i,
@@ -34,12 +35,12 @@ type Pool struct {
 	Workers  []*Worker
 	Total    int
 	Finished int
-	In       chan *File
+	In       chan *common.File
 	Out      chan error
 	Printer  *Printer
 }
 
-func (this *Pool) Queue(job *File) {
+func (this *Pool) Queue(job *common.File) {
 	this.In <- job
 }
 func (this *Pool) Run() error {
@@ -83,7 +84,7 @@ func NewPool(size int, nbJobs int, printer *Printer, cb WorkerCallback) *Pool {
 		Size:     size,
 		Total:    nbJobs,
 		Finished: 0,
-		In:       make(chan *File, nbJobs),
+		In:       make(chan *common.File, nbJobs),
 		Out:      make(chan error, nbJobs),
 		Printer:  printer,
 	}

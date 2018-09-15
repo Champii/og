@@ -1,0 +1,72 @@
+!walker
+
+import
+	strings
+	reflect
+	"github.com/champii/og/lib/ast"
+
+struct Template
+	Name         string
+	Types        []string
+	UsedFor      [][]string
+	GeneratedFor map[string][]string // Join(UsedFor[i], ",") -> []PackageName
+	Node         ast.INode
+
+	contains(arr []string, str string): bool ->
+		for _, item in arr
+			if str == item
+				return true
+
+		false
+
+	*IsGeneratedFor(types []string, packageName string): bool ->
+		serie := strings.Join(types, ",")
+
+		packages, _ := @GeneratedFor[serie]
+
+		return @contains(packages, packageName)
+
+	*AddGeneratedFor(types []string, packageName string) ->
+		serie := strings.Join(types, ",")
+
+		packages, _ := @GeneratedFor[serie]
+
+		if !@contains(packages, packageName)
+			@GeneratedFor[serie] = append(@GeneratedFor[serie], packageName)
+
+	*AddUsedFor(types []string) ->
+		for _, usedFor in @UsedFor
+			if reflect.DeepEqual(types, usedFor)
+				return
+
+		@UsedFor = append(@UsedFor, types)
+
+NewTemplate(name string, types []string, node ast.INode): *Template ->
+	&Template
+		Name: name
+		Types: types
+		UsedFor: [][]string{}
+		Node: node
+		GeneratedFor: make(map[string][]string)
+
+struct Templates
+	names     []string
+	templates []*Template
+
+	*Add(name string, template *Template) ->
+		@names = append(@names, name)
+		@templates = append(@templates, template)
+
+	Get(name string): *Template ->
+		for i, n in @names
+			if n == name
+				return @templates[i]
+
+		return nil
+
+	ResetUsedFor ->
+		for _, template in @templates
+			template.UsedFor = [][]string{}
+
+NewTemplates: *Templates ->
+	&Templates{}

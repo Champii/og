@@ -14,9 +14,6 @@ type Og struct {
 }
 
 func (this Og) Run() error {
-	if this.Config.Print || this.Config.Ast || this.Config.Dirty || this.Config.Blocks {
-		this.Config.Quiet = true
-	}
 	if len(this.Config.Paths) == 0 {
 		this.Config.Paths = []string{"."}
 	}
@@ -32,6 +29,9 @@ func (this Og) Run() error {
 		if !this.Config.Run {
 			return nil
 		}
+	}
+	if this.Config.Print || this.Config.Ast || this.Config.Blocks || this.Config.Dirty {
+		return nil
 	}
 	if !this.Config.NoBuild {
 		if err := this.Build(); err != nil {

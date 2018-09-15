@@ -3,6 +3,7 @@ package og
 import (
 	"bufio"
 	"fmt"
+	"github.com/champii/og/lib/common"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -22,7 +23,7 @@ func RunInterpreter(compiler *OgCompiler) {
 		if len(ln) == 0 {
 			continue
 		}
-		file := &File{
+		file := &common.File{
 			Path:   "STDIN",
 			Name:   "STDIN",
 			Source: []byte(ln),

@@ -6,6 +6,7 @@ import
   bufio
   "io/ioutil"
   "os/exec"
+  "github.com/champii/og/lib/common"
 
 RunInterpreter(compiler *OgCompiler) ->
   fmt.Println("-> This is an experimental feature, only small expressions are allowed, no declaration")
@@ -24,7 +25,7 @@ RunInterpreter(compiler *OgCompiler) ->
     if len(ln) == 0
       continue
 
-    file := &File
+    file := &common.File
       Path: "STDIN"
       Name: "STDIN"
       Source: []byte(ln)

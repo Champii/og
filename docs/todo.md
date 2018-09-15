@@ -50,7 +50,6 @@
 - [ ] Better error context (How to keep line number after preproc ?)
 - [ ] Parse all AST alltogether to perform type analysis and generics preprocessing across files
 - [ ] Avoid race when printing
-- [ ] Separate the print logic
 - [ ] Centralized error management
 - [ ] Allow to give arguments to finaly executed binary with `og -r -- arg1 arg2`
 - [ ] Fix typeswitch that cannot allow a pointer as second case without `;`

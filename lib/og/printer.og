@@ -37,6 +37,9 @@ struct Printer
     tm.Flush()
 
   NothingToDo ->
+    if @Config.Quiet
+      return
+
     tm.Print("                                          \r")
     tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Nothing to do.", tm.GREEN))
     tm.Flush()

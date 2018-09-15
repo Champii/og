@@ -39,6 +39,9 @@ func (this Printer) Running() {
 	tm.Flush()
 }
 func (this Printer) NothingToDo() {
+	if this.Config.Quiet {
+		return
+	}
 	tm.Print("                                          \r")
 	tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Nothing to do.", tm.GREEN))
 	tm.Flush()

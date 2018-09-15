@@ -1,0 +1,60 @@
+!walker
+
+import
+	"github.com/champii/og/lib/ast"
+
+struct Returnable
+	AstWalker
+	Root      ast.INode
+
+	*VarDecl(n ast.INode): ast.INode ->
+		varDecl := n.(*ast.VarDecl)
+		for _, varSpec in varDecl.VarSpecs
+			statement := varSpec.Statement
+
+			if statement == nil
+				continue
+
+			ifStmt := statement.IfStmt
+			if ifStmt == nil
+				/* Hack: Get the inner ifStmt if existant */
+				if statement.Block != nil && len(statement.Block.Statements) == 1 && statement.Block.Statements[0].IfStmt != nil
+					ifStmt = statement.Block.Statements[0].IfStmt
+				else
+					continue
+
+			varSpec.Statement = ifStmt.MakeReturnClosureStatement(varSpec.Type)
+
+		varDecl
+
+	*Function(n ast.INode): ast.INode ->
+		function := n.(*ast.Function)
+		sig := function.Signature
+
+		/* No signature means no return type */
+		if sig == nil
+			return n
+
+		retType := sig.Result
+
+		/* We don't support multiple return type (yet) */
+		if retType == nil || len(retType.Types) != 1
+			return n
+
+		block := function.Block
+		if block != nil && len(block.Statements) > 0
+			last := block.Statements[len(block.Statements)-1]
+
+			if last.ReturnStmt == nil
+				if last.SimpleStmt != nil => block.AddReturn()
+				if last.IfStmt != nil     => last.IfStmt.AddReturn()
+
+		n
+
+RunReturnable(tree ast.INode): ast.INode ->
+	returnable := Returnable
+		Root:      tree
+
+	returnable.type_ = &returnable
+
+	returnable.Walk(tree)

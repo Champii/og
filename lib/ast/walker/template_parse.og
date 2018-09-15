@@ -1,0 +1,42 @@
+!walker
+
+import
+	"github.com/champii/og/lib/ast"
+
+struct TemplateParse
+	AstWalker
+	Root      ast.INode
+	Templates *Templates
+
+	*StructType(n ast.INode): ast.INode ->
+		structType := n.(*ast.StructType)
+		if structType.TemplateSpec != nil
+			types := []string{}
+			for _, t in structType.TemplateSpec.Result.Types
+				types = append(types, t.Eval())
+
+			@Templates.Add(structType.Name, NewTemplate(structType.Name, types, structType))
+		n
+
+	*Signature(n ast.INode): ast.INode ->
+		sig := n.(*ast.Signature)
+		if sig.TemplateSpec != nil
+
+			if f, ok := sig.GetParent().(*ast.Function); ok
+				fDecl := f.GetParent().(*ast.FunctionDecl)
+
+				types := []string{}
+				for _, t in sig.TemplateSpec.Result.Types
+					types = append(types, t.Eval())
+
+				@Templates.Add(fDecl.Name, NewTemplate(fDecl.Name, types, fDecl))
+		n
+
+RunTemplateParse(tree ast.INode, templates *Templates) ->
+	templateParse := TemplateParse
+		Root:      tree
+		Templates: templates
+
+	templateParse.type_ = &templateParse
+
+	templateParse.Walk(tree)
