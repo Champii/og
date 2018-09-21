@@ -1,0 +1,18 @@
+!common
+
+struct Error
+	Path   string
+	Source []string
+	Line   int
+	Column int
+	Msg    string
+	Msg2   string
+
+NewError(filePath string, source []string, line, column int, msg, msg2 string): *Error ->
+	&Error
+		Path:   filePath
+		Source: source
+		Line:   line
+		Column: column
+		Msg:    msg
+		Msg2:   msg2

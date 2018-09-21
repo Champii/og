@@ -1,11 +1,12 @@
 package ast
 
 import (
+	"github.com/champii/og/lib/common"
 	"strings"
 )
 
 type SourceFile struct {
-	*Node
+	*common.Node
 	Package   *Package
 	Import    *Import
 	TopLevels []*TopLevel
@@ -26,7 +27,7 @@ func (this SourceFile) Eval() string {
 }
 
 type Package struct {
-	*Node
+	*common.Node
 	Name string
 }
 
@@ -35,7 +36,7 @@ func (this Package) Eval() string {
 }
 
 type Import struct {
-	*Node
+	*common.Node
 	Items []*ImportSpec
 }
 
@@ -48,7 +49,7 @@ func (this Import) Eval() string {
 }
 
 type ImportSpec struct {
-	*Node
+	*common.Node
 	Path  string
 	Alias string
 }
@@ -62,7 +63,7 @@ func (this ImportSpec) Eval() string {
 }
 
 type TopLevel struct {
-	*Node
+	*common.Node
 	Declaration  *Declaration
 	FunctionDecl *FunctionDecl
 	MethodDecl   *MethodDecl
@@ -79,7 +80,7 @@ func (this TopLevel) Eval() string {
 }
 
 type Declaration struct {
-	*Node
+	*common.Node
 	ConstDecl *ConstDecl
 	TypeDecl  *TypeDecl
 	VarDecl   *VarDecl
@@ -96,7 +97,7 @@ func (this Declaration) Eval() string {
 }
 
 type ConstDecl struct {
-	*Node
+	*common.Node
 	ConstSpecs []*ConstSpec
 }
 
@@ -109,14 +110,17 @@ func (this ConstDecl) Eval() string {
 }
 
 type ConstSpec struct {
-	*Node
-	IdentifierList []string
+	*common.Node
+	IdentifierList *IdentifierList
 	Type           *Type
 	ExpressionList *ExpressionList
 }
 
 func (this ConstSpec) Eval() string {
-	res := strings.Join(this.IdentifierList, ",")
+	res := ""
+	if this.IdentifierList != nil {
+		res += this.IdentifierList.Eval()
+	}
 	if this.Type != nil {
 		res += " " + this.Type.Eval()
 	}
@@ -127,7 +131,7 @@ func (this ConstSpec) Eval() string {
 }
 
 type ExpressionList struct {
-	*Node
+	*common.Node
 	Expressions []*Expression
 }
 
@@ -143,7 +147,7 @@ func (this ExpressionList) Eval() string {
 }
 
 type Parameters struct {
-	*Node
+	*common.Node
 	List []*Parameter
 }
 
@@ -159,7 +163,7 @@ func (this Parameters) Eval() string {
 }
 
 type TypeDecl struct {
-	*Node
+	*common.Node
 	TypeSpecs     []*TypeSpec
 	StructType    *StructType
 	InterfaceType *InterfaceType
@@ -188,7 +192,7 @@ func (this TypeDecl) Eval() string {
 }
 
 type TypeSpec struct {
-	*Node
+	*common.Node
 	Name string
 	Type *Type
 }
@@ -198,7 +202,7 @@ func (this TypeSpec) Eval() string {
 }
 
 type FunctionDecl struct {
-	*Node
+	*common.Node
 	Name      string
 	Function  *Function
 	Signature *Signature
@@ -216,7 +220,7 @@ func (this FunctionDecl) Eval() string {
 }
 
 type Function struct {
-	*Node
+	*common.Node
 	Signature *Signature
 	Block     *Block
 }
@@ -226,7 +230,7 @@ func (this Function) Eval() string {
 }
 
 type MethodDecl struct {
-	*Node
+	*common.Node
 	Receiver  *Receiver
 	Function  *Function
 	Signature *Signature
@@ -244,7 +248,7 @@ func (this MethodDecl) Eval() string {
 }
 
 type Receiver struct {
-	*Node
+	*common.Node
 	Package           string
 	IsPointerReceiver bool
 	Method            string
@@ -261,7 +265,7 @@ func (this *Receiver) Eval() string {
 }
 
 type VarDecl struct {
-	*Node
+	*common.Node
 	VarSpecs []*VarSpec
 }
 
@@ -274,15 +278,18 @@ func (this VarDecl) Eval() string {
 }
 
 type VarSpec struct {
-	*Node
-	IdentifierList []string
+	*common.Node
+	IdentifierList *IdentifierList
 	Type           *Type
 	ExpressionList *ExpressionList
 	Statement      *Statement
 }
 
 func (this VarSpec) Eval() string {
-	res := strings.Join(this.IdentifierList, ",")
+	res := ""
+	if this.IdentifierList != nil {
+		res += this.IdentifierList.Eval()
+	}
 	if this.Type != nil {
 		res += " " + this.Type.Eval()
 	}
@@ -296,7 +303,7 @@ func (this VarSpec) Eval() string {
 }
 
 type Block struct {
-	*Node
+	*common.Node
 	Statements []*Statement
 }
 
@@ -315,11 +322,11 @@ func (this *Block) AddReturn() {
 		}
 		if last.SimpleStmt != nil {
 			this.Statements[len(this.Statements)-1] = &Statement{
-				Node: NewNodeNoCtx(),
+				Node: common.NewNodeNoCtx(&Statement{}),
 				ReturnStmt: &ReturnStmt{
-					Node: NewNodeNoCtx(),
+					Node: common.NewNodeNoCtx(&ReturnStmt{}),
 					Expressions: &ExpressionList{
-						Node:        NewNodeNoCtx(),
+						Node:        common.NewNodeNoCtx(&ExpressionList{}),
 						Expressions: []*Expression{last.SimpleStmt.Expression},
 					},
 				},
@@ -329,7 +336,7 @@ func (this *Block) AddReturn() {
 }
 
 type Statement struct {
-	*Node
+	*common.Node
 	SimpleStmt      *SimpleStmt
 	LabeledStmt     *LabeledStmt
 	GoStmt          *GoStmt
@@ -382,7 +389,7 @@ func (this Statement) Eval() string {
 }
 
 type SimpleStmt struct {
-	*Node
+	*common.Node
 	SendStmt     *SendStmt
 	Expression   *Expression
 	IncDecStmt   *IncDecStmt
@@ -408,7 +415,7 @@ func (this SimpleStmt) Eval() string {
 }
 
 type SendStmt struct {
-	*Node
+	*common.Node
 	Left  *Expression
 	Right *Expression
 }
@@ -418,7 +425,7 @@ func (this SendStmt) Eval() string {
 }
 
 type IncDecStmt struct {
-	*Node
+	*common.Node
 	Expression *Expression
 	IsInc      bool
 }
@@ -433,7 +440,7 @@ func (this IncDecStmt) Eval() string {
 }
 
 type Assignment struct {
-	*Node
+	*common.Node
 	Left  *ExpressionList
 	Op    string
 	Right *ExpressionList
@@ -444,14 +451,16 @@ func (this Assignment) Eval() string {
 }
 
 type ShortVarDecl struct {
-	*Node
-	Identifiers []string
-	Expressions *ExpressionList
+	*common.Node
+	IdentifierList *IdentifierList
+	Expressions    *ExpressionList
 }
 
 func (this ShortVarDecl) Eval() string {
 	res := ""
-	res += strings.Join(this.Identifiers, ",") + ":="
+	if this.IdentifierList != nil {
+		res += this.IdentifierList.Eval() + ":="
+	}
 	if this.Expressions != nil {
 		res += this.Expressions.Eval()
 	}
@@ -459,7 +468,7 @@ func (this ShortVarDecl) Eval() string {
 }
 
 type LabeledStmt struct {
-	*Node
+	*common.Node
 	Name      string
 	Statement *Statement
 }
@@ -469,7 +478,7 @@ func (this LabeledStmt) Eval() string {
 }
 
 type ReturnStmt struct {
-	*Node
+	*common.Node
 	Expressions *ExpressionList
 }
 
@@ -482,7 +491,7 @@ func (this ReturnStmt) Eval() string {
 }
 
 type BreakStmt struct {
-	*Node
+	*common.Node
 	Name string
 }
 
@@ -491,7 +500,7 @@ func (this BreakStmt) Eval() string {
 }
 
 type ContinueStmt struct {
-	*Node
+	*common.Node
 	Name string
 }
 
@@ -500,7 +509,7 @@ func (this ContinueStmt) Eval() string {
 }
 
 type GotoStmt struct {
-	*Node
+	*common.Node
 	Name string
 }
 
@@ -509,7 +518,7 @@ func (this GotoStmt) Eval() string {
 }
 
 type FallthroughStmt struct {
-	*Node
+	*common.Node
 }
 
 func (this FallthroughStmt) Eval() string {
@@ -517,7 +526,7 @@ func (this FallthroughStmt) Eval() string {
 }
 
 type DeferStmt struct {
-	*Node
+	*common.Node
 	Expression *Expression
 }
 
@@ -526,7 +535,7 @@ func (this DeferStmt) Eval() string {
 }
 
 type IfStmt struct {
-	*Node
+	*common.Node
 	SimpleStmt *SimpleStmt
 	Expression *Expression
 	Block      *Block
@@ -565,24 +574,24 @@ func (this *IfStmt) AddReturn() {
 func (this *IfStmt) MakeReturnClosureStatement(t *Type) *Statement {
 	this.AddReturn()
 	funcLit := &FunctionLit{
-		Node: NewNodeNoCtx(),
+		Node: common.NewNodeNoCtx(&FunctionLit{}),
 		Function: &Function{
-			Node: NewNodeNoCtx(),
+			Node: common.NewNodeNoCtx(&Function{}),
 			Signature: &Signature{
-				Node: NewNodeNoCtx(),
+				Node: common.NewNodeNoCtx(&Signature{}),
 				Parameters: &Parameters{
-					Node: NewNodeNoCtx(),
+					Node: common.NewNodeNoCtx(&Parameters{}),
 					List: []*Parameter{},
 				},
 				Result: &Result{
-					Node:  NewNodeNoCtx(),
+					Node:  common.NewNodeNoCtx(&Result{}),
 					Types: []*Type{t},
 				},
 			},
 			Block: &Block{
-				Node: NewNodeNoCtx(),
+				Node: common.NewNodeNoCtx(&Block{}),
 				Statements: []*Statement{&Statement{
-					Node:   NewNodeNoCtx(),
+					Node:   common.NewNodeNoCtx(&Statement{}),
 					IfStmt: this,
 				},
 				},
@@ -590,34 +599,34 @@ func (this *IfStmt) MakeReturnClosureStatement(t *Type) *Statement {
 		},
 	}
 	primary := &PrimaryExpr{
-		Node: NewNodeNoCtx(),
+		Node: common.NewNodeNoCtx(&PrimaryExpr{}),
 		Operand: &Operand{
-			Node: NewNodeNoCtx(),
+			Node: common.NewNodeNoCtx(&Operand{}),
 			Literal: &Literal{
-				Node:        NewNodeNoCtx(),
+				Node:        common.NewNodeNoCtx(&Literal{}),
 				FunctionLit: funcLit,
 			},
 		},
 	}
 	unary := &UnaryExpr{
-		Node: NewNodeNoCtx(),
+		Node: common.NewNodeNoCtx(&UnaryExpr{}),
 		PrimaryExpr: &PrimaryExpr{
-			Node:        NewNodeNoCtx(),
+			Node:        common.NewNodeNoCtx(&PrimaryExpr{}),
 			PrimaryExpr: primary,
 			SecondaryExpr: &SecondaryExpr{
-				Node:      NewNodeNoCtx(),
-				Arguments: &Arguments{Node: NewNodeNoCtx()},
+				Node:      common.NewNodeNoCtx(&SecondaryExpr{}),
+				Arguments: &Arguments{Node: common.NewNodeNoCtx(&Arguments{})},
 			},
 		},
 	}
 	expr := &Expression{
-		Node:      NewNodeNoCtx(),
+		Node:      common.NewNodeNoCtx(&Expression{}),
 		UnaryExpr: unary,
 	}
 	stmt := &Statement{
-		Node: NewNodeNoCtx(),
+		Node: common.NewNodeNoCtx(&Statement{}),
 		SimpleStmt: &SimpleStmt{
-			Node:       NewNodeNoCtx(),
+			Node:       common.NewNodeNoCtx(&SimpleStmt{}),
 			Expression: expr,
 		},
 	}
@@ -625,7 +634,7 @@ func (this *IfStmt) MakeReturnClosureStatement(t *Type) *Statement {
 }
 
 type SwitchStmt struct {
-	*Node
+	*common.Node
 	ExprSwitchStmt *ExprSwitchStmt
 	TypeSwitchStmt *TypeSwitchStmt
 }
@@ -641,7 +650,7 @@ func (this SwitchStmt) Eval() string {
 }
 
 type ExprSwitchStmt struct {
-	*Node
+	*common.Node
 	SimpleStmt      *SimpleStmt
 	Expression      *Expression
 	ExprCaseClauses []*ExprCaseClause
@@ -663,7 +672,7 @@ func (this ExprSwitchStmt) Eval() string {
 }
 
 type ExprCaseClause struct {
-	*Node
+	*common.Node
 	ExprSwitchCase *ExprSwitchCase
 	Statements     []*Statement
 }
@@ -681,7 +690,7 @@ func (this ExprCaseClause) Eval() string {
 }
 
 type ExprSwitchCase struct {
-	*Node
+	*common.Node
 	Expressions *ExpressionList
 	IsDefault   bool
 }
@@ -694,7 +703,7 @@ func (this ExprSwitchCase) Eval() string {
 }
 
 type TypeSwitchStmt struct {
-	*Node
+	*common.Node
 	SimpleStmt      *SimpleStmt
 	TypeSwitchGuard *TypeSwitchGuard
 	TypeCaseClauses []*TypeCaseClause
@@ -714,7 +723,7 @@ func (this TypeSwitchStmt) Eval() string {
 }
 
 type TypeSwitchGuard struct {
-	*Node
+	*common.Node
 	Name        string
 	PrimaryExpr *PrimaryExpr
 }
@@ -728,7 +737,7 @@ func (this TypeSwitchGuard) Eval() string {
 }
 
 type TypeCaseClause struct {
-	*Node
+	*common.Node
 	TypeSwitchCase *TypeSwitchCase
 	Statements     []*Statement
 }
@@ -745,7 +754,7 @@ func (this TypeCaseClause) Eval() string {
 }
 
 type TypeSwitchCase struct {
-	*Node
+	*common.Node
 	Types []*Type
 }
 
@@ -763,7 +772,7 @@ func (this TypeSwitchCase) Eval() string {
 }
 
 type SelectStmt struct {
-	*Node
+	*common.Node
 	CommClauses []*CommClause
 }
 
@@ -776,7 +785,7 @@ func (this SelectStmt) Eval() string {
 }
 
 type CommClause struct {
-	*Node
+	*common.Node
 	CommCase *CommCase
 	Block    *Block
 }
@@ -787,7 +796,7 @@ func (this CommClause) Eval() string {
 }
 
 type CommCase struct {
-	*Node
+	*common.Node
 	SendStmt  *SendStmt
 	RecvStmt  *RecvStmt
 	IsDefault bool
@@ -807,10 +816,10 @@ func (this CommCase) Eval() string {
 }
 
 type RecvStmt struct {
-	*Node
-	Expressions *ExpressionList
-	Identifiers []string
-	Expression  *Expression
+	*common.Node
+	Expressions    *ExpressionList
+	IdentifierList *IdentifierList
+	Expression     *Expression
 }
 
 func (this RecvStmt) Eval() string {
@@ -818,8 +827,10 @@ func (this RecvStmt) Eval() string {
 	if this.Expressions != nil {
 		res += this.Expressions.Eval() + "="
 	}
-	res += strings.Join(this.Identifiers, ",")
-	if len(this.Identifiers) > 0 {
+	if this.IdentifierList != nil {
+		res += this.IdentifierList.Eval()
+	}
+	if len(res) > 0 {
 		res += ":="
 	}
 	res += this.Expression.Eval()
@@ -827,7 +838,7 @@ func (this RecvStmt) Eval() string {
 }
 
 type ForStmt struct {
-	*Node
+	*common.Node
 	Expression  *Expression
 	ForClause   *ForClause
 	RangeClause *RangeClause
@@ -849,7 +860,7 @@ func (this ForStmt) Eval() string {
 }
 
 type ForClause struct {
-	*Node
+	*common.Node
 	LeftSimpleStmt  *SimpleStmt
 	Expression      *Expression
 	RightSimpleStmt *SimpleStmt
@@ -872,20 +883,22 @@ func (this ForClause) Eval() string {
 }
 
 type RangeClause struct {
-	*Node
-	Identifiers []string
-	Expression  *Expression
+	*common.Node
+	IdentifierList *IdentifierList
+	Expression     *Expression
 }
 
 func (this RangeClause) Eval() string {
 	res := ""
-	res += strings.Join(this.Identifiers, ",")
+	if this.IdentifierList != nil {
+		res += this.IdentifierList.Eval()
+	}
 	res += ":= "
 	return res + "range " + this.Expression.Eval()
 }
 
 type GoStmt struct {
-	*Node
+	*common.Node
 	Function   *Function
 	Expression *Expression
 }
@@ -901,7 +914,7 @@ func (this GoStmt) Eval() string {
 }
 
 type Type struct {
-	*Node
+	*common.Node
 	TypeName string
 	TypeLit  *TypeLit
 	Type     *Type
@@ -918,7 +931,7 @@ func (this Type) Eval() string {
 }
 
 type TypeLit struct {
-	*Node
+	*common.Node
 	ArrayType     *ArrayType
 	StructType    *StructType
 	PointerType   *PointerType
@@ -958,7 +971,7 @@ func (this TypeLit) Eval() string {
 }
 
 type ArrayType struct {
-	*Node
+	*common.Node
 	Length      *Expression
 	ElementType *Type
 }
@@ -968,7 +981,7 @@ func (this ArrayType) Eval() string {
 }
 
 type PointerType struct {
-	*Node
+	*common.Node
 	Type *Type
 }
 
@@ -977,7 +990,7 @@ func (this *PointerType) Eval() string {
 }
 
 type InterfaceType struct {
-	*Node
+	*common.Node
 	Name        string
 	MethodSpecs []*MethodSpec
 }
@@ -994,7 +1007,7 @@ func (this InterfaceType) Eval() string {
 }
 
 type SliceType struct {
-	*Node
+	*common.Node
 	Type *Type
 }
 
@@ -1003,7 +1016,7 @@ func (this SliceType) Eval() string {
 }
 
 type MapType struct {
-	*Node
+	*common.Node
 	InnerType *Type
 	OuterType *Type
 }
@@ -1013,7 +1026,7 @@ func (this MapType) Eval() string {
 }
 
 type ChannelType struct {
-	*Node
+	*common.Node
 	ChannelDecl string
 	Type        *Type
 }
@@ -1023,7 +1036,7 @@ func (this ChannelType) Eval() string {
 }
 
 type MethodSpec struct {
-	*Node
+	*common.Node
 	Name       string
 	Parameters *Parameters
 	Result     *Result
@@ -1043,7 +1056,7 @@ func (this MethodSpec) Eval() string {
 }
 
 type FunctionType struct {
-	*Node
+	*common.Node
 	Signature *Signature
 }
 
@@ -1052,7 +1065,7 @@ func (this FunctionType) Eval() string {
 }
 
 type Signature struct {
-	*Node
+	*common.Node
 	TemplateSpec *TemplateSpec
 	Parameters   *Parameters
 	Result       *Result
@@ -1070,11 +1083,11 @@ func (this Signature) Eval() string {
 }
 
 type TemplateSpec struct {
-	*Node
+	*common.Node
 	Result *Result
 }
 type Result struct {
-	*Node
+	*common.Node
 	Types []*Type
 }
 
@@ -1088,21 +1101,17 @@ func (this Result) Eval() string {
 }
 
 type Parameter struct {
-	*Node
-	Names      []string
-	Type       *Type
-	IsVariadic bool
+	*common.Node
+	IdentifierList *IdentifierList
+	Type           *Type
+	IsVariadic     bool
 }
 
 func (this Parameter) Eval() string {
 	res := ""
-	for _, spec := range this.Names {
-		res += spec + ","
+	if this.IdentifierList != nil {
+		res += this.IdentifierList.Eval() + " "
 	}
-	if len(this.Names) > 0 {
-		res = res[:len(res)-1]
-	}
-	res += " "
 	if this.IsVariadic {
 		res += "..."
 	}
@@ -1110,7 +1119,7 @@ func (this Parameter) Eval() string {
 }
 
 type Operand struct {
-	*Node
+	*common.Node
 	Literal     *Literal
 	OperandName *OperandName
 	MethodExpr  *MethodExpr
@@ -1134,7 +1143,7 @@ func (this Operand) Eval() string {
 }
 
 type Literal struct {
-	*Node
+	*common.Node
 	Basic       string
 	Composite   *CompositeLit
 	FunctionLit *FunctionLit
@@ -1151,7 +1160,7 @@ func (this Literal) Eval() string {
 }
 
 type OperandName struct {
-	*Node
+	*common.Node
 	Name string
 }
 
@@ -1160,7 +1169,7 @@ func (this OperandName) Eval() string {
 }
 
 type CompositeLit struct {
-	*Node
+	*common.Node
 	LiteralType  *LiteralType
 	TemplateSpec *TemplateSpec
 	LiteralValue *LiteralValue
@@ -1171,7 +1180,7 @@ func (this CompositeLit) Eval() string {
 }
 
 type LiteralType struct {
-	*Node
+	*common.Node
 	Struct  *StructType
 	Array   *ArrayType
 	Element *Type
@@ -1200,7 +1209,7 @@ func (this LiteralType) Eval() string {
 }
 
 type LiteralValue struct {
-	*Node
+	*common.Node
 	Elements []*KeyedElement
 }
 
@@ -1216,7 +1225,7 @@ func (this LiteralValue) Eval() string {
 }
 
 type KeyedElement struct {
-	*Node
+	*common.Node
 	Key     *Key
 	Element *Element
 }
@@ -1230,7 +1239,7 @@ func (this KeyedElement) Eval() string {
 }
 
 type Key struct {
-	*Node
+	*common.Node
 	Name         string
 	Expression   *Expression
 	LiteralValue *LiteralValue
@@ -1247,7 +1256,7 @@ func (this Key) Eval() string {
 }
 
 type Element struct {
-	*Node
+	*common.Node
 	Expression   *Expression
 	LiteralValue *LiteralValue
 }
@@ -1263,7 +1272,7 @@ func (this Element) Eval() string {
 }
 
 type StructType struct {
-	*Node
+	*common.Node
 	Name         string
 	TemplateSpec *TemplateSpec
 	Fields       []*FieldDecl
@@ -1287,8 +1296,8 @@ func (this *StructType) Eval() string {
 }
 
 type FieldDecl struct {
-	*Node
-	Identifiers        []string
+	*common.Node
+	IdentifierList     *IdentifierList
 	Type               *Type
 	Anonymous          *AnonymousField
 	Tag                string
@@ -1299,7 +1308,10 @@ func (this FieldDecl) Eval() string {
 	if this.InlineStructMethod != nil {
 		return this.InlineStructMethod.Eval()
 	}
-	res := strings.Join(this.Identifiers, ",")
+	res := ""
+	if this.IdentifierList != nil {
+		res += this.IdentifierList.Eval()
+	}
 	if this.Type != nil {
 		res += " " + this.Type.Eval()
 	}
@@ -1309,8 +1321,17 @@ func (this FieldDecl) Eval() string {
 	return res + " " + this.Tag
 }
 
+type IdentifierList struct {
+	*common.Node
+	List []string
+}
+
+func (this IdentifierList) Eval() string {
+	return strings.Join(this.List, ",")
+}
+
 type InlineStructMethod struct {
-	*Node
+	*common.Node
 	IsPointerReceiver bool
 	FunctionDecl      *FunctionDecl
 }
@@ -1320,7 +1341,7 @@ func (this InlineStructMethod) Eval() string {
 }
 
 type AnonymousField struct {
-	*Node
+	*common.Node
 	IsPointerReceiver bool
 	Type              string
 }
@@ -1334,7 +1355,7 @@ func (this *AnonymousField) Eval() string {
 }
 
 type FunctionLit struct {
-	*Node
+	*common.Node
 	Function *Function
 }
 
@@ -1343,7 +1364,7 @@ func (this FunctionLit) Eval() string {
 }
 
 type PrimaryExpr struct {
-	*Node
+	*common.Node
 	Operand       *Operand
 	Conversion    *Conversion
 	PrimaryExpr   *PrimaryExpr
@@ -1364,7 +1385,7 @@ func (this PrimaryExpr) Eval() string {
 }
 
 type SecondaryExpr struct {
-	*Node
+	*common.Node
 	Selector      string
 	Index         *Index
 	Slice         *Slice
@@ -1392,7 +1413,7 @@ func (this SecondaryExpr) Eval() string {
 }
 
 type Index struct {
-	*Node
+	*common.Node
 	Expression *Expression
 }
 
@@ -1401,7 +1422,7 @@ func (this Index) Eval() string {
 }
 
 type Slice struct {
-	*Node
+	*common.Node
 	LeftExpr   *Expression
 	MiddleExpr *Expression
 	RightExpr  *Expression
@@ -1423,7 +1444,7 @@ func (this Slice) Eval() string {
 }
 
 type TypeAssertion struct {
-	*Node
+	*common.Node
 	Type *Type
 }
 
@@ -1432,7 +1453,7 @@ func (this TypeAssertion) Eval() string {
 }
 
 type Arguments struct {
-	*Node
+	*common.Node
 	TemplateSpec *TemplateSpec
 	Expressions  *ExpressionList
 	Type         *Type
@@ -1457,7 +1478,7 @@ func (this Arguments) Eval() string {
 }
 
 type MethodExpr struct {
-	*Node
+	*common.Node
 	ReceiverType *ReceiverType
 	Name         string
 }
@@ -1467,7 +1488,7 @@ func (this MethodExpr) Eval() string {
 }
 
 type ReceiverType struct {
-	*Node
+	*common.Node
 	Type         string
 	IsPointer    bool
 	ReceiverType *ReceiverType
@@ -1486,7 +1507,7 @@ func (this *ReceiverType) Eval() string {
 }
 
 type Expression struct {
-	*Node
+	*common.Node
 	UnaryExpr       *UnaryExpr
 	LeftExpression  *Expression
 	Op              string
@@ -1501,7 +1522,7 @@ func (this Expression) Eval() string {
 }
 
 type UnaryExpr struct {
-	*Node
+	*common.Node
 	PrimaryExpr *PrimaryExpr
 	Op          string
 	UnaryExpr   *UnaryExpr
@@ -1515,7 +1536,7 @@ func (this UnaryExpr) Eval() string {
 }
 
 type Conversion struct {
-	*Node
+	*common.Node
 	Type       *Type
 	Expression *Expression
 }
@@ -1525,7 +1546,7 @@ func (this Conversion) Eval() string {
 }
 
 type Interpret struct {
-	*Node
+	*common.Node
 	Statement *Statement
 	TopLevel  *TopLevel
 }

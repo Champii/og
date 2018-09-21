@@ -5,11 +5,12 @@ import (
 	"encoding/gob"
 	"fmt"
 	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 	"strings"
 )
 
 type TemplateGenerator struct {
-	Root ast.INode
+	Root common.INode
 }
 
 func (this *TemplateGenerator) GenerateStruct(template *Template) {
@@ -92,7 +93,7 @@ func (this *TemplateGenerator) GenerateGenerics(templates *Templates) {
 		}
 	}
 }
-func RunTemplateGenerator(tree ast.INode, templates *Templates) {
+func RunTemplateGenerator(tree common.INode, templates *Templates) {
 	templateGenerator := TemplateGenerator{Root: tree}
 	templateGenerator.GenerateGenerics(templates)
 }

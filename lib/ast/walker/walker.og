@@ -3,7 +3,7 @@
 import
 	// fmt
 	reflect
-	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 
 struct AstWalker
 	type_ interface
@@ -20,8 +20,8 @@ struct AstWalker
 
 		return []reflect.Value{reflect.Zero(arg.Type())}, false
 
-	*Trigger(arg reflect.Value, parentField reflect.Value, parentNode ast.INode): reflect.Value, bool->
-		node := arg.Interface().(ast.INode)
+	*Trigger(arg reflect.Value, parentField reflect.Value, parentNode common.INode): reflect.Value, bool->
+		node := arg.Interface().(common.INode)
 
 		if node == nil
 			return reflect.Zero(arg.Type()), false
@@ -35,7 +35,7 @@ struct AstWalker
 
 		res, ok := @callDelegate("Each", arg)
 		if ok
-			node = res[0].Interface().(ast.INode)
+			node = res[0].Interface().(common.INode)
 			parentField.Set(reflect.ValueOf(node))
 
 		@callDelegate(name, arg)
@@ -43,14 +43,14 @@ struct AstWalker
 		parentField.Set(reflect.ValueOf(@Walk(node)))
 		res, ok = @callDelegate("After", arg)
 		if ok
-			node = res[0].Interface().(ast.INode)
+			node = res[0].Interface().(common.INode)
 			parentField.Set(reflect.ValueOf(node))
 
 		@callDelegate("After" + name, arg)
 
 		return reflect.ValueOf(node), true
 
-	*Walk(tree ast.INode): ast.INode ->
+	*Walk(tree common.INode): common.INode ->
 		val := reflect.ValueOf(tree).Elem()
 
 		for i := 0; i < val.NumField(); i++

@@ -1,15 +1,18 @@
 !walker
 
 import
+	os
 	strings
 	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 
 struct TemplateUsage
 	AstWalker
-	Root      ast.INode
+	File      *common.File
+	Root      common.INode
 	Templates *Templates
 
-	*computeTypes(callee ast.INode, templateSpec *ast.TemplateSpec): string ->
+	*computeTypes(callee common.INode, templateSpec *ast.TemplateSpec): string ->
 		calleeName := callee.Eval()
 
 		types := []string{}
@@ -19,11 +22,17 @@ struct TemplateUsage
 
 		template := @Templates.Get(calleeName)
 
+		if template == nil
+			err := @File.Error(callee.Line(), callee.Col(), "Unknown template name", calleeName)
+			common.Print.Error(err)
+			os.Exit(1)
+			return calleeName
+
 		template.AddUsedFor(types)
 
 		calleeName + strings.Join(types, "")
 
-	*Arguments(n ast.INode): ast.INode ->
+	*Arguments(n common.INode): common.INode ->
 		args := n.(*ast.Arguments)
 
 		if args.TemplateSpec != nil
@@ -32,7 +41,7 @@ struct TemplateUsage
 
 		n
 
-	*CompositeLit(n ast.INode): ast.INode ->
+	*CompositeLit(n common.INode): common.INode ->
 		composite := n.(*ast.CompositeLit)
 
 		if composite.TemplateSpec != nil
@@ -41,11 +50,12 @@ struct TemplateUsage
 
 		n
 
-RunTemplateUsage(tree ast.INode, templates *Templates) ->
+RunTemplateUsage(file *common.File, templates *Templates) ->
 	templateUsage := TemplateUsage
-		Root: tree
+		Root: file.Ast
+		File: file
 		Templates: templates
 
 	templateUsage.type_ = &templateUsage
 
-	templateUsage.Walk(tree)
+	templateUsage.Walk(file.Ast)

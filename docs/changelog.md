@@ -1,6 +1,10 @@
 # Changelog
 
 ## DEV: Current version
+  - Add `-s` option to show a simplified AST with only terminal nodes
+  - Errors show now the good original lines and columns
+  - Show an error when a template in unknown
+  - Colorful ast and lines/columns are shown
 
 ## v0.7.1
   - Fix `-p` that showed the non-formated output 

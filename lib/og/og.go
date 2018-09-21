@@ -2,15 +2,15 @@ package og
 
 import (
 	"fmt"
+	"github.com/champii/og/lib/common"
 	"os"
 	"os/exec"
 	"path"
 )
 
 type Og struct {
-	Config   *OgConfig
+	Config   *common.OgConfig
 	Compiler *OgCompiler
-	Printer  *Printer
 }
 
 func (this Og) Run() error {
@@ -25,12 +25,12 @@ func (this Og) Run() error {
 		return err
 	}
 	if len(this.Compiler.Files) == 0 {
-		this.Printer.NothingToDo()
+		common.Print.NothingToDo()
 		if !this.Config.Run {
 			return nil
 		}
 	}
-	if this.Config.Print || this.Config.Ast || this.Config.Blocks || this.Config.Dirty {
+	if this.Config.Print || this.Config.Ast || this.Config.SimpleAst || this.Config.Blocks || this.Config.Dirty {
 		return nil
 	}
 	if !this.Config.NoBuild {
@@ -46,7 +46,7 @@ func (this Og) Run() error {
 	return nil
 }
 func (this Og) Build() error {
-	this.Printer.Compiling(len(this.Compiler.Files))
+	common.Print.Compiling(len(this.Compiler.Files))
 	cmd := exec.Command("go", "build")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -54,7 +54,7 @@ func (this Og) Build() error {
 		return err
 	}
 	if len(this.Compiler.Files) > 0 {
-		this.Printer.Compiled(len(this.Compiler.Files))
+		common.Print.Compiled(len(this.Compiler.Files))
 	}
 	return nil
 }
@@ -64,7 +64,7 @@ func (this Og) RunBinary() error {
 		return err
 	}
 	current := path.Base(dir)
-	this.Printer.Running()
+	common.Print.Running()
 	cmd := exec.Command("./" + current)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -74,11 +74,10 @@ func (this Og) RunBinary() error {
 	cmd.Wait()
 	return nil
 }
-func NewOg(config *OgConfig) *Og {
-	printer := NewPrinter(config)
+func NewOg(config *common.OgConfig) *Og {
+	common.Print = common.NewPrinter(config)
 	return &Og{
 		Config:   config,
-		Compiler: NewOgCompiler(config, printer),
-		Printer:  printer,
+		Compiler: NewOgCompiler(config),
 	}
 }

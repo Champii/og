@@ -2,15 +2,16 @@ package walker
 
 import (
 	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 )
 
 type TemplateParse struct {
 	AstWalker
-	Root      ast.INode
+	Root      common.INode
 	Templates *Templates
 }
 
-func (this *TemplateParse) StructType(n ast.INode) ast.INode {
+func (this *TemplateParse) StructType(n common.INode) common.INode {
 	structType := n.(*ast.StructType)
 	if structType.TemplateSpec != nil {
 		types := []string{}
@@ -21,7 +22,7 @@ func (this *TemplateParse) StructType(n ast.INode) ast.INode {
 	}
 	return n
 }
-func (this *TemplateParse) Signature(n ast.INode) ast.INode {
+func (this *TemplateParse) Signature(n common.INode) common.INode {
 	sig := n.(*ast.Signature)
 	if sig.TemplateSpec != nil {
 		if f, ok := sig.GetParent().(*ast.Function); ok {
@@ -35,7 +36,7 @@ func (this *TemplateParse) Signature(n ast.INode) ast.INode {
 	}
 	return n
 }
-func RunTemplateParse(tree ast.INode, templates *Templates) {
+func RunTemplateParse(tree common.INode, templates *Templates) {
 	templateParse := TemplateParse{
 		Root:      tree,
 		Templates: templates,

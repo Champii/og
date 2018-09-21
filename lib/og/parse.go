@@ -2,37 +2,14 @@ package og
 
 import (
 	"errors"
-	"fmt"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	tm "github.com/buger/goterm"
 	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/ast/walker"
 	"github.com/champii/og/lib/common"
 	"github.com/champii/og/lib/translator"
 	"github.com/champii/og/parser"
-	"github.com/fatih/color"
 	"os"
-	"strconv"
 	"strings"
-)
-
-var (
-	yellow = color.New(color.FgHiYellow).SprintFunc()
-)
-var (
-	red = color.New(color.FgHiRed).SprintFunc()
-)
-var (
-	cyan = color.New(color.FgCyan).SprintFunc()
-)
-var (
-	magenta = color.New(color.Bold, color.FgHiMagenta).SprintFunc()
-)
-var (
-	blue = color.New(color.Bold, color.FgHiBlue).SprintfFunc()
-)
-var (
-	green = color.New(color.FgHiGreen).SprintfFunc()
 )
 
 type ErrorHandler struct {
@@ -53,18 +30,8 @@ type ErrorListener struct {
 }
 
 func (this *ErrorListener) SyntaxError(rec antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, e antlr.RecognitionException) {
-	for i := 0; i < 8; i++ {
-		tm.Println("                                                                          ")
-	}
-	tm.MoveCursorUp(9)
-	tm.Flush()
-	fileInfo := fmt.Sprintf("%s (%s:%s)", green(this.filePath), yellow(line), yellow(column))
-	badToken := offendingSymbol.(antlr.Token).GetText()
-	fmt.Printf("%s: %s '%s'\n", fileInfo, red("Unexpected"), magenta(badToken))
-	badLine := this.source[line-1]
-	badLine = cyan(badLine[:column]) + magenta(badToken) + cyan(badLine[column+len(badToken):])
-	fmt.Println(badLine)
-	fmt.Print(blue("%"+strconv.Itoa(column+1)+"s\n\n", "^"))
+	err := common.NewError(this.filePath, this.source, line, column, "Unexpected", offendingSymbol.(antlr.Token).GetText())
+	common.Print.Error(err)
 }
 func NewErrorListener(filePath, source string) *ErrorListener {
 	return &ErrorListener{
@@ -75,7 +42,7 @@ func NewErrorListener(filePath, source string) *ErrorListener {
 }
 
 type OgParser struct {
-	Config *OgConfig
+	Config *common.OgConfig
 }
 
 func (this *OgParser) parserInit(file *common.File) *parser.OgParser {
@@ -97,9 +64,10 @@ func (this *OgParser) Parse(file *common.File) error {
 		return errors.New("Cannot parse file: " + file.Path)
 	}
 	t := new(translator.OgVisitor)
+	t.File = file
 	tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
-	if this.Config.Ast {
-		walker.Print(tree)
+	if this.Config.Ast || this.Config.SimpleAst {
+		walker.Print(tree, this.Config.SimpleAst)
 	}
 	file.Ast = tree
 	return nil
@@ -118,6 +86,6 @@ func (this *OgParser) ParseInterpret(file *common.File) error {
 	file.Ast = t.VisitInterp(res.(*parser.InterpContext), t).(*ast.Interpret)
 	return nil
 }
-func NewOgParser(config *OgConfig) *OgParser {
+func NewOgParser(config *common.OgConfig) *OgParser {
 	return &OgParser{Config: config}
 }

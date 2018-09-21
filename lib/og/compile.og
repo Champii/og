@@ -10,10 +10,9 @@ import
   "github.com/champii/og/lib/ast/walker"
 
 struct OgCompiler
-  Config   *OgConfig
+  Config   *common.OgConfig
   Parser   *OgParser
   Preproc  *OgPreproc
-  Printer  *Printer
   Files    []*common.File
 
   *Compile: error ->
@@ -32,7 +31,7 @@ struct OgCompiler
     if len(@Files) < poolSize
       poolSize = len(@Files)
 
-    pool := NewPool(poolSize, len(@Files), @Printer, @ParseFile)
+    pool := NewPool(poolSize, len(@Files), @ParseFile)
 
     for _, file in @Files
       pool.Queue(file)
@@ -116,10 +115,9 @@ struct OgCompiler
 
     strings.Replace(path.Join(@Config.OutPath, filePath), ".og", ".go", 1)
 
-NewOgCompiler(config *OgConfig, printer *Printer): *OgCompiler ->
+NewOgCompiler(config *common.OgConfig): *OgCompiler ->
   &OgCompiler
     Config:  config
-    Printer: printer
     Parser:  NewOgParser(config)
     Preproc: NewOgPreproc()
     Files:   []*common.File{}

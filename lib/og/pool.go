@@ -37,7 +37,6 @@ type Pool struct {
 	Finished int
 	In       chan *common.File
 	Out      chan error
-	Printer  *Printer
 }
 
 func (this *Pool) Queue(job *common.File) {
@@ -48,8 +47,8 @@ func (this *Pool) Run() error {
 		go worker.Run()
 	}
 	close(this.In)
-	this.Printer.CursorHide()
-	defer this.Printer.CursorShow()
+	common.Print.CursorHide()
+	defer common.Print.CursorShow()
 	ticker := time.NewTicker(100 * time.Millisecond)
 	go func() {
 		for true {
@@ -77,16 +76,15 @@ func (this Pool) Print() {
 			workerIds = append(workerIds, i+1)
 		}
 	}
-	this.Printer.CompileList(files, workerIds, len(this.Workers), this.Finished, this.Total)
+	common.Print.CompileList(files, workerIds, len(this.Workers), this.Finished, this.Total)
 }
-func NewPool(size int, nbJobs int, printer *Printer, cb WorkerCallback) *Pool {
+func NewPool(size int, nbJobs int, cb WorkerCallback) *Pool {
 	pool := &Pool{
 		Size:     size,
 		Total:    nbJobs,
 		Finished: 0,
 		In:       make(chan *common.File, nbJobs),
 		Out:      make(chan error, nbJobs),
-		Printer:  printer,
 	}
 	for i := 0; i < pool.Size; i++ {
 		pool.Workers = append(pool.Workers, NewWorker(pool.In, pool.Out, cb))

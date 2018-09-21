@@ -36,7 +36,6 @@ struct Pool
   Finished int
   In chan *common.File
   Out chan error
-  Printer *Printer
 
   Queue(job *common.File) ->
     @In <- job
@@ -47,8 +46,8 @@ struct Pool
 
     close(@In)
 
-    @Printer.CursorHide()
-    defer @Printer.CursorShow()
+    common.Print.CursorHide()
+    defer common.Print.CursorShow()
 
     ticker := time.NewTicker(100 * time.Millisecond)
     go ->
@@ -77,35 +76,15 @@ struct Pool
         files = append(files, worker.Processing.Path)
         workerIds = append(workerIds, i + 1)
 
-    @Printer.CompileList(files, workerIds, len(@Workers), @Finished, @Total)
+    common.Print.CompileList(files, workerIds, len(@Workers), @Finished, @Total)
 
-    // spinners := []string{"|", "/", "-", "\\"}
-    // tm.Print("                                          \r")
-    // tm.Println(spinners[@spinner], tm.Color("[", tm.RED), tm.Color(strconv.Itoa(@Finished), tm.YELLOW), tm.Color("/", tm.RED), tm.Color(strconv.Itoa(@Total), tm.GREEN), tm.Color("]", tm.RED), tm.Color("Building sources", tm.YELLOW))
-
-    // working := 0
-
-    // for i, worker in @Workers
-    // 	tm.Print("                                          \r")
-    // 	if worker.Processing != "."
-    // 		working++
-    // 		tm.Println(tm.Color(strconv.Itoa(i + 1), tm.CYAN), tm.Color(":", tm.RED), tm.Color(worker.Processing, tm.MAGENTA))
-
-    // for working < len(@Workers)
-    // 	tm.Print("                                          \n")
-    // 	working++
-
-    // tm.MoveCursorUp(len(@Workers)+2)
-    // tm.Flush()
-
-NewPool(size int, nbJobs int, printer *Printer, cb WorkerCallback): *Pool ->
+NewPool(size int, nbJobs int, cb WorkerCallback): *Pool ->
   pool := &Pool
     Size: size
     Total: nbJobs
     Finished: 0
     In: make(chan *common.File, nbJobs)
     Out: make(chan error, nbJobs)
-    Printer: printer
 
   for i := 0; i < pool.Size; i++
     pool.Workers = append(pool.Workers, NewWorker(pool.In, pool.Out, cb))

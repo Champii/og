@@ -1,4 +1,4 @@
-!og
+!common
 
 struct OgConfig
   Blocks      bool
@@ -6,6 +6,7 @@ struct OgConfig
   Print       bool
   Force       bool
   Ast         bool
+  SimpleAst   bool
   Quiet       bool
   Interpreter bool
   Paths       []string // from command line

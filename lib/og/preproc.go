@@ -17,17 +17,18 @@ func (this OgPreproc) indentCount(str string) int {
 	return 0
 }
 func (this *OgPreproc) Run(file *common.File) {
-	rawLines := strings.Split(string(file.Source), "\n")
-	lines := []string{}
-	for _, v := range rawLines {
-		if len(v) > 0 {
-			lines = append(lines, v)
-		}
-	}
+	lineCount := 0
+	lines := strings.Split(string(file.Source), "\n")
 	res := []string{}
 	lastIndent := 0
 	indentSize := 0
+	file.LineMapping = []int{0}
 	for i := range lines {
+		lineCount++
+		if len(lines[i]) == 0 {
+			continue
+		}
+		file.LineMapping = append(file.LineMapping, lineCount)
 		indent := this.indentCount(lines[i])
 		token := "=>"
 		eqIf := "= if "
@@ -52,6 +53,7 @@ func (this *OgPreproc) Run(file *common.File) {
 			indentBuff := lastIndent - indent
 			for indentBuff > 0 {
 				res = append(res, "}")
+				file.LineMapping = append(file.LineMapping, lineCount)
 				indentBuff -= indentSize
 			}
 		}
@@ -60,6 +62,7 @@ func (this *OgPreproc) Run(file *common.File) {
 	}
 	for lastIndent > 0 {
 		res = append(res, "}")
+		file.LineMapping = append(file.LineMapping, lineCount)
 		lastIndent -= indentSize
 	}
 	file.Output = strings.Join(res, "\n") + "\n"

@@ -13,24 +13,23 @@ struct OgPreproc
     0
 
   Run(file *common.File) ->
-    // lineCount = 0
-    rawLines := strings.Split(string(file.Source), "\n")
-
-    lines := []string{}
-
-    for _, v in rawLines
-      if len(v) > 0
-        lines = append(lines, v)
+    lineCount := 0
+    lines := strings.Split(string(file.Source), "\n")
 
     res := []string{}
 
     lastIndent := 0
     indentSize := 0
 
+    file.LineMapping = []int{0}
+
     for i in lines
-      // if len(lines[i]) == 0
-      //   res = append(res, ";")
-      //   continue
+      lineCount++
+      if len(lines[i]) == 0
+        continue
+
+      file.LineMapping = append(file.LineMapping, lineCount)
+
       indent := @indentCount(lines[i])
 
       token := "=>"
@@ -63,6 +62,7 @@ struct OgPreproc
 
         for indentBuff > 0
           res = append(res, "}")
+          file.LineMapping = append(file.LineMapping, lineCount)
           indentBuff -= indentSize
 
       lastIndent = indent
@@ -72,6 +72,7 @@ struct OgPreproc
 
     for lastIndent > 0
       res = append(res, "}")
+      file.LineMapping = append(file.LineMapping, lineCount)
       lastIndent -= indentSize
 
     file.Output = strings.Join(res, "\n") + "\n"

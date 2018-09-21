@@ -3,21 +3,22 @@ package common
 import (
 	"errors"
 	"fmt"
-	"github.com/champii/og/lib/ast"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 type File struct {
-	Path    string
-	OutPath string
-	Name    string
-	Ast     ast.INode
-	Output  string
-	Source  []byte
+	Path        string
+	OutPath     string
+	Name        string
+	Ast         INode
+	Output      string
+	LineMapping []int
+	Source      []byte
 }
 
 func (this File) Write() {
@@ -40,6 +41,10 @@ func (this *File) Format() error {
 	}
 	this.Output = string(final)
 	return nil
+}
+func (this *File) Error(line, column int, msg, msg2 string) *Error {
+	source := strings.Split(string(this.Source), "\n")
+	return NewError(this.Path, source, line, column, msg, msg2)
 }
 func NewFile(filePath, outPath string) *File {
 	name := path.Base(filePath)

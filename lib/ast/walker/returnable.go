@@ -2,14 +2,15 @@ package walker
 
 import (
 	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 )
 
 type Returnable struct {
 	AstWalker
-	Root ast.INode
+	Root common.INode
 }
 
-func (this *Returnable) VarDecl(n ast.INode) ast.INode {
+func (this *Returnable) VarDecl(n common.INode) common.INode {
 	varDecl := n.(*ast.VarDecl)
 	for _, varSpec := range varDecl.VarSpecs {
 		statement := varSpec.Statement
@@ -28,7 +29,7 @@ func (this *Returnable) VarDecl(n ast.INode) ast.INode {
 	}
 	return varDecl
 }
-func (this *Returnable) Function(n ast.INode) ast.INode {
+func (this *Returnable) Function(n common.INode) common.INode {
 	function := n.(*ast.Function)
 	sig := function.Signature
 	if sig == nil {
@@ -52,7 +53,7 @@ func (this *Returnable) Function(n ast.INode) ast.INode {
 	}
 	return n
 }
-func RunReturnable(tree ast.INode) ast.INode {
+func RunReturnable(tree common.INode) common.INode {
 	returnable := Returnable{Root: tree}
 	returnable.type_ = &returnable
 	return returnable.Walk(tree)

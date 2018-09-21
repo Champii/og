@@ -11,10 +11,9 @@ import (
 )
 
 type OgCompiler struct {
-	Config  *OgConfig
+	Config  *common.OgConfig
 	Parser  *OgParser
 	Preproc *OgPreproc
-	Printer *Printer
 	Files   []*common.File
 }
 
@@ -34,7 +33,7 @@ func (this *OgCompiler) Compile() error {
 	if len(this.Files) < poolSize {
 		poolSize = len(this.Files)
 	}
-	pool := NewPool(poolSize, len(this.Files), this.Printer, this.ParseFile)
+	pool := NewPool(poolSize, len(this.Files), this.ParseFile)
 	for _, file := range this.Files {
 		pool.Queue(file)
 	}
@@ -116,10 +115,9 @@ func (this OgCompiler) getNewPath(filePath string) string {
 	}
 	return strings.Replace(path.Join(this.Config.OutPath, filePath), ".og", ".go", 1)
 }
-func NewOgCompiler(config *OgConfig, printer *Printer) *OgCompiler {
+func NewOgCompiler(config *common.OgConfig) *OgCompiler {
 	return &OgCompiler{
 		Config:  config,
-		Printer: printer,
 		Parser:  NewOgParser(config),
 		Preproc: NewOgPreproc(),
 		Files:   []*common.File{},

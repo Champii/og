@@ -2,13 +2,13 @@
 
 import
 	"encoding/gob"
-	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 
 struct GobRegister
 	AstWalker
-	*Each(n ast.INode) -> gob.Register(n)
+	*Each(n common.INode) -> gob.Register(n)
 
-RunGobRegister(tree ast.INode) ->
+RunGobRegister(tree common.INode) ->
 	p := GobRegister{}
 	gob.Register(tree)
 	p.type_ = &p

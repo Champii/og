@@ -14,7 +14,7 @@ func (this *Desugar) Run(files []*common.File) {
 		RunTemplateParse(file.Ast, this.Templates)
 	}
 	for _, file := range files {
-		RunTemplateUsage(file.Ast, this.Templates)
+		RunTemplateUsage(file, this.Templates)
 		RunTemplateGenerator(file.Ast, this.Templates)
 		this.Templates.ResetUsedFor()
 	}

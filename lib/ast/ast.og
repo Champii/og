@@ -2,9 +2,10 @@
 
 import
 	strings
+	"github.com/champii/og/lib/common"
 
 struct SourceFile
-	*Node
+	*common.Node
 	Package  *Package
 	Import   *Import
 	TopLevels []*TopLevel
@@ -17,12 +18,12 @@ struct SourceFile
 		res
 
 struct Package
-	*Node
+	*common.Node
 	Name string
 	Eval: string -> "package " + @Name
 
 struct Import
-	*Node
+	*common.Node
 	Items []*ImportSpec
 	Eval: string ->
 		res := "import (\n"
@@ -31,7 +32,7 @@ struct Import
 		res + "\n)\n"
 
 struct ImportSpec
-	*Node
+	*common.Node
 	Path  string
 	Alias string
 	Eval: string ->
@@ -39,7 +40,7 @@ struct ImportSpec
 		else               => @Path
 
 struct TopLevel
-	*Node
+	*common.Node
 	Declaration  *Declaration
 	FunctionDecl *FunctionDecl
 	MethodDecl   *MethodDecl
@@ -49,7 +50,7 @@ struct TopLevel
 		else                         => @MethodDecl.Eval()
 
 struct Declaration
-	*Node
+	*common.Node
 	ConstDecl *ConstDecl
 	TypeDecl  *TypeDecl
 	VarDecl   *VarDecl
@@ -59,7 +60,7 @@ struct Declaration
 		else                      => @VarDecl.Eval()
 
 struct ConstDecl
-	*Node
+	*common.Node
 	ConstSpecs []*ConstSpec
 	Eval: string ->
 		res := "const ("
@@ -68,18 +69,19 @@ struct ConstDecl
 		res + ")"
 
 struct ConstSpec
-	*Node
-	IdentifierList []string
+	*common.Node
+	IdentifierList *IdentifierList
 	Type           *Type
 	ExpressionList *ExpressionList
 	Eval: string ->
-		res := strings.Join(@IdentifierList, ",")
+		res := ""
+		if @IdentifierList != nil => res += @IdentifierList.Eval()
 		if @Type           != nil => res += " " + @Type.Eval()
 		if @ExpressionList != nil => res += " = " + @ExpressionList.Eval()
 		res
 
 struct ExpressionList
-	*Node
+	*common.Node
 	Expressions []*Expression
 	Eval: string ->
 		res := ""
@@ -90,7 +92,7 @@ struct ExpressionList
 		res
 
 struct Parameters
-	*Node
+	*common.Node
 	List []*Parameter
 	Eval: string ->
 		res := "("
@@ -101,7 +103,7 @@ struct Parameters
 		res + ")"
 
 struct TypeDecl
-	*Node
+	*common.Node
 	TypeSpecs     []*TypeSpec
 	StructType    *StructType
 	InterfaceType *InterfaceType
@@ -120,13 +122,13 @@ struct TypeDecl
 		res
 
 struct TypeSpec
-	*Node
+	*common.Node
 	Name string
 	Type *Type
 	Eval: string -> @Name + " " + @Type.Eval()
 
 struct FunctionDecl
-	*Node
+	*common.Node
 	Name      string
 	Function  *Function
 	Signature *Signature
@@ -137,13 +139,13 @@ struct FunctionDecl
 		res
 
 struct Function
-	*Node
+	*common.Node
 	Signature *Signature
 	Block     *Block
 	Eval: string ->  @Signature.Eval() + @Block.Eval()
 
 struct MethodDecl
-	*Node
+	*common.Node
 	Receiver  *Receiver
 	Function  *Function
 	Signature *Signature
@@ -154,7 +156,7 @@ struct MethodDecl
 		res
 
 struct Receiver
-	*Node
+	*common.Node
 	Package           string
 	IsPointerReceiver bool
 	Method            string
@@ -166,7 +168,7 @@ struct Receiver
 		res
 
 struct VarDecl
-	*Node
+	*common.Node
 	VarSpecs []*VarSpec
 	Eval: string ->
 		res := "var ("
@@ -175,20 +177,21 @@ struct VarDecl
 		res + ")"
 
 struct VarSpec
-	*Node
-	IdentifierList []string
+	*common.Node
+	IdentifierList *IdentifierList
 	Type           *Type
 	ExpressionList *ExpressionList
 	Statement      *Statement
 	Eval: string ->
-		res := strings.Join(@IdentifierList, ",")
+		res := ""
+		if @IdentifierList != nil => res += @IdentifierList.Eval()
 		if @Type           != nil => res += " " + @Type.Eval()
 		if @ExpressionList != nil => res += "=" + @ExpressionList.Eval()
 		if @Statement      != nil => res += "=" + @Statement.Eval()
 		res
 
 struct Block
-	*Node
+	*common.Node
 	Statements []*Statement
 	Eval: string ->
 		res := "{\n"
@@ -204,16 +207,16 @@ struct Block
 				last.IfStmt.AddReturn()
 			if last.SimpleStmt != nil
 				@Statements[len(@Statements)-1] = &Statement
-					Node: NewNodeNoCtx()
+					Node: common.NewNodeNoCtx(&Statement{})
 					ReturnStmt: &ReturnStmt
-						Node: NewNodeNoCtx()
+						Node: common.NewNodeNoCtx(&ReturnStmt{})
 						Expressions: &ExpressionList
-							Node: NewNodeNoCtx()
+							Node: common.NewNodeNoCtx(&ExpressionList{})
 							Expressions: []*Expression{last.SimpleStmt.Expression}
 
 
 struct Statement
-	*Node
+	*common.Node
 	SimpleStmt      *SimpleStmt
 	LabeledStmt     *LabeledStmt
 	GoStmt          *GoStmt
@@ -247,7 +250,7 @@ struct Statement
 		else                            => @Declaration.Eval()
 
 struct SimpleStmt
-	*Node
+	*common.Node
 	SendStmt       *SendStmt
 	Expression     *Expression
 	IncDecStmt     *IncDecStmt
@@ -263,13 +266,13 @@ struct SimpleStmt
 		else                         => "\n"
 
 struct SendStmt
-	*Node
+	*common.Node
 	Left  *Expression
 	Right *Expression
 	Eval: string -> @Left.Eval() + "<-" + @Right.Eval()
 
 struct IncDecStmt
-	*Node
+	*common.Node
 	Expression *Expression
 	IsInc      bool
 	Eval: string ->
@@ -278,32 +281,32 @@ struct IncDecStmt
 		else      => res + "--"
 
 struct Assignment
-	*Node
+	*common.Node
 	Left  *ExpressionList
 	Op    string
 	Right *ExpressionList
 	Eval: string -> @Left.Eval() + @Op + @Right.Eval()
 
 struct ShortVarDecl
-	*Node
-	Identifiers []string
+	*common.Node
+	IdentifierList *IdentifierList
 	Expressions *ExpressionList
 	// Statement   *Statement
 	Eval: string ->
 		res := ""
-		res += strings.Join(@Identifiers, ",") + ":="
+		if @IdentifierList != nil => res += @IdentifierList.Eval() + ":="
 		if @Expressions != nil => res += @Expressions.Eval()
 		// if @Statement   != nil => res += @Statement.Eval()
 		res
 
 struct LabeledStmt
-	*Node
+	*common.Node
 	Name      string
 	Statement *Statement
 	Eval: string -> @Name + ": " + @Statement.Eval()
 
 struct ReturnStmt
-	*Node
+	*common.Node
 	Expressions *ExpressionList
 	Eval: string ->
 		res := "return "
@@ -311,31 +314,31 @@ struct ReturnStmt
 		res
 
 struct BreakStmt
-	*Node
+	*common.Node
 	Name string
 	Eval: string -> "break " + @Name
 
 struct ContinueStmt
-	*Node
+	*common.Node
 	Name string
 	Eval: string -> "continue " + @Name
 
 struct GotoStmt
-	*Node
+	*common.Node
 	Name string
 	Eval: string -> "goto " + @Name
 
 struct FallthroughStmt
-	*Node
+	*common.Node
 	Eval: string -> "fallthrough"
 
 struct DeferStmt
-	*Node
+	*common.Node
 	Expression *Expression
 	Eval: string -> "defer " + @Expression.Eval()
 
 struct IfStmt
-	*Node
+	*common.Node
 	SimpleStmt *SimpleStmt
 	Expression *Expression
 	Block      *Block
@@ -360,60 +363,57 @@ struct IfStmt
 
 		/* FIXME: Problem with large nested struct decl */
 		funcLit := &FunctionLit
-			Node: NewNodeNoCtx()
+			Node: common.NewNodeNoCtx(&FunctionLit{})
 			Function: &Function
-				Node: NewNodeNoCtx()
+				Node: common.NewNodeNoCtx(&Function{})
 				Signature: &Signature
-					Node: NewNodeNoCtx()
+					Node: common.NewNodeNoCtx(&Signature{})
 					Parameters: &Parameters
-						Node: NewNodeNoCtx()
+						Node: common.NewNodeNoCtx(&Parameters{})
 						List: []*Parameter{}
 					Result: &Result
-						Node: NewNodeNoCtx()
+						Node: common.NewNodeNoCtx(&Result{})
 						Types: []*Type{t}
 				Block: &Block
-					Node: NewNodeNoCtx()
+					Node: common.NewNodeNoCtx(&Block{})
 					Statements: []*Statement
 						&Statement
-							Node: NewNodeNoCtx()
+							Node: common.NewNodeNoCtx(&Statement{})
 							IfStmt: @
 
 		primary := &PrimaryExpr
-			Node: NewNodeNoCtx()
+			Node: common.NewNodeNoCtx(&PrimaryExpr{})
 			Operand: &Operand
-				Node: NewNodeNoCtx()
+				Node: common.NewNodeNoCtx(&Operand{})
 				Literal: &Literal
-					Node: NewNodeNoCtx()
+					Node: common.NewNodeNoCtx(&Literal{})
 					FunctionLit: funcLit
 
 		unary := &UnaryExpr
-			Node: NewNodeNoCtx()
+			Node: common.NewNodeNoCtx(&UnaryExpr{})
 			PrimaryExpr: &PrimaryExpr
-				Node: NewNodeNoCtx()
+				Node: common.NewNodeNoCtx(&PrimaryExpr{})
 				PrimaryExpr: primary
 				SecondaryExpr: &SecondaryExpr
-					Node: NewNodeNoCtx()
+					Node: common.NewNodeNoCtx(&SecondaryExpr{})
 					Arguments: &Arguments
-						Node: NewNodeNoCtx()
+						Node: common.NewNodeNoCtx(&Arguments{})
 
 		expr := &Expression
-			Node: NewNodeNoCtx()
+			Node: common.NewNodeNoCtx(&Expression{})
 			UnaryExpr: unary
 
 		stmt := &Statement
-			Node: NewNodeNoCtx()
+			Node: common.NewNodeNoCtx(&Statement{})
 			SimpleStmt: &SimpleStmt
-				Node: NewNodeNoCtx()
+				Node: common.NewNodeNoCtx(&SimpleStmt{})
 				Expression: expr
 
 		return stmt
-		/* TODO: Fixme: without return the parser think this is `@AddReturn() & Statement` */
-		/* return &Statement */
-		// Node: NewNodeNoCtx()
 
 
 struct SwitchStmt
-	*Node
+	*common.Node
 	ExprSwitchStmt *ExprSwitchStmt
 	TypeSwitchStmt *TypeSwitchStmt
 	Eval: string ->
@@ -422,7 +422,7 @@ struct SwitchStmt
 		""
 
 struct ExprSwitchStmt
-	*Node
+	*common.Node
 	SimpleStmt      *SimpleStmt
 	Expression      *Expression
 	ExprCaseClauses []*ExprCaseClause
@@ -436,7 +436,7 @@ struct ExprSwitchStmt
 		res + "}"
 
 struct ExprCaseClause
-	*Node
+	*common.Node
 	ExprSwitchCase *ExprSwitchCase
 	Statements     []*Statement
 	Eval: string ->
@@ -449,7 +449,7 @@ struct ExprCaseClause
 		res
 
 struct ExprSwitchCase
-	*Node
+	*common.Node
 	Expressions *ExpressionList
 	IsDefault   bool
 	Eval: string ->
@@ -457,7 +457,7 @@ struct ExprSwitchCase
 		"case " + @Expressions.Eval()
 
 struct TypeSwitchStmt
-	*Node
+	*common.Node
 	SimpleStmt       *SimpleStmt
 	TypeSwitchGuard  *TypeSwitchGuard
 	TypeCaseClauses  []*TypeCaseClause
@@ -471,7 +471,7 @@ struct TypeSwitchStmt
 		res + "}"
 
 struct TypeSwitchGuard
-	*Node
+	*common.Node
 	Name        string
 	PrimaryExpr *PrimaryExpr
 	Eval: string ->
@@ -480,7 +480,7 @@ struct TypeSwitchGuard
 		res + @PrimaryExpr.Eval() + ".(type)"
 
 struct TypeCaseClause
-	*Node
+	*common.Node
 	TypeSwitchCase *TypeSwitchCase
 	Statements     []*Statement
 	Eval: string ->
@@ -492,7 +492,7 @@ struct TypeCaseClause
 		res
 
 struct TypeSwitchCase
-	*Node
+	*common.Node
 	Types []*Type
 	Eval: string ->
 		res := ""
@@ -504,7 +504,7 @@ struct TypeSwitchCase
 		res
 
 struct SelectStmt
-	*Node
+	*common.Node
 	CommClauses []*CommClause
 	Eval: string ->
 		res := "select {\n"
@@ -513,7 +513,7 @@ struct SelectStmt
 		res + "}"
 
 struct CommClause
-	*Node
+	*common.Node
 	CommCase *CommCase
 	Block *Block
 	Eval: string ->
@@ -521,7 +521,7 @@ struct CommClause
 		@CommCase.Eval() + ":" + block[1:len(block)-1]
 
 struct CommCase
-	*Node
+	*common.Node
 	SendStmt *SendStmt
 	RecvStmt *RecvStmt
 	IsDefault bool
@@ -532,20 +532,20 @@ struct CommCase
 		""
 
 struct RecvStmt
-	*Node
+	*common.Node
 	Expressions *ExpressionList
-	Identifiers []string
+	IdentifierList *IdentifierList
 	Expression  *Expression
 	Eval: string ->
 		res := ""
 		if @Expressions != nil => res += @Expressions.Eval() + "="
-		res += strings.Join(@Identifiers, ",")
-		if len(@Identifiers) > 0 => res += ":="
+		if @IdentifierList != nil => res += @IdentifierList.Eval()
+		if len(res) > 0 => res += ":="
 		res += @Expression.Eval()
 		res
 
 struct ForStmt
-	*Node
+	*common.Node
 	Expression  *Expression
 	ForClause   *ForClause
 	RangeClause *RangeClause
@@ -558,7 +558,7 @@ struct ForStmt
 		res + @Block.Eval()
 
 struct ForClause
-	*Node
+	*common.Node
 	LeftSimpleStmt  *SimpleStmt
 	Expression      *Expression
 	RightSimpleStmt *SimpleStmt
@@ -572,19 +572,19 @@ struct ForClause
 		res
 
 struct RangeClause
-	*Node
+	*common.Node
 	// Expressions *ExpressionList
-	Identifiers []string
+	IdentifierList *IdentifierList
 	Expression  *Expression
 	Eval: string ->
 		res := ""
 		// if @Expressions != nil => res += @Expressions.Eval()
-		res += strings.Join(@Identifiers, ",")
+		if @IdentifierList != nil => res += @IdentifierList.Eval()
 		res += ":= "
 		res + "range " +  @Expression.Eval()
 
 struct GoStmt
-	*Node
+	*common.Node
 	Function   *Function
 	Expression *Expression
 	Eval: string ->
@@ -593,7 +593,7 @@ struct GoStmt
 		""
 
 struct Type
-	*Node
+	*common.Node
 	TypeName string
 	TypeLit  *TypeLit
 	Type     *Type
@@ -603,7 +603,7 @@ struct Type
 		@TypeName
 
 struct TypeLit
-	*Node
+	*common.Node
 	ArrayType     *ArrayType
 	StructType    *StructType
 	PointerType   *PointerType
@@ -624,18 +624,18 @@ struct TypeLit
 		""
 
 struct ArrayType
-	*Node
+	*common.Node
 	Length      *Expression
 	ElementType *Type
 	Eval: string -> "[" + @Length.Eval() + "]" + @ElementType.Eval()
 
 struct PointerType
-	*Node
+	*common.Node
 	Type *Type
 	Eval: string -> "*" + @Type.Eval()
 
 struct InterfaceType
-	*Node
+	*common.Node
 	Name string
 	MethodSpecs []*MethodSpec
 	Eval: string ->
@@ -647,24 +647,24 @@ struct InterfaceType
 		@Name + " interface {" + res  + "}"
 
 struct SliceType
-	*Node
+	*common.Node
 	Type *Type
 	Eval: string -> "[]" + @Type.Eval()
 
 struct MapType
-	*Node
+	*common.Node
 	InnerType *Type
 	OuterType *Type
 	Eval: string -> "map[" + @InnerType.Eval() + "]" + @OuterType.Eval()
 
 struct ChannelType
-	*Node
+	*common.Node
 	ChannelDecl string
 	Type        *Type
 	Eval: string -> @ChannelDecl + " " + @Type.Eval()
 
 struct MethodSpec
-	*Node
+	*common.Node
 	Name string
 	Parameters *Parameters
 	Result     *Result
@@ -677,12 +677,12 @@ struct MethodSpec
 		res
 
 struct FunctionType
-	*Node
+	*common.Node
 	Signature *Signature
 	Eval: string -> "func " + @Signature.Eval()
 
 struct Signature
-	*Node
+	*common.Node
 	TemplateSpec *TemplateSpec
 	Parameters   *Parameters
 	Result       *Result
@@ -693,11 +693,11 @@ struct Signature
 		res
 
 struct TemplateSpec
-	*Node
+	*common.Node
 	Result *Result
 
 struct Result
-	*Node
+	*common.Node
 	Types []*Type
 	Eval: string ->
 		res := "("
@@ -707,22 +707,18 @@ struct Result
 		res
 
 struct Parameter
-	*Node
-	Names      []string
+	*common.Node
+	IdentifierList *IdentifierList
 	Type       *Type
 	IsVariadic bool
 	Eval: string ->
 		res := ""
-		for _, spec in @Names
-			res += spec + ","
-		if len(@Names) > 0
-			res = res[:len(res)-1]
-		res += " "
+		if @IdentifierList != nil => res += @IdentifierList.Eval() + " "
 		if @IsVariadic => res += "..."
 		res + @Type.Eval()
 
 struct Operand
-	*Node
+	*common.Node
 	Literal     *Literal
 	OperandName *OperandName
 	MethodExpr  *MethodExpr
@@ -735,7 +731,7 @@ struct Operand
 		""
 
 struct Literal
-	*Node
+	*common.Node
 	Basic     string
 	Composite *CompositeLit
 	FunctionLit     *FunctionLit
@@ -745,19 +741,19 @@ struct Literal
 		@Basic
 
 struct OperandName
-	*Node
+	*common.Node
 	Name string
 	Eval: string -> @Name
 
 struct CompositeLit
-	*Node
+	*common.Node
 	LiteralType  *LiteralType
 	TemplateSpec *TemplateSpec
 	LiteralValue *LiteralValue
 	Eval: string -> @LiteralType.Eval() + @LiteralValue.Eval()
 
 struct LiteralType
-	*Node
+	*common.Node
 	Struct   *StructType
 	Array    *ArrayType
 	Element  *Type
@@ -773,7 +769,7 @@ struct LiteralType
 		@Type
 
 struct LiteralValue
-	*Node
+	*common.Node
 	Elements []*KeyedElement
 	Eval: string ->
 		res := "{"
@@ -784,7 +780,7 @@ struct LiteralValue
 		res + "}"
 
 struct KeyedElement
-	*Node
+	*common.Node
 	Key     *Key
 	Element *Element
 	Eval: string ->
@@ -793,7 +789,7 @@ struct KeyedElement
 		res + @Element.Eval()
 
 struct Key
-	*Node
+	*common.Node
 	Name         string
 	Expression   *Expression
 	LiteralValue *LiteralValue
@@ -803,7 +799,7 @@ struct Key
 		@Name
 
 struct Element
-	*Node
+	*common.Node
 	Expression   *Expression
 	LiteralValue *LiteralValue
 	Eval: string ->
@@ -812,7 +808,7 @@ struct Element
 		""
 
 struct StructType
-	*Node
+	*common.Node
 	Name string
 	TemplateSpec *TemplateSpec
 	Fields []*FieldDecl
@@ -829,27 +825,33 @@ struct StructType
 		res + "}" + methods
 
 struct FieldDecl
-	*Node
-	Identifiers []string
+	*common.Node
+	IdentifierList *IdentifierList
 	Type        *Type
 	Anonymous   *AnonymousField
 	Tag         string
 	InlineStructMethod *InlineStructMethod
 	Eval: string ->
 		if @InlineStructMethod != nil => return @InlineStructMethod.Eval()
-		res := strings.Join(@Identifiers, ",")
+		res := ""
+		if @IdentifierList != nil => res += @IdentifierList.Eval()
 		if @Type != nil => res += " " + @Type.Eval()
 		if @Anonymous != nil => res += @Anonymous.Eval()
 		res + " " + @Tag
 
+struct IdentifierList
+	*common.Node
+	List []string
+	Eval: string -> strings.Join(@List, ",")
+
 struct InlineStructMethod
-	*Node
+	*common.Node
 	IsPointerReceiver bool
 	FunctionDecl      *FunctionDecl
 	Eval: string -> @FunctionDecl.Eval()[4:]
 
 struct AnonymousField
-	*Node
+	*common.Node
 	IsPointerReceiver bool
 	Type              string
 	Eval: string ->
@@ -858,12 +860,12 @@ struct AnonymousField
 		res
 
 struct FunctionLit
-	*Node
+	*common.Node
 	Function *Function
 	Eval: string -> "func " + @Function.Eval()
 
 struct PrimaryExpr
-	*Node
+	*common.Node
 	Operand       *Operand
 	Conversion    *Conversion
 	PrimaryExpr   *PrimaryExpr
@@ -875,7 +877,7 @@ struct PrimaryExpr
 		""
 
 struct SecondaryExpr
-	*Node
+	*common.Node
 	Selector      string
 	Index         *Index
 	Slice         *Slice
@@ -890,12 +892,12 @@ struct SecondaryExpr
 		""
 
 struct Index
-	*Node
+	*common.Node
 	Expression *Expression
 	Eval: string -> "[" + @Expression.Eval() + "]"
 
 struct Slice
-	*Node
+	*common.Node
 	LeftExpr   *Expression
 	MiddleExpr *Expression
 	RightExpr  *Expression
@@ -908,12 +910,12 @@ struct Slice
 		res + "]"
 
 struct TypeAssertion
-	*Node
+	*common.Node
 	Type *Type
 	Eval: string -> ".(" + @Type.Eval() + ")"
 
 struct Arguments
-	*Node
+	*common.Node
 	TemplateSpec *TemplateSpec
 	Expressions  *ExpressionList
 	Type         *Type
@@ -929,13 +931,13 @@ struct Arguments
 		res + ")"
 
 struct MethodExpr
-	*Node
+	*common.Node
 	ReceiverType *ReceiverType
 	Name         string
 	Eval: string -> @ReceiverType.Eval() + "." + @Name
 
 struct ReceiverType
-	*Node
+	*common.Node
 	Type         string
 	IsPointer    bool
 	ReceiverType *ReceiverType
@@ -947,7 +949,7 @@ struct ReceiverType
 		res
 
 struct Expression
-	*Node
+	*common.Node
 	UnaryExpr       *UnaryExpr
 	// FunctionLit     *FunctionLit
 	LeftExpression  *Expression
@@ -959,7 +961,7 @@ struct Expression
 		@LeftExpression.Eval() + @Op + @RightExpression.Eval()
 
 struct UnaryExpr
-	*Node
+	*common.Node
 	PrimaryExpr *PrimaryExpr
 	Op          string
 	UnaryExpr   *UnaryExpr
@@ -968,13 +970,13 @@ struct UnaryExpr
 		@Op + @UnaryExpr.Eval()
 
 struct Conversion
-	*Node
+	*common.Node
 	Type       *Type
 	Expression *Expression
 	Eval: string -> @Type.Eval() + "(" + @Expression.Eval() + ")"
 
 struct Interpret
-	*Node
+	*common.Node
 	Statement *Statement
 	TopLevel  *TopLevel
 	Eval: string ->

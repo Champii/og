@@ -1,4 +1,4 @@
-package og
+package common
 
 type OgConfig struct {
 	Blocks      bool
@@ -6,6 +6,7 @@ type OgConfig struct {
 	Print       bool
 	Force       bool
 	Ast         bool
+	SimpleAst   bool
 	Quiet       bool
 	Interpreter bool
 	Paths       []string

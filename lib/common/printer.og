@@ -1,9 +1,18 @@
-!og
+!common
 
 import
+  fmt
   strconv
+  "github.com/fatih/color"
   "github.com/buger/goterm": tm
   "github.com/k0kubun/go-ansi": curs
+
+var yellow = color.New(color.FgHiYellow).SprintFunc()
+var red = color.New(color.FgHiRed).SprintFunc()
+var cyan = color.New(color.FgCyan).SprintFunc()
+var magenta = color.New(color.Bold, color.FgHiMagenta).SprintFunc()
+var blue = color.New(color.Bold, color.FgHiBlue).SprintfFunc()
+var green = color.New(color.FgHiGreen).SprintfFunc()
 
 struct Printer
   Config *OgConfig
@@ -67,6 +76,21 @@ struct Printer
     @spinner += 1
     @spinner %= 4
 
+  *Error(err *Error) ->
+    for i := 0; i < 8; i++
+      tm.Println("                                                                          ")
+    tm.MoveCursorUp(9)
+    tm.Flush()
+
+    fileInfo := fmt.Sprintf("%s (%s:%s)", green(err.Path), yellow(err.Line), yellow(err.Column))
+    fmt.Printf("\n%s: %s '%s'\n", fileInfo, red(err.Msg), magenta(err.Msg2))
+
+    badLine := err.Source[err.Line-1]
+    badLine = cyan(badLine[:err.Column]) + magenta(err.Msg2) + cyan(badLine[err.Column+len(err.Msg2):])
+
+    fmt.Println(badLine)
+    fmt.Print(blue("%"+strconv.Itoa(err.Column+1)+"s\n","^"))
+
   CursorHide -> if !@Config.Quiet => curs.CursorHide()
   CursorShow -> if !@Config.Quiet => curs.CursorShow()
 
@@ -74,3 +98,5 @@ struct Printer
 NewPrinter(config *OgConfig): *Printer ->
   &Printer
     Config: config
+
+var Print *Printer

@@ -1,9 +1,30 @@
-package og
+package common
 
 import (
+	"fmt"
 	tm "github.com/buger/goterm"
+	"github.com/fatih/color"
 	curs "github.com/k0kubun/go-ansi"
 	"strconv"
+)
+
+var (
+	yellow = color.New(color.FgHiYellow).SprintFunc()
+)
+var (
+	red = color.New(color.FgHiRed).SprintFunc()
+)
+var (
+	cyan = color.New(color.FgCyan).SprintFunc()
+)
+var (
+	magenta = color.New(color.Bold, color.FgHiMagenta).SprintFunc()
+)
+var (
+	blue = color.New(color.Bold, color.FgHiBlue).SprintfFunc()
+)
+var (
+	green = color.New(color.FgHiGreen).SprintfFunc()
 )
 
 type Printer struct {
@@ -72,6 +93,19 @@ func (this *Printer) CompileList(files []string, workerIds []int, nbWorkers, fin
 	this.spinner += 1
 	this.spinner %= 4
 }
+func (this *Printer) Error(err *Error) {
+	for i := 0; i < 8; i++ {
+		tm.Println("                                                                          ")
+	}
+	tm.MoveCursorUp(9)
+	tm.Flush()
+	fileInfo := fmt.Sprintf("%s (%s:%s)", green(err.Path), yellow(err.Line), yellow(err.Column))
+	fmt.Printf("\n%s: %s '%s'\n", fileInfo, red(err.Msg), magenta(err.Msg2))
+	badLine := err.Source[err.Line-1]
+	badLine = cyan(badLine[:err.Column]) + magenta(err.Msg2) + cyan(badLine[err.Column+len(err.Msg2):])
+	fmt.Println(badLine)
+	fmt.Print(blue("%"+strconv.Itoa(err.Column+1)+"s\n", "^"))
+}
 func (this Printer) CursorHide() {
 	if !this.Config.Quiet {
 		curs.CursorHide()
@@ -85,3 +119,7 @@ func (this Printer) CursorShow() {
 func NewPrinter(config *OgConfig) *Printer {
 	return &Printer{Config: config}
 }
+
+var (
+	Print *Printer
+)

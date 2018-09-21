@@ -2,12 +2,8 @@
 
 import
   os
-  fmt
   strings
-  strconv
   errors
-  "github.com/fatih/color"
-  "github.com/buger/goterm": tm
   "github.com/champii/og/parser"
   "github.com/champii/og/lib/ast"
   "github.com/champii/og/lib/common"
@@ -15,25 +11,8 @@ import
   "github.com/champii/og/lib/translator"
   "github.com/antlr/antlr4/runtime/Go/antlr"
 
-var yellow = color.New(color.FgHiYellow).SprintFunc()
-var red = color.New(color.FgHiRed).SprintFunc()
-var cyan = color.New(color.FgCyan).SprintFunc()
-var magenta = color.New(color.Bold, color.FgHiMagenta).SprintFunc()
-var blue = color.New(color.Bold, color.FgHiBlue).SprintfFunc()
-var green = color.New(color.FgHiGreen).SprintfFunc()
-
 struct ErrorHandler
   *antlr.DefaultErrorStrategy
-
-  // tok := p.GetCurrentToken().GetText()
-
-  // fmt.Print("TOK: '", tok, "'\n")
-
-  // if tok == "(" || tok == ")" || tok == "{" || tok == "}"
-  //   p.Consume()
-  //   @DefaultErrorStrategy.Recover(p, r)
-  //   // fmt.Println("KIK")
-  // else
 
   Recover(p antlr.Parser, r antlr.RecognitionException) ->
     os.Exit(1)
@@ -48,19 +27,8 @@ struct ErrorListener
   source []string
 
   *SyntaxError(rec antlr.Recognizer, offendingSymbol interface, line, column int, msg string, e antlr.RecognitionException) ->
-    // FIXME
-    for i := 0; i < 8; i++
-      tm.Println("                                                                          ")
-    tm.MoveCursorUp(9)
-    tm.Flush()
-
-    fileInfo := fmt.Sprintf("%s (%s:%s)", green(@filePath), yellow(line), yellow(column))
-    badToken := offendingSymbol.(antlr.Token).GetText()
-    fmt.Printf("%s: %s '%s'\n", fileInfo, red("Unexpected"), magenta(badToken))
-    badLine := @source[line-1]
-    badLine = cyan(badLine[:column]) + magenta(badToken) + cyan(badLine[column+len(badToken):])
-    fmt.Println(badLine)
-    fmt.Print(blue("%"+strconv.Itoa(column+1)+"s\n\n","^"))
+    err := common.NewError(@filePath, @source, line, column, "Unexpected", offendingSymbol.(antlr.Token).GetText())
+    common.Print.Error(err)
 
 NewErrorListener(filePath, source string): *ErrorListener ->
   &ErrorListener
@@ -69,7 +37,7 @@ NewErrorListener(filePath, source string): *ErrorListener ->
     source: strings.Split(source, "\n")
 
 struct OgParser
-  Config *OgConfig
+  Config *common.OgConfig
 
   parserInit(file *common.File): *parser.OgParser ->
     input := antlr.NewInputStream(string(file.Output))
@@ -99,21 +67,16 @@ struct OgParser
 
     t := new(translator.OgVisitor)
 
+    t.File = file
+
     tree := t.VisitSourceFile(res.(*parser.SourceFileContext), t).(*ast.SourceFile)
 
-    if @Config.Ast
-      walker.Print(tree)
+    if @Config.Ast || @Config.SimpleAst
+      walker.Print(tree, @Config.SimpleAst)
 
     file.Ast = tree
 
     nil
-    // walker.TypeCheck(tree)
-
-    // tree = walker.RunDesugar(tree).(*ast.SourceFile)
-
-    // final := tree.Eval()
-
-    // final
 
   ParseStmt(file *common.File): error ->
     p := @parserInit(file)
@@ -137,6 +100,6 @@ struct OgParser
 
     nil
 
-NewOgParser(config *OgConfig): *OgParser ->
+NewOgParser(config *common.OgConfig): *OgParser ->
   &OgParser
     Config: config

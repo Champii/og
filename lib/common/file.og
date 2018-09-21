@@ -5,17 +5,18 @@ import
   fmt
   path
   errors
+  strings
   "os/exec"
   "io/ioutil"
   "path/filepath"
-  "github.com/champii/og/lib/ast"
 
 struct File
   Path    string
   OutPath string
   Name    string
-  Ast     ast.INode
+  Ast     INode
   Output  string
+  LineMapping []int
   Source  []byte
   Write ->
     os.MkdirAll(filepath.Dir(@OutPath), os.ModePerm);
@@ -42,7 +43,9 @@ struct File
     @Output = string(final)
 
     return nil
-
+  Error(line, column int, msg, msg2 string): *Error ->
+    source := strings.Split(string(@Source), "\n")
+    NewError(@Path, source, line, column, msg, msg2)
 
 NewFile(filePath, outPath string): *File ->
   name := path.Base(filePath)

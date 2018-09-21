@@ -1,7 +1,7 @@
 package walker
 
 import (
-	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 	"reflect"
 )
 
@@ -21,8 +21,8 @@ func (this *AstWalker) callDelegate(name string, arg reflect.Value) ([]reflect.V
 	}
 	return []reflect.Value{reflect.Zero(arg.Type())}, false
 }
-func (this *AstWalker) Trigger(arg reflect.Value, parentField reflect.Value, parentNode ast.INode) (reflect.Value, bool) {
-	node := arg.Interface().(ast.INode)
+func (this *AstWalker) Trigger(arg reflect.Value, parentField reflect.Value, parentNode common.INode) (reflect.Value, bool) {
+	node := arg.Interface().(common.INode)
 	if node == nil {
 		return reflect.Zero(arg.Type()), false
 	}
@@ -32,20 +32,20 @@ func (this *AstWalker) Trigger(arg reflect.Value, parentField reflect.Value, par
 	this.callDelegate("Before"+name, arg)
 	res, ok := this.callDelegate("Each", arg)
 	if ok {
-		node = res[0].Interface().(ast.INode)
+		node = res[0].Interface().(common.INode)
 		parentField.Set(reflect.ValueOf(node))
 	}
 	this.callDelegate(name, arg)
 	parentField.Set(reflect.ValueOf(this.Walk(node)))
 	res, ok = this.callDelegate("After", arg)
 	if ok {
-		node = res[0].Interface().(ast.INode)
+		node = res[0].Interface().(common.INode)
 		parentField.Set(reflect.ValueOf(node))
 	}
 	this.callDelegate("After"+name, arg)
 	return reflect.ValueOf(node), true
 }
-func (this *AstWalker) Walk(tree ast.INode) ast.INode {
+func (this *AstWalker) Walk(tree common.INode) common.INode {
 	val := reflect.ValueOf(tree).Elem()
 	for i := 0; i < val.NumField(); i++ {
 		valueField := val.Field(i)

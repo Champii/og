@@ -6,9 +6,10 @@ import
 	strings
 	"encoding/gob"
 	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 
 struct TemplateGenerator
-	Root ast.INode
+	Root common.INode
 
 	*GenerateStruct(template *Template) ->
 		source := @Root.(*ast.SourceFile)
@@ -89,7 +90,7 @@ struct TemplateGenerator
 				*ast.FunctionDecl => @GenerateTopFns(template);
 				*ast.StructType   => @GenerateStruct(template)
 
-RunTemplateGenerator(tree ast.INode, templates *Templates) ->
+RunTemplateGenerator(tree common.INode, templates *Templates) ->
 	templateGenerator := TemplateGenerator
 		Root: tree
 

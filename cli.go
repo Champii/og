@@ -4,20 +4,21 @@ import (
 	"os"
 	"time"
 
-	"github.com/champii/og/lib/og"
+	"github.com/champii/og/lib/common"
 
 	"github.com/urfave/cli"
 )
 
-func parseArgs(done func(og.OgConfig)) {
+func parseArgs(done func(*common.OgConfig)) {
 	cli_ := setupCli()
 
 	cli_.Action = func(c *cli.Context) error {
-		options := og.OgConfig{
+		options := common.OgConfig{
 			Blocks:      c.Bool("b"),
 			Dirty:       c.Bool("d"),
 			Print:       c.Bool("p"),
 			Ast:         c.Bool("a"),
+			SimpleAst:   c.Bool("s"),
 			Quiet:       c.Bool("q"),
 			Workers:     c.Int("w"),
 			OutPath:     c.String("o"),
@@ -28,7 +29,7 @@ func parseArgs(done func(og.OgConfig)) {
 			Paths:       []string(c.Args()),
 		}
 
-		done(options)
+		done(&options)
 
 		return nil
 	}
@@ -115,6 +116,10 @@ COPYRIGHT:
 		cli.BoolFlag{
 			Name:  "a, ast",
 			Usage: "Print the generated AST",
+		},
+		cli.BoolFlag{
+			Name:  "s, simple-ast",
+			Usage: "Print a simple AST instead with only terminals",
 		},
 		cli.BoolFlag{
 			Name:  "i, interpreter",

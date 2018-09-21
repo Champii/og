@@ -3,14 +3,14 @@
 import
 	strings
 	reflect
-	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 
 struct Template
 	Name         string
 	Types        []string
 	UsedFor      [][]string
 	GeneratedFor map[string][]string // Join(UsedFor[i], ",") -> []PackageName
-	Node         ast.INode
+	Node         common.INode
 
 	contains(arr []string, str string): bool ->
 		for _, item in arr
@@ -41,7 +41,7 @@ struct Template
 
 		@UsedFor = append(@UsedFor, types)
 
-NewTemplate(name string, types []string, node ast.INode): *Template ->
+NewTemplate(name string, types []string, node common.INode): *Template ->
 	&Template
 		Name: name
 		Types: types

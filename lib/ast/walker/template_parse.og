@@ -2,13 +2,14 @@
 
 import
 	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 
 struct TemplateParse
 	AstWalker
-	Root      ast.INode
+	Root      common.INode
 	Templates *Templates
 
-	*StructType(n ast.INode): ast.INode ->
+	*StructType(n common.INode): common.INode ->
 		structType := n.(*ast.StructType)
 		if structType.TemplateSpec != nil
 			types := []string{}
@@ -18,7 +19,7 @@ struct TemplateParse
 			@Templates.Add(structType.Name, NewTemplate(structType.Name, types, structType))
 		n
 
-	*Signature(n ast.INode): ast.INode ->
+	*Signature(n common.INode): common.INode ->
 		sig := n.(*ast.Signature)
 		if sig.TemplateSpec != nil
 
@@ -32,7 +33,7 @@ struct TemplateParse
 				@Templates.Add(fDecl.Name, NewTemplate(fDecl.Name, types, fDecl))
 		n
 
-RunTemplateParse(tree ast.INode, templates *Templates) ->
+RunTemplateParse(tree common.INode, templates *Templates) ->
 	templateParse := TemplateParse
 		Root:      tree
 		Templates: templates

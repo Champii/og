@@ -1,0 +1,48 @@
+!common
+
+import
+	"github.com/antlr/antlr4/runtime/Go/antlr"
+
+interface INode
+	Eval: string
+	Text: string
+	Line: int
+	Col:  int
+	SetParent(n INode)
+	GetParent: INode
+	ChildrenCount: int
+	T: interface
+
+struct Node
+	Line_     int
+	Col_      int
+	Text_     string
+	Children  []INode
+	parent    INode
+	ChildrenCount_ int
+	t interface
+
+	Eval: string ->  ""
+	Text: string -> @Text_
+	Line: int    -> @Line_
+	Col:  int    -> @Col_
+	ChildrenCount:  int    -> @ChildrenCount_
+	*SetParent(n INode) -> if @parent == nil => @parent = n;
+	*GetParent: INode -> @parent
+	T: interface -> @t
+
+NewNode(ctx antlr.ParserRuleContext, file *File, t interface): *Node ->
+	tok := ctx.GetStart()
+	line := file.LineMapping[tok.GetLine()]
+	col := tok.GetColumn();
+
+	&Node
+		Text_: ctx.GetText()
+		Line_: line
+		Col_:  col
+		ChildrenCount_: len(ctx.GetChildren())
+		t: t
+
+NewNodeNoCtx(t interface): *Node ->
+	&Node
+		t: t

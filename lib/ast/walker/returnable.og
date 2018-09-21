@@ -2,12 +2,13 @@
 
 import
 	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 
 struct Returnable
 	AstWalker
-	Root      ast.INode
+	Root      common.INode
 
-	*VarDecl(n ast.INode): ast.INode ->
+	*VarDecl(n common.INode): common.INode ->
 		varDecl := n.(*ast.VarDecl)
 		for _, varSpec in varDecl.VarSpecs
 			statement := varSpec.Statement
@@ -27,7 +28,7 @@ struct Returnable
 
 		varDecl
 
-	*Function(n ast.INode): ast.INode ->
+	*Function(n common.INode): common.INode ->
 		function := n.(*ast.Function)
 		sig := function.Signature
 
@@ -51,7 +52,7 @@ struct Returnable
 
 		n
 
-RunReturnable(tree ast.INode): ast.INode ->
+RunReturnable(tree common.INode): common.INode ->
 	returnable := Returnable
 		Root:      tree
 

@@ -2,13 +2,14 @@
 
 import
 	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 
 struct TemplateApply
 	AstWalker
 	typeSrc []string
 	typeDest []string
 
-	*Type(n ast.INode): ast.INode ->
+	*Type(n common.INode): common.INode ->
 		t := n.(*ast.Type)
 		tName := t.Eval()
 		for i, ty in @typeSrc
@@ -18,7 +19,7 @@ struct TemplateApply
 				t.Type = nil
 		n
 
-RunTemplateApply(tree ast.INode, typeSrc []string, typeDest []string): ast.INode ->
+RunTemplateApply(tree common.INode, typeSrc []string, typeDest []string): common.INode ->
 	templateApply := TemplateApply
 		typeSrc:  typeSrc
 		typeDest:  typeDest

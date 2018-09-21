@@ -1,7 +1,7 @@
 package walker
 
 import (
-	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 	"reflect"
 	"strings"
 )
@@ -11,7 +11,7 @@ type Template struct {
 	Types        []string
 	UsedFor      [][]string
 	GeneratedFor map[string][]string
-	Node         ast.INode
+	Node         common.INode
 }
 
 func (this Template) contains(arr []string, str string) bool {
@@ -42,7 +42,7 @@ func (this *Template) AddUsedFor(types []string) {
 	}
 	this.UsedFor = append(this.UsedFor, types)
 }
-func NewTemplate(name string, types []string, node ast.INode) *Template {
+func NewTemplate(name string, types []string, node common.INode) *Template {
 	return &Template{
 		Name:         name,
 		Types:        types,

@@ -3,12 +3,15 @@ package translator
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	. "github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
 	"github.com/champii/og/parser"
 	"strings"
 )
 
 type OgVisitor struct {
 	*antlr.BaseParseTreeVisitor
+	Line int
+	File *common.File
 }
 
 func (this OgVisitor) Aggregate(resultSoFar interface{}, childResult interface{}) interface{} {
@@ -29,7 +32,7 @@ func (this OgVisitor) Aggregate(resultSoFar interface{}, childResult interface{}
 }
 func (this *OgVisitor) VisitSourceFile(ctx *parser.SourceFileContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &SourceFile{
-		Node:    NewNode(ctx),
+		Node:    common.NewNode(ctx, this.File, &SourceFile{}),
 		Package: this.VisitPackageClause(ctx.PackageClause().(*parser.PackageClauseContext), delegate).(*Package),
 	}
 	if ctx.ImportDecl(0) != nil {
@@ -45,13 +48,13 @@ func (this *OgVisitor) VisitSourceFile(ctx *parser.SourceFileContext, delegate a
 }
 func (this *OgVisitor) VisitPackageClause(ctx *parser.PackageClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &Package{
-		Node: NewNode(ctx),
+		Node: common.NewNode(ctx, this.File, &Package{}),
 		Name: ctx.IDENTIFIER().GetText(),
 	}
 }
 func (this *OgVisitor) VisitImportDecl(ctx *parser.ImportDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &Import{
-		Node:  NewNode(ctx),
+		Node:  common.NewNode(ctx, this.File, &Import{}),
 		Items: this.VisitImportBody(ctx.ImportBody().(*parser.ImportBodyContext), delegate).([]*ImportSpec),
 	}
 }
@@ -64,7 +67,7 @@ func (this *OgVisitor) VisitImportBody(ctx *parser.ImportBodyContext, delegate a
 	return res
 }
 func (this *OgVisitor) VisitImportSpec(ctx *parser.ImportSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &ImportSpec{Node: NewNode(ctx)}
+	node := &ImportSpec{Node: common.NewNode(ctx, this.File, &ImportSpec{})}
 	if ctx.ImportPath() != nil {
 		node.Path = this.VisitImportPath(ctx.ImportPath().(*parser.ImportPathContext), delegate).(string)
 	}
@@ -84,7 +87,7 @@ func (this *OgVisitor) VisitImportPath(ctx *parser.ImportPathContext, delegate a
 	}
 }
 func (this *OgVisitor) VisitTopLevelDecl(ctx *parser.TopLevelDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &TopLevel{Node: NewNode(ctx)}
+	node := &TopLevel{Node: common.NewNode(ctx, this.File, &TopLevel{})}
 	if ctx.Declaration() != nil {
 		node.Declaration = this.VisitDeclaration(ctx.Declaration().(*parser.DeclarationContext), delegate).(*Declaration)
 	}
@@ -97,7 +100,7 @@ func (this *OgVisitor) VisitTopLevelDecl(ctx *parser.TopLevelDeclContext, delega
 	return node
 }
 func (this *OgVisitor) VisitDeclaration(ctx *parser.DeclarationContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Declaration{Node: NewNode(ctx)}
+	node := &Declaration{Node: common.NewNode(ctx, this.File, &Declaration{})}
 	if ctx.ConstDecl() != nil {
 		node.ConstDecl = this.VisitConstDecl(ctx.ConstDecl().(*parser.ConstDeclContext), delegate).(*ConstDecl)
 	}
@@ -110,7 +113,7 @@ func (this *OgVisitor) VisitDeclaration(ctx *parser.DeclarationContext, delegate
 	return node
 }
 func (this *OgVisitor) VisitConstDecl(ctx *parser.ConstDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &ConstDecl{Node: NewNode(ctx)}
+	node := &ConstDecl{Node: common.NewNode(ctx, this.File, &ConstDecl{})}
 	res := []*ConstSpec{}
 	bodies := ctx.AllConstSpec()
 	for _, spec := range bodies {
@@ -120,9 +123,9 @@ func (this *OgVisitor) VisitConstDecl(ctx *parser.ConstDeclContext, delegate ant
 	return node
 }
 func (this *OgVisitor) VisitConstSpec(ctx *parser.ConstSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &ConstSpec{Node: NewNode(ctx)}
+	node := &ConstSpec{Node: common.NewNode(ctx, this.File, &ConstSpec{})}
 	if ctx.IdentifierList() != nil {
-		node.IdentifierList = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
+		node.IdentifierList = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(*IdentifierList)
 	}
 	if ctx.Type_() != nil {
 		node.Type = this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
@@ -133,10 +136,13 @@ func (this *OgVisitor) VisitConstSpec(ctx *parser.ConstSpecContext, delegate ant
 	return node
 }
 func (this *OgVisitor) VisitIdentifierList(ctx *parser.IdentifierListContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return strings.Split(ctx.GetText(), ",")
+	return &IdentifierList{
+		Node: common.NewNode(ctx, this.File, &IdentifierList{}),
+		List: strings.Split(ctx.GetText(), ","),
+	}
 }
 func (this *OgVisitor) VisitExpressionList(ctx *parser.ExpressionListContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &ExpressionList{Node: NewNode(ctx)}
+	node := &ExpressionList{Node: common.NewNode(ctx, this.File, &ExpressionList{})}
 	res := []*Expression{}
 	bodies := ctx.AllExpression()
 	for _, spec := range bodies {
@@ -146,7 +152,7 @@ func (this *OgVisitor) VisitExpressionList(ctx *parser.ExpressionListContext, de
 	return node
 }
 func (this *OgVisitor) VisitTypeDecl(ctx *parser.TypeDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &TypeDecl{Node: NewNode(ctx)}
+	node := &TypeDecl{Node: common.NewNode(ctx, this.File, &TypeDecl{})}
 	if len(ctx.AllTypeSpec()) > 0 {
 		res := []*TypeSpec{}
 		bodies := ctx.AllTypeSpec()
@@ -165,14 +171,14 @@ func (this *OgVisitor) VisitTypeDecl(ctx *parser.TypeDeclContext, delegate antlr
 }
 func (this *OgVisitor) VisitTypeSpec(ctx *parser.TypeSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &TypeSpec{
-		Node: NewNode(ctx),
+		Node: common.NewNode(ctx, this.File, &TypeSpec{}),
 		Name: ctx.IDENTIFIER().GetText(),
 		Type: this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type),
 	}
 }
 func (this *OgVisitor) VisitFunctionDecl(ctx *parser.FunctionDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &FunctionDecl{
-		Node: NewNode(ctx),
+		Node: common.NewNode(ctx, this.File, &FunctionDecl{}),
 		Name: ctx.IDENTIFIER().GetText(),
 	}
 	if ctx.Function() != nil {
@@ -185,7 +191,7 @@ func (this *OgVisitor) VisitFunctionDecl(ctx *parser.FunctionDeclContext, delega
 }
 func (this *OgVisitor) VisitFunction(ctx *parser.FunctionContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &Function{
-		Node:      NewNode(ctx),
+		Node:      common.NewNode(ctx, this.File, &Function{}),
 		Signature: this.VisitSignature(ctx.Signature().(*parser.SignatureContext), delegate).(*Signature),
 	}
 	if ctx.Block() != nil {
@@ -193,7 +199,7 @@ func (this *OgVisitor) VisitFunction(ctx *parser.FunctionContext, delegate antlr
 	}
 	if ctx.Statement() != nil {
 		node.Block = &Block{
-			Node:       NewNode(ctx),
+			Node:       common.NewNode(ctx, this.File, &Block{}),
 			Statements: []*Statement{this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)},
 		}
 	}
@@ -201,7 +207,7 @@ func (this *OgVisitor) VisitFunction(ctx *parser.FunctionContext, delegate antlr
 }
 func (this *OgVisitor) VisitMethodDecl(ctx *parser.MethodDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &MethodDecl{
-		Node:     NewNode(ctx),
+		Node:     common.NewNode(ctx, this.File, &MethodDecl{}),
 		Receiver: this.VisitReceiver(ctx.Receiver().(*parser.ReceiverContext), delegate).(*Receiver),
 	}
 	if ctx.Function() != nil {
@@ -214,14 +220,14 @@ func (this *OgVisitor) VisitMethodDecl(ctx *parser.MethodDeclContext, delegate a
 }
 func (this *OgVisitor) VisitReceiver(ctx *parser.ReceiverContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &Receiver{
-		Node:              NewNode(ctx),
+		Node:              common.NewNode(ctx, this.File, &Receiver{}),
 		Package:           ctx.IDENTIFIER(0).GetText(),
 		IsPointerReceiver: strings.Contains(ctx.GetText(), "*"),
 		Method:            ctx.IDENTIFIER(1).GetText(),
 	}
 }
 func (this *OgVisitor) VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &VarDecl{Node: NewNode(ctx)}
+	node := &VarDecl{Node: common.NewNode(ctx, this.File, &VarDecl{})}
 	res := []*VarSpec{}
 	bodies := ctx.AllVarSpec()
 	for _, spec := range bodies {
@@ -232,8 +238,8 @@ func (this *OgVisitor) VisitVarDecl(ctx *parser.VarDeclContext, delegate antlr.P
 }
 func (this *OgVisitor) VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &VarSpec{
-		Node:           NewNode(ctx),
-		IdentifierList: this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string),
+		Node:           common.NewNode(ctx, this.File, &VarSpec{}),
+		IdentifierList: this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(*IdentifierList),
 	}
 	if ctx.Type_() != nil {
 		node.Type = this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
@@ -248,7 +254,7 @@ func (this *OgVisitor) VisitVarSpec(ctx *parser.VarSpecContext, delegate antlr.P
 }
 func (this *OgVisitor) VisitBlock(ctx *parser.BlockContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &Block{
-		Node:       NewNode(ctx),
+		Node:       common.NewNode(ctx, this.File, &Block{}),
 		Statements: this.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).([]*Statement),
 	}
 }
@@ -261,7 +267,7 @@ func (this *OgVisitor) VisitStatementList(ctx *parser.StatementListContext, dele
 	return res
 }
 func (this *OgVisitor) VisitStatement(ctx *parser.StatementContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Statement{Node: NewNode(ctx)}
+	node := &Statement{Node: common.NewNode(ctx, this.File, &Statement{})}
 	if ctx.Declaration() != nil {
 		node.Declaration = this.VisitDeclaration(ctx.Declaration().(*parser.DeclarationContext), delegate).(*Declaration)
 	}
@@ -310,7 +316,7 @@ func (this *OgVisitor) VisitStatement(ctx *parser.StatementContext, delegate ant
 	return node
 }
 func (this *OgVisitor) VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &SimpleStmt{Node: NewNode(ctx)}
+	node := &SimpleStmt{Node: common.NewNode(ctx, this.File, &SimpleStmt{})}
 	if ctx.SendStmt() != nil {
 		node.SendStmt = this.VisitSendStmt(ctx.SendStmt().(*parser.SendStmtContext), delegate).(*SendStmt)
 	}
@@ -333,21 +339,21 @@ func (this *OgVisitor) VisitSimpleStmt(ctx *parser.SimpleStmtContext, delegate a
 }
 func (this *OgVisitor) VisitSendStmt(ctx *parser.SendStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &SendStmt{
-		Node:  NewNode(ctx),
+		Node:  common.NewNode(ctx, this.File, &SendStmt{}),
 		Left:  this.VisitExpression(ctx.Expression(0).(*parser.ExpressionContext), delegate).(*Expression),
 		Right: this.VisitExpression(ctx.Expression(1).(*parser.ExpressionContext), delegate).(*Expression),
 	}
 }
 func (this *OgVisitor) VisitIncDecStmt(ctx *parser.IncDecStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &IncDecStmt{
-		Node:       NewNode(ctx),
+		Node:       common.NewNode(ctx, this.File, &IncDecStmt{}),
 		Expression: this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression),
 		IsInc:      strings.Contains(ctx.GetText(), "++"),
 	}
 }
 func (this *OgVisitor) VisitAssignment(ctx *parser.AssignmentContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &Assignment{
-		Node:  NewNode(ctx),
+		Node:  common.NewNode(ctx, this.File, &Assignment{}),
 		Left:  this.VisitExpressionList(ctx.ExpressionList(0).(*parser.ExpressionListContext), delegate).(*ExpressionList),
 		Op:    ctx.Assign_op().GetText(),
 		Right: this.VisitExpressionList(ctx.ExpressionList(1).(*parser.ExpressionListContext), delegate).(*ExpressionList),
@@ -361,8 +367,8 @@ func (this *OgVisitor) VisitAssign_op(ctx *parser.Assign_opContext, delegate ant
 }
 func (this *OgVisitor) VisitShortVarDecl(ctx *parser.ShortVarDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &ShortVarDecl{
-		Node:        NewNode(ctx),
-		Identifiers: this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string),
+		Node:           common.NewNode(ctx, this.File, &ShortVarDecl{}),
+		IdentifierList: this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(*IdentifierList),
 	}
 	if ctx.ExpressionList() != nil {
 		node.Expressions = this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
@@ -374,27 +380,27 @@ func (this *OgVisitor) VisitEmptyStmt(ctx *parser.EmptyStmtContext, delegate ant
 }
 func (this *OgVisitor) VisitLabeledStmt(ctx *parser.LabeledStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &LabeledStmt{
-		Node:      NewNode(ctx),
+		Node:      common.NewNode(ctx, this.File, &LabeledStmt{}),
 		Name:      ctx.IDENTIFIER().GetText(),
 		Statement: this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement),
 	}
 }
 func (this *OgVisitor) VisitReturnStmt(ctx *parser.ReturnStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &ReturnStmt{Node: NewNode(ctx)}
+	node := &ReturnStmt{Node: common.NewNode(ctx, this.File, &ReturnStmt{})}
 	if ctx.ExpressionList() != nil {
 		node.Expressions = this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
 	}
 	return node
 }
 func (this *OgVisitor) VisitBreakStmt(ctx *parser.BreakStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &BreakStmt{Node: NewNode(ctx)}
+	node := &BreakStmt{Node: common.NewNode(ctx, this.File, &BreakStmt{})}
 	if ctx.IDENTIFIER() != nil {
 		node.Name = ctx.IDENTIFIER().GetText()
 	}
 	return node
 }
 func (this *OgVisitor) VisitContinueStmt(ctx *parser.ContinueStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &ContinueStmt{Node: NewNode(ctx)}
+	node := &ContinueStmt{Node: common.NewNode(ctx, this.File, &ContinueStmt{})}
 	if ctx.IDENTIFIER() != nil {
 		node.Name = ctx.IDENTIFIER().GetText()
 	}
@@ -402,21 +408,21 @@ func (this *OgVisitor) VisitContinueStmt(ctx *parser.ContinueStmtContext, delega
 }
 func (this *OgVisitor) VisitGotoStmt(ctx *parser.GotoStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &GotoStmt{
-		Node: NewNode(ctx),
+		Node: common.NewNode(ctx, this.File, &GotoStmt{}),
 		Name: ctx.IDENTIFIER().GetText(),
 	}
 }
 func (this *OgVisitor) VisitFallthroughStmt(ctx *parser.FallthroughStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	return &FallthroughStmt{Node: NewNode(ctx)}
+	return &FallthroughStmt{Node: common.NewNode(ctx, this.File, &FallthroughStmt{})}
 }
 func (this *OgVisitor) VisitDeferStmt(ctx *parser.DeferStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &DeferStmt{
-		Node:       NewNode(ctx),
+		Node:       common.NewNode(ctx, this.File, &DeferStmt{}),
 		Expression: this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression),
 	}
 }
 func (this *OgVisitor) VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &IfStmt{Node: NewNode(ctx)}
+	node := &IfStmt{Node: common.NewNode(ctx, this.File, &IfStmt{})}
 	if ctx.SimpleStmt() != nil {
 		node.SimpleStmt = this.VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(*SimpleStmt)
 	}
@@ -425,7 +431,7 @@ func (this *OgVisitor) VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.Par
 		node.Block = this.VisitBlock(ctx.Block(0).(*parser.BlockContext), delegate).(*Block)
 	} else if ctx.Statement(0) != nil {
 		node.Block = &Block{
-			Node:       NewNode(ctx),
+			Node:       common.NewNode(ctx, this.File, &Block{}),
 			Statements: []*Statement{this.VisitStatement(ctx.Statement(0).(*parser.StatementContext), delegate).(*Statement)},
 		}
 	}
@@ -433,7 +439,7 @@ func (this *OgVisitor) VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.Par
 		node.BlockElse = this.VisitBlock(ctx.Block(1).(*parser.BlockContext), delegate).(*Block)
 	} else if ctx.Statement(1) != nil {
 		node.BlockElse = &Block{
-			Node:       NewNode(ctx),
+			Node:       common.NewNode(ctx, this.File, &Block{}),
 			Statements: []*Statement{this.VisitStatement(ctx.Statement(1).(*parser.StatementContext), delegate).(*Statement)},
 		}
 	} else if ctx.IfStmt() != nil {
@@ -442,7 +448,7 @@ func (this *OgVisitor) VisitIfStmt(ctx *parser.IfStmtContext, delegate antlr.Par
 	return node
 }
 func (this *OgVisitor) VisitSwitchStmt(ctx *parser.SwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &SwitchStmt{Node: NewNode(ctx)}
+	node := &SwitchStmt{Node: common.NewNode(ctx, this.File, &SwitchStmt{})}
 	if ctx.ExprSwitchStmt() != nil {
 		node.ExprSwitchStmt = this.VisitExprSwitchStmt(ctx.ExprSwitchStmt().(*parser.ExprSwitchStmtContext), delegate).(*ExprSwitchStmt)
 	}
@@ -452,7 +458,7 @@ func (this *OgVisitor) VisitSwitchStmt(ctx *parser.SwitchStmtContext, delegate a
 	return node
 }
 func (this *OgVisitor) VisitExprSwitchStmt(ctx *parser.ExprSwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &ExprSwitchStmt{Node: NewNode(ctx)}
+	node := &ExprSwitchStmt{Node: common.NewNode(ctx, this.File, &ExprSwitchStmt{})}
 	if ctx.SimpleStmt() != nil {
 		node.SimpleStmt = this.VisitSimpleStmt(ctx.SimpleStmt().(*parser.SimpleStmtContext), delegate).(*SimpleStmt)
 	}
@@ -469,13 +475,13 @@ func (this *OgVisitor) VisitExprSwitchStmt(ctx *parser.ExprSwitchStmtContext, de
 }
 func (this *OgVisitor) VisitExprCaseClause(ctx *parser.ExprCaseClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &ExprCaseClause{
-		Node:           NewNode(ctx),
+		Node:           common.NewNode(ctx, this.File, &ExprCaseClause{}),
 		ExprSwitchCase: this.VisitExprSwitchCase(ctx.ExprSwitchCase().(*parser.ExprSwitchCaseContext), delegate).(*ExprSwitchCase),
 		Statements:     this.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).([]*Statement),
 	}
 }
 func (this *OgVisitor) VisitExprSwitchCase(ctx *parser.ExprSwitchCaseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &ExprSwitchCase{Node: NewNode(ctx)}
+	node := &ExprSwitchCase{Node: common.NewNode(ctx, this.File, &ExprSwitchCase{})}
 	if ctx.GetText() == "_" {
 		node.IsDefault = true
 		return node
@@ -487,7 +493,7 @@ func (this *OgVisitor) VisitExprSwitchCase(ctx *parser.ExprSwitchCaseContext, de
 }
 func (this *OgVisitor) VisitTypeSwitchStmt(ctx *parser.TypeSwitchStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &TypeSwitchStmt{
-		Node:            NewNode(ctx),
+		Node:            common.NewNode(ctx, this.File, &TypeSwitchStmt{}),
 		TypeSwitchGuard: this.VisitTypeSwitchGuard(ctx.TypeSwitchGuard().(*parser.TypeSwitchGuardContext), delegate).(*TypeSwitchGuard),
 	}
 	if ctx.SimpleStmt() != nil {
@@ -503,7 +509,7 @@ func (this *OgVisitor) VisitTypeSwitchStmt(ctx *parser.TypeSwitchStmtContext, de
 }
 func (this *OgVisitor) VisitTypeSwitchGuard(ctx *parser.TypeSwitchGuardContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &TypeSwitchGuard{
-		Node:        NewNode(ctx),
+		Node:        common.NewNode(ctx, this.File, &TypeSwitchGuard{}),
 		PrimaryExpr: this.VisitPrimaryExpr(ctx.PrimaryExpr().(*parser.PrimaryExprContext), delegate).(*PrimaryExpr),
 	}
 	if ctx.IDENTIFIER() != nil {
@@ -513,13 +519,13 @@ func (this *OgVisitor) VisitTypeSwitchGuard(ctx *parser.TypeSwitchGuardContext, 
 }
 func (this *OgVisitor) VisitTypeCaseClause(ctx *parser.TypeCaseClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &TypeCaseClause{
-		Node:           NewNode(ctx),
+		Node:           common.NewNode(ctx, this.File, &TypeCaseClause{}),
 		TypeSwitchCase: this.VisitTypeSwitchCase(ctx.TypeSwitchCase().(*parser.TypeSwitchCaseContext), delegate).(*TypeSwitchCase),
 		Statements:     this.VisitStatementList(ctx.StatementList().(*parser.StatementListContext), delegate).([]*Statement),
 	}
 }
 func (this *OgVisitor) VisitTypeSwitchCase(ctx *parser.TypeSwitchCaseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &TypeSwitchCase{Node: NewNode(ctx)}
+	node := &TypeSwitchCase{Node: common.NewNode(ctx, this.File, &TypeSwitchCase{})}
 	if ctx.TypeList() != nil {
 		node.Types = this.VisitTypeList(ctx.TypeList().(*parser.TypeListContext), delegate).([]*Type)
 	}
@@ -534,7 +540,7 @@ func (this *OgVisitor) VisitTypeList(ctx *parser.TypeListContext, delegate antlr
 	return res
 }
 func (this *OgVisitor) VisitSelectStmt(ctx *parser.SelectStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &SelectStmt{Node: NewNode(ctx)}
+	node := &SelectStmt{Node: common.NewNode(ctx, this.File, &SelectStmt{})}
 	res := []*CommClause{}
 	bodies := ctx.AllCommClause()
 	for _, spec := range bodies {
@@ -545,21 +551,21 @@ func (this *OgVisitor) VisitSelectStmt(ctx *parser.SelectStmtContext, delegate a
 }
 func (this *OgVisitor) VisitCommClause(ctx *parser.CommClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &CommClause{
-		Node:     NewNode(ctx),
+		Node:     common.NewNode(ctx, this.File, &CommClause{}),
 		CommCase: this.VisitCommCase(ctx.CommCase().(*parser.CommCaseContext), delegate).(*CommCase),
 	}
 	if ctx.Block() != nil {
 		node.Block = this.VisitBlock(ctx.Block().(*parser.BlockContext), delegate).(*Block)
 	} else if ctx.Statement() != nil {
 		node.Block = &Block{
-			Node:       NewNode(ctx),
+			Node:       common.NewNode(ctx, this.File, &Block{}),
 			Statements: []*Statement{this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)},
 		}
 	}
 	return node
 }
 func (this *OgVisitor) VisitCommCase(ctx *parser.CommCaseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &CommCase{Node: NewNode(ctx)}
+	node := &CommCase{Node: common.NewNode(ctx, this.File, &CommCase{})}
 	if ctx.GetText() == "_" {
 		node.IsDefault = true
 		return node
@@ -574,20 +580,20 @@ func (this *OgVisitor) VisitCommCase(ctx *parser.CommCaseContext, delegate antlr
 }
 func (this *OgVisitor) VisitRecvStmt(ctx *parser.RecvStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &RecvStmt{
-		Node:       NewNode(ctx),
+		Node:       common.NewNode(ctx, this.File, &RecvStmt{}),
 		Expression: this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression),
 	}
 	if ctx.ExpressionList() != nil {
 		node.Expressions = this.VisitExpressionList(ctx.ExpressionList().(*parser.ExpressionListContext), delegate).(*ExpressionList)
 	}
 	if ctx.IdentifierList() != nil {
-		node.Identifiers = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
+		node.IdentifierList = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(*IdentifierList)
 	}
 	return node
 }
 func (this *OgVisitor) VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &ForStmt{
-		Node:  NewNode(ctx),
+		Node:  common.NewNode(ctx, this.File, &ForStmt{}),
 		Block: this.VisitBlock(ctx.Block().(*parser.BlockContext), delegate).(*Block),
 	}
 	if ctx.ForClause() != nil {
@@ -602,7 +608,7 @@ func (this *OgVisitor) VisitForStmt(ctx *parser.ForStmtContext, delegate antlr.P
 	return node
 }
 func (this *OgVisitor) VisitForClause(ctx *parser.ForClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &ForClause{Node: NewNode(ctx)}
+	node := &ForClause{Node: common.NewNode(ctx, this.File, &ForClause{})}
 	if ctx.SimpleStmt(0) != nil {
 		node.LeftSimpleStmt = this.VisitSimpleStmt(ctx.SimpleStmt(0).(*parser.SimpleStmtContext), delegate).(*SimpleStmt)
 	}
@@ -616,16 +622,16 @@ func (this *OgVisitor) VisitForClause(ctx *parser.ForClauseContext, delegate ant
 }
 func (this *OgVisitor) VisitRangeClause(ctx *parser.RangeClauseContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &RangeClause{
-		Node:       NewNode(ctx),
+		Node:       common.NewNode(ctx, this.File, &RangeClause{}),
 		Expression: this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression),
 	}
 	if ctx.IdentifierList() != nil {
-		node.Identifiers = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
+		node.IdentifierList = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(*IdentifierList)
 	}
 	return node
 }
 func (this *OgVisitor) VisitGoStmt(ctx *parser.GoStmtContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &GoStmt{Node: NewNode(ctx)}
+	node := &GoStmt{Node: common.NewNode(ctx, this.File, &GoStmt{})}
 	if ctx.Expression() != nil {
 		node.Expression = this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 	}
@@ -635,7 +641,7 @@ func (this *OgVisitor) VisitGoStmt(ctx *parser.GoStmtContext, delegate antlr.Par
 	return node
 }
 func (this *OgVisitor) VisitType_(ctx *parser.Type_Context, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Type{Node: NewNode(ctx)}
+	node := &Type{Node: common.NewNode(ctx, this.File, &Type{})}
 	if ctx.TypeName() != nil {
 		node.TypeName = this.VisitTypeName(ctx.TypeName().(*parser.TypeNameContext), delegate).(string)
 	}
@@ -651,7 +657,7 @@ func (this *OgVisitor) VisitTypeName(ctx *parser.TypeNameContext, delegate antlr
 	return ctx.GetText()
 }
 func (this *OgVisitor) VisitTypeLit(ctx *parser.TypeLitContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &TypeLit{Node: NewNode(ctx)}
+	node := &TypeLit{Node: common.NewNode(ctx, this.File, &TypeLit{})}
 	if ctx.ArrayType() != nil {
 		node.ArrayType = this.VisitArrayType(ctx.ArrayType().(*parser.ArrayTypeContext), delegate).(*ArrayType)
 	}
@@ -680,7 +686,7 @@ func (this *OgVisitor) VisitTypeLit(ctx *parser.TypeLitContext, delegate antlr.P
 }
 func (this *OgVisitor) VisitArrayType(ctx *parser.ArrayTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &ArrayType{
-		Node:        NewNode(ctx),
+		Node:        common.NewNode(ctx, this.File, &ArrayType{}),
 		Length:      this.VisitArrayLength(ctx.ArrayLength().(*parser.ArrayLengthContext), delegate).(*Expression),
 		ElementType: this.VisitElementType(ctx.ElementType().(*parser.ElementTypeContext), delegate).(*Type),
 	}
@@ -693,12 +699,12 @@ func (this *OgVisitor) VisitElementType(ctx *parser.ElementTypeContext, delegate
 }
 func (this *OgVisitor) VisitPointerType(ctx *parser.PointerTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &PointerType{
-		Node: NewNode(ctx),
+		Node: common.NewNode(ctx, this.File, &PointerType{}),
 		Type: this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type),
 	}
 }
 func (this *OgVisitor) VisitInterfaceType(ctx *parser.InterfaceTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &InterfaceType{Node: NewNode(ctx)}
+	node := &InterfaceType{Node: common.NewNode(ctx, this.File, &InterfaceType{})}
 	if ctx.IDENTIFIER() != nil {
 		node.Name = ctx.IDENTIFIER().GetText()
 	}
@@ -712,26 +718,26 @@ func (this *OgVisitor) VisitInterfaceType(ctx *parser.InterfaceTypeContext, dele
 }
 func (this *OgVisitor) VisitSliceType(ctx *parser.SliceTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &SliceType{
-		Node: NewNode(ctx),
+		Node: common.NewNode(ctx, this.File, &SliceType{}),
 		Type: this.VisitElementType(ctx.ElementType().(*parser.ElementTypeContext), delegate).(*Type),
 	}
 }
 func (this *OgVisitor) VisitMapType(ctx *parser.MapTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &MapType{
-		Node:      NewNode(ctx),
+		Node:      common.NewNode(ctx, this.File, &MapType{}),
 		InnerType: this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type),
 		OuterType: this.VisitElementType(ctx.ElementType().(*parser.ElementTypeContext), delegate).(*Type),
 	}
 }
 func (this *OgVisitor) VisitChannelType(ctx *parser.ChannelTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &ChannelType{
-		Node:        NewNode(ctx),
+		Node:        common.NewNode(ctx, this.File, &ChannelType{}),
 		ChannelDecl: ctx.ChannelDecl().GetText(),
 		Type:        this.VisitElementType(ctx.ElementType().(*parser.ElementTypeContext), delegate).(*Type),
 	}
 }
 func (this *OgVisitor) VisitMethodSpec(ctx *parser.MethodSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &MethodSpec{Node: NewNode(ctx)}
+	node := &MethodSpec{Node: common.NewNode(ctx, this.File, &MethodSpec{})}
 	if ctx.IDENTIFIER() != nil {
 		node.Name = ctx.IDENTIFIER().GetText()
 	}
@@ -748,12 +754,12 @@ func (this *OgVisitor) VisitMethodSpec(ctx *parser.MethodSpecContext, delegate a
 }
 func (this *OgVisitor) VisitFunctionType(ctx *parser.FunctionTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &FunctionType{
-		Node:      NewNode(ctx),
+		Node:      common.NewNode(ctx, this.File, &FunctionType{}),
 		Signature: this.VisitSignature(ctx.Signature().(*parser.SignatureContext), delegate).(*Signature),
 	}
 }
 func (this *OgVisitor) VisitSignature(ctx *parser.SignatureContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Signature{Node: NewNode(ctx)}
+	node := &Signature{Node: common.NewNode(ctx, this.File, &Signature{})}
 	if ctx.Parameters() != nil {
 		node.Parameters = this.VisitParameters(ctx.Parameters().(*parser.ParametersContext), delegate).(*Parameters)
 	}
@@ -767,12 +773,12 @@ func (this *OgVisitor) VisitSignature(ctx *parser.SignatureContext, delegate ant
 }
 func (this *OgVisitor) VisitTemplateSpec(ctx *parser.TemplateSpecContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &TemplateSpec{
-		Node:   NewNode(ctx),
+		Node:   common.NewNode(ctx, this.File, &TemplateSpec{}),
 		Result: this.VisitResult(ctx.Result().(*parser.ResultContext), delegate).(*Result),
 	}
 }
 func (this *OgVisitor) VisitResult(ctx *parser.ResultContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Result{Node: NewNode(ctx)}
+	node := &Result{Node: common.NewNode(ctx, this.File, &Result{})}
 	res := []*Type{}
 	bodies := ctx.AllType_()
 	for _, spec := range bodies {
@@ -785,10 +791,10 @@ func (this *OgVisitor) VisitParameters(ctx *parser.ParametersContext, delegate a
 	if ctx.ParameterList() != nil {
 		return this.VisitParameterList(ctx.ParameterList().(*parser.ParameterListContext), delegate).(*Parameters)
 	}
-	return &Parameters{Node: NewNode(ctx)}
+	return &Parameters{Node: common.NewNode(ctx, this.File, &Parameters{})}
 }
 func (this *OgVisitor) VisitParameterList(ctx *parser.ParameterListContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Parameters{Node: NewNode(ctx)}
+	node := &Parameters{Node: common.NewNode(ctx, this.File, &Parameters{})}
 	res := []*Parameter{}
 	bodies := ctx.AllParameterDecl()
 	for _, spec := range bodies {
@@ -799,12 +805,12 @@ func (this *OgVisitor) VisitParameterList(ctx *parser.ParameterListContext, dele
 }
 func (this *OgVisitor) VisitParameterDecl(ctx *parser.ParameterDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &Parameter{
-		Node:       NewNode(ctx),
+		Node:       common.NewNode(ctx, this.File, &Parameter{}),
 		Type:       this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type),
 		IsVariadic: ctx.RestOp() != nil,
 	}
 	if ctx.IdentifierList() != nil {
-		node.Names = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
+		node.IdentifierList = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(*IdentifierList)
 	}
 	return node
 }
@@ -812,7 +818,7 @@ func (this *OgVisitor) VisitRestOp(ctx *parser.RestOpContext, delegate antlr.Par
 	return ctx.GetText()
 }
 func (this *OgVisitor) VisitOperand(ctx *parser.OperandContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Operand{Node: NewNode(ctx)}
+	node := &Operand{Node: common.NewNode(ctx, this.File, &Operand{})}
 	if ctx.Literal() != nil {
 		node.Literal = this.VisitLiteral(ctx.Literal().(*parser.LiteralContext), delegate).(*Literal)
 	}
@@ -828,7 +834,7 @@ func (this *OgVisitor) VisitOperand(ctx *parser.OperandContext, delegate antlr.P
 	return node
 }
 func (this *OgVisitor) VisitLiteral(ctx *parser.LiteralContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Literal{Node: NewNode(ctx)}
+	node := &Literal{Node: common.NewNode(ctx, this.File, &Literal{})}
 	if ctx.BasicLit() != nil {
 		node.Basic = this.VisitBasicLit(ctx.BasicLit().(*parser.BasicLitContext), delegate).(string)
 	}
@@ -844,7 +850,7 @@ func (this *OgVisitor) VisitBasicLit(ctx *parser.BasicLitContext, delegate antlr
 	return ctx.GetText()
 }
 func (this *OgVisitor) VisitOperandName(ctx *parser.OperandNameContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &OperandName{Node: NewNode(ctx)}
+	node := &OperandName{Node: common.NewNode(ctx, this.File, &OperandName{})}
 	if ctx.This_() != nil {
 		node.Name = "this"
 	} else if ctx.QualifiedIdent() != nil {
@@ -865,7 +871,7 @@ func (this *OgVisitor) VisitQualifiedIdent(ctx *parser.QualifiedIdentContext, de
 }
 func (this *OgVisitor) VisitCompositeLit(ctx *parser.CompositeLitContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &CompositeLit{
-		Node:         NewNode(ctx),
+		Node:         common.NewNode(ctx, this.File, &CompositeLit{}),
 		LiteralType:  this.VisitLiteralType(ctx.LiteralType().(*parser.LiteralTypeContext), delegate).(*LiteralType),
 		LiteralValue: this.VisitLiteralValue(ctx.LiteralValue().(*parser.LiteralValueContext), delegate).(*LiteralValue),
 	}
@@ -875,7 +881,7 @@ func (this *OgVisitor) VisitCompositeLit(ctx *parser.CompositeLitContext, delega
 	return node
 }
 func (this *OgVisitor) VisitLiteralType(ctx *parser.LiteralTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &LiteralType{Node: NewNode(ctx)}
+	node := &LiteralType{Node: common.NewNode(ctx, this.File, &LiteralType{})}
 	if ctx.StructType() != nil {
 		node.Struct = this.VisitStructType(ctx.StructType().(*parser.StructTypeContext), delegate).(*StructType)
 	}
@@ -897,7 +903,7 @@ func (this *OgVisitor) VisitLiteralType(ctx *parser.LiteralTypeContext, delegate
 	return node
 }
 func (this *OgVisitor) VisitLiteralValue(ctx *parser.LiteralValueContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &LiteralValue{Node: NewNode(ctx)}
+	node := &LiteralValue{Node: common.NewNode(ctx, this.File, &LiteralValue{})}
 	if ctx.ElementList() != nil {
 		node.Elements = this.VisitElementList(ctx.ElementList().(*parser.ElementListContext), delegate).([]*KeyedElement)
 	}
@@ -913,7 +919,7 @@ func (this *OgVisitor) VisitElementList(ctx *parser.ElementListContext, delegate
 }
 func (this *OgVisitor) VisitKeyedElement(ctx *parser.KeyedElementContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &KeyedElement{
-		Node:    NewNode(ctx),
+		Node:    common.NewNode(ctx, this.File, &KeyedElement{}),
 		Element: this.VisitElement(ctx.Element().(*parser.ElementContext), delegate).(*Element),
 	}
 	if ctx.Key() != nil {
@@ -922,7 +928,7 @@ func (this *OgVisitor) VisitKeyedElement(ctx *parser.KeyedElementContext, delega
 	return node
 }
 func (this *OgVisitor) VisitKey(ctx *parser.KeyContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Key{Node: NewNode(ctx)}
+	node := &Key{Node: common.NewNode(ctx, this.File, &Key{})}
 	if ctx.IDENTIFIER() != nil {
 		node.Name = ctx.IDENTIFIER().GetText()
 	}
@@ -935,7 +941,7 @@ func (this *OgVisitor) VisitKey(ctx *parser.KeyContext, delegate antlr.ParseTree
 	return node
 }
 func (this *OgVisitor) VisitElement(ctx *parser.ElementContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Element{Node: NewNode(ctx)}
+	node := &Element{Node: common.NewNode(ctx, this.File, &Element{})}
 	if ctx.Expression() != nil {
 		node.Expression = this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression)
 	}
@@ -945,7 +951,7 @@ func (this *OgVisitor) VisitElement(ctx *parser.ElementContext, delegate antlr.P
 	return node
 }
 func (this *OgVisitor) VisitStructType(ctx *parser.StructTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &StructType{Node: NewNode(ctx)}
+	node := &StructType{Node: common.NewNode(ctx, this.File, &StructType{})}
 	if ctx.IDENTIFIER() != nil {
 		node.Name = ctx.IDENTIFIER().GetText()
 	}
@@ -961,9 +967,9 @@ func (this *OgVisitor) VisitStructType(ctx *parser.StructTypeContext, delegate a
 	return node
 }
 func (this *OgVisitor) VisitFieldDecl(ctx *parser.FieldDeclContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &FieldDecl{Node: NewNode(ctx)}
+	node := &FieldDecl{Node: common.NewNode(ctx, this.File, &FieldDecl{})}
 	if ctx.IdentifierList() != nil {
-		node.Identifiers = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).([]string)
+		node.IdentifierList = this.VisitIdentifierList(ctx.IdentifierList().(*parser.IdentifierListContext), delegate).(*IdentifierList)
 	}
 	if ctx.Type_() != nil {
 		node.Type = this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type)
@@ -981,26 +987,26 @@ func (this *OgVisitor) VisitFieldDecl(ctx *parser.FieldDeclContext, delegate ant
 }
 func (this *OgVisitor) VisitInlineStructMethod(ctx *parser.InlineStructMethodContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &InlineStructMethod{
-		Node:              NewNode(ctx),
+		Node:              common.NewNode(ctx, this.File, &InlineStructMethod{}),
 		FunctionDecl:      this.VisitFunctionDecl(ctx.FunctionDecl().(*parser.FunctionDeclContext), delegate).(*FunctionDecl),
 		IsPointerReceiver: strings.Contains(ctx.GetText(), "*"),
 	}
 }
 func (this *OgVisitor) VisitAnonymousField(ctx *parser.AnonymousFieldContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &AnonymousField{
-		Node:              NewNode(ctx),
+		Node:              common.NewNode(ctx, this.File, &AnonymousField{}),
 		Type:              this.VisitTypeName(ctx.TypeName().(*parser.TypeNameContext), delegate).(string),
 		IsPointerReceiver: strings.Contains(ctx.GetText(), "*"),
 	}
 }
 func (this *OgVisitor) VisitFunctionLit(ctx *parser.FunctionLitContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &FunctionLit{
-		Node:     NewNode(ctx),
+		Node:     common.NewNode(ctx, this.File, &FunctionLit{}),
 		Function: this.VisitFunction(ctx.Function().(*parser.FunctionContext), delegate).(*Function),
 	}
 }
 func (this *OgVisitor) VisitPrimaryExpr(ctx *parser.PrimaryExprContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &PrimaryExpr{Node: NewNode(ctx)}
+	node := &PrimaryExpr{Node: common.NewNode(ctx, this.File, &PrimaryExpr{})}
 	if ctx.Operand() != nil {
 		node.Operand = this.VisitOperand(ctx.Operand().(*parser.OperandContext), delegate).(*Operand)
 	}
@@ -1014,7 +1020,7 @@ func (this *OgVisitor) VisitPrimaryExpr(ctx *parser.PrimaryExprContext, delegate
 	return node
 }
 func (this *OgVisitor) VisitSecondaryExpr(ctx *parser.SecondaryExprContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &SecondaryExpr{Node: NewNode(ctx)}
+	node := &SecondaryExpr{Node: common.NewNode(ctx, this.File, &SecondaryExpr{})}
 	if ctx.Selector() != nil {
 		node.Selector = this.VisitSelector(ctx.Selector().(*parser.SelectorContext), delegate).(string)
 	}
@@ -1037,12 +1043,12 @@ func (this *OgVisitor) VisitSelector(ctx *parser.SelectorContext, delegate antlr
 }
 func (this *OgVisitor) VisitIndex(ctx *parser.IndexContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &Index{
-		Node:       NewNode(ctx),
+		Node:       common.NewNode(ctx, this.File, &Index{}),
 		Expression: this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression),
 	}
 }
 func (this *OgVisitor) VisitSlice(ctx *parser.SliceContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Slice{Node: NewNode(ctx)}
+	node := &Slice{Node: common.NewNode(ctx, this.File, &Slice{})}
 	dist := strings.Split(ctx.GetText(), ":")
 	if len(dist) == 3 {
 		if len(dist[0]) <= 1 {
@@ -1073,13 +1079,13 @@ func (this *OgVisitor) VisitSlice(ctx *parser.SliceContext, delegate antlr.Parse
 }
 func (this *OgVisitor) VisitTypeAssertion(ctx *parser.TypeAssertionContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &TypeAssertion{
-		Node: NewNode(ctx),
+		Node: common.NewNode(ctx, this.File, &TypeAssertion{}),
 		Type: this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type),
 	}
 }
 func (this *OgVisitor) VisitArguments(ctx *parser.ArgumentsContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &Arguments{
-		Node:       NewNode(ctx),
+		Node:       common.NewNode(ctx, this.File, &Arguments{}),
 		IsVariadic: ctx.RestOp() != nil,
 	}
 	if ctx.Type_() != nil {
@@ -1095,14 +1101,14 @@ func (this *OgVisitor) VisitArguments(ctx *parser.ArgumentsContext, delegate ant
 }
 func (this *OgVisitor) VisitMethodExpr(ctx *parser.MethodExprContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &MethodExpr{
-		Node:         NewNode(ctx),
+		Node:         common.NewNode(ctx, this.File, &MethodExpr{}),
 		ReceiverType: this.VisitReceiverType(ctx.ReceiverType().(*parser.ReceiverTypeContext), delegate).(*ReceiverType),
 		Name:         ctx.IDENTIFIER().GetText(),
 	}
 }
 func (this *OgVisitor) VisitReceiverType(ctx *parser.ReceiverTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &ReceiverType{
-		Node:      NewNode(ctx),
+		Node:      common.NewNode(ctx, this.File, &ReceiverType{}),
 		IsPointer: strings.Contains(ctx.GetText(), "*"),
 	}
 	if ctx.TypeName() != nil {
@@ -1114,7 +1120,7 @@ func (this *OgVisitor) VisitReceiverType(ctx *parser.ReceiverTypeContext, delega
 	return node
 }
 func (this *OgVisitor) VisitExpression(ctx *parser.ExpressionContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Expression{Node: NewNode(ctx)}
+	node := &Expression{Node: common.NewNode(ctx, this.File, &Expression{})}
 	if ctx.UnaryExpr() != nil {
 		node.UnaryExpr = this.VisitUnaryExpr(ctx.UnaryExpr().(*parser.UnaryExprContext), delegate).(*UnaryExpr)
 	}
@@ -1126,7 +1132,7 @@ func (this *OgVisitor) VisitExpression(ctx *parser.ExpressionContext, delegate a
 	return node
 }
 func (this *OgVisitor) VisitUnaryExpr(ctx *parser.UnaryExprContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &UnaryExpr{Node: NewNode(ctx)}
+	node := &UnaryExpr{Node: common.NewNode(ctx, this.File, &UnaryExpr{})}
 	if ctx.PrimaryExpr() != nil {
 		node.PrimaryExpr = this.VisitPrimaryExpr(ctx.PrimaryExpr().(*parser.PrimaryExprContext), delegate).(*PrimaryExpr)
 	}
@@ -1138,13 +1144,19 @@ func (this *OgVisitor) VisitUnaryExpr(ctx *parser.UnaryExprContext, delegate ant
 }
 func (this *OgVisitor) VisitConversion(ctx *parser.ConversionContext, delegate antlr.ParseTreeVisitor) interface{} {
 	return &Conversion{
-		Node:       NewNode(ctx),
+		Node:       common.NewNode(ctx, this.File, &Conversion{}),
 		Type:       this.VisitType_(ctx.Type_().(*parser.Type_Context), delegate).(*Type),
 		Expression: this.VisitExpression(ctx.Expression().(*parser.ExpressionContext), delegate).(*Expression),
 	}
 }
+func (this *OgVisitor) VisitEos(ctx *parser.EosContext, delegate antlr.ParseTreeVisitor) interface{} {
+	if ctx.EOF() != nil || ctx.GetText() == ";" {
+		this.Line++
+	}
+	return ""
+}
 func (this *OgVisitor) VisitInterp(ctx *parser.InterpContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &Interpret{Node: NewNode(ctx)}
+	node := &Interpret{Node: common.NewNode(ctx, this.File, &Interpret{})}
 	if ctx.Statement() != nil {
 		node.Statement = this.VisitStatement(ctx.Statement().(*parser.StatementContext), delegate).(*Statement)
 	}

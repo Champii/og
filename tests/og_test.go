@@ -5,6 +5,8 @@ import (
 	"og/lib/og"
 
 	"testing"
+
+	"github.com/champii/og/lib/common"
 )
 
 func TestMain(t *testing.T) {
@@ -533,7 +535,7 @@ type Fooint struct {
 		`generics`,
 	}
 
-	config := og.NewOgConfig()
+	config := common.NewOgConfig()
 
 	config.Force = true
 
@@ -541,8 +543,8 @@ type Fooint struct {
 		config.Paths = append(config.Paths, "./exemples/"+p+".og")
 	}
 
-	printer := og.NewPrinter(config)
-	compiler := og.NewOgCompiler(config, printer)
+	common.Print = common.NewPrinter(config)
+	compiler := og.NewOgCompiler(config)
 
 	if err := compiler.Compile(); err != nil {
 		t.Fatalf(err.Error())

@@ -12,7 +12,7 @@ struct Desugar
 			RunTemplateParse(file.Ast, @Templates)
 
 		for _, file in files
-			RunTemplateUsage(file.Ast, @Templates)
+			RunTemplateUsage(file, @Templates)
 			RunTemplateGenerator(file.Ast, @Templates)
 			@Templates.ResetUsedFor()
 

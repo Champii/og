@@ -5,11 +5,11 @@ import
   fmt
   path
   "os/exec"
+  "github.com/champii/og/lib/common"
 
 struct Og
-  Config   *OgConfig
+  Config   *common.OgConfig
   Compiler *OgCompiler
-  Printer  *Printer
 
   Run: error ->
     if len(@Config.Paths) == 0
@@ -23,11 +23,11 @@ struct Og
       return err
 
     if len(@Compiler.Files) == 0
-      @Printer.NothingToDo()
+      common.Print.NothingToDo()
       if !@Config.Run
         return nil
 
-    if @Config.Print || @Config.Ast || @Config.Blocks || @Config.Dirty
+    if @Config.Print || @Config.Ast || @Config.SimpleAst || @Config.Blocks || @Config.Dirty
       return nil
 
     if !@Config.NoBuild
@@ -41,7 +41,7 @@ struct Og
     return nil
 
   Build: error ->
-    @Printer.Compiling(len(@Compiler.Files))
+    common.Print.Compiling(len(@Compiler.Files))
 
     cmd := exec.Command("go", "build")
 
@@ -52,7 +52,7 @@ struct Og
       return err
 
     if len(@Compiler.Files) > 0
-      @Printer.Compiled(len(@Compiler.Files))
+      common.Print.Compiled(len(@Compiler.Files))
 
     nil
 
@@ -64,7 +64,7 @@ struct Og
 
     current := path.Base(dir)
 
-    @Printer.Running()
+    common.Print.Running()
 
     cmd := exec.Command("./" + current)
     cmd.Stdout = os.Stdout
@@ -77,10 +77,9 @@ struct Og
 
     return nil
 
-NewOg(config *OgConfig): *Og ->
-  printer := NewPrinter(config);
+NewOg(config *common.OgConfig): *Og ->
+  common.Print = common.NewPrinter(config);
 
   &Og
     Config: config
-    Compiler: NewOgCompiler(config, printer)
-    Printer: printer
+    Compiler: NewOgCompiler(config)
