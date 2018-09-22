@@ -9,7 +9,7 @@ NAME:
   Oglang - Golang on steroids
 
 VERSION:
-  DEV
+  v0.7.2
 
 USAGE:
   og [options] [folders...|files...]
