@@ -1,0 +1,32 @@
+!walker
+
+import
+	os
+	path
+	"io/ioutil"
+	"github.com/champii/og/lib/ast"
+	"github.com/champii/og/lib/common"
+
+load(dir string, templates *Templates) ->
+	templateDir := path.Join(os.Getenv("GOPATH"), "src", dir, ".og")
+
+	_, err := os.Stat(templateDir)
+
+	if err != nil
+		return
+
+	content, err := ioutil.ReadFile(path.Join(templateDir, "template"))
+
+	if err != nil
+		return
+
+	templates.Decode(content)
+
+RunTemplateLoader(tree common.INode, templates *Templates) ->
+	imports := tree.(*ast.SourceFile).Import
+
+	if imports == nil
+		return
+
+	for _, imp in imports.Items
+		load(imp.Path[1:len(imp.Path)-2], templates)

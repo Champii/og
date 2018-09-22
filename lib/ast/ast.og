@@ -1,6 +1,8 @@
 !ast
 
 import
+	os
+	path
 	strings
 	"github.com/champii/og/lib/common"
 
@@ -15,6 +17,25 @@ struct SourceFile
 		if @Import  != nil => res += @Import.Eval() + "\n"
 		for _, t in @TopLevels
 			res += t.Eval() + "\n"
+		res
+	// alias -> fullPath
+	GetImports: map[string]string ->
+		res := make(map[string]string)
+
+		if @Import == nil
+			return res
+
+		for _, imp in @Import.Items
+			if imp.Path[0] != '"'
+				// ignore system paths
+				continue
+
+			alias := imp.Alias
+			if imp.Alias == ""
+				alias = path.Base(imp.Path[1:len(imp.Path)-2])
+
+			res[alias] = path.Join(os.Getenv("GOPATH"), "src", imp.Path[1:len(imp.Path)-2])
+
 		res
 
 struct Package

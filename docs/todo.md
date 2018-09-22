@@ -35,6 +35,7 @@
 ## Technical
 ---
 
+- [ ] Make a distinction between Generics(run time) and Templates(compile time)
 - [ ] Early checks like import validity or undefined references based on first pass analysis of the project
 - [ ] Interoperable Generics on differents Og projects
 - [ ] Recursive Generics
@@ -47,10 +48,6 @@
 - [ ] Make tests truly executable
 - [ ] VSCode extension
 - [ ] Adapt Golang tooling like `gofmt` or `golint`
-- [ ] Better error context (How to keep line number after preproc ?)
-- [ ] Parse all AST alltogether to perform type analysis and generics preprocessing across files
-- [ ] Avoid race when printing
-- [ ] Centralized error management
 - [ ] Allow to give arguments to finaly executed binary with `og -r -- arg1 arg2`
 - [ ] Fix typeswitch that cannot allow a pointer as second case without `;`
     ```go

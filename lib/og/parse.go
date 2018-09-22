@@ -70,6 +70,7 @@ func (this *OgParser) Parse(file *common.File) error {
 		walker.Print(tree, this.Config.SimpleAst)
 	}
 	file.Ast = tree
+	file.Imports = tree.GetImports()
 	return nil
 }
 func (this *OgParser) ParseStmt(file *common.File) error {

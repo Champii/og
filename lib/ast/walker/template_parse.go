@@ -3,12 +3,15 @@ package walker
 import (
 	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/common"
+	"path"
 )
 
 type TemplateParse struct {
 	AstWalker
-	Root      common.INode
-	Templates *Templates
+	Root       common.INode
+	Package    string
+	Templates  *Templates
+	ImportName string
 }
 
 func (this *TemplateParse) StructType(n common.INode) common.INode {
@@ -18,7 +21,7 @@ func (this *TemplateParse) StructType(n common.INode) common.INode {
 		for _, t := range structType.TemplateSpec.Result.Types {
 			types = append(types, t.Eval())
 		}
-		this.Templates.Add(structType.Name, NewTemplate(structType.Name, types, structType))
+		this.Templates.Add(structType.Name, this.ImportName, NewTemplate(structType.Name, this.ImportName, types, structType))
 	}
 	return n
 }
@@ -31,16 +34,18 @@ func (this *TemplateParse) Signature(n common.INode) common.INode {
 			for _, t := range sig.TemplateSpec.Result.Types {
 				types = append(types, t.Eval())
 			}
-			this.Templates.Add(fDecl.Name, NewTemplate(fDecl.Name, types, fDecl))
+			this.Templates.Add(fDecl.Name, this.ImportName, NewTemplate(fDecl.Name, this.ImportName, types, fDecl))
 		}
 	}
 	return n
 }
-func RunTemplateParse(tree common.INode, templates *Templates) {
+func RunTemplateParse(file *common.File, templates *Templates) {
 	templateParse := TemplateParse{
-		Root:      tree,
-		Templates: templates,
+		Root:       file.Ast,
+		Templates:  templates,
+		Package:    file.Ast.(*ast.SourceFile).Package.Name,
+		ImportName: path.Dir(file.FullPath),
 	}
 	templateParse.type_ = &templateParse
-	templateParse.Walk(tree)
+	templateParse.Walk(file.Ast)
 }

@@ -482,19 +482,29 @@ func voila() int {
 		// generics.og
 		`package og
 
+import (
+	"github.com/champii/og/tests/exemples/bar"
+)
+
 func main() {
-	fmt.Println(aint(1))
-	fmt.Println(astring(1))
-	a := Fooint{bar: 1}
+	fmt.Println(exemples_a_int(1))
+	fmt.Println(exemples_a_string(1))
+	a := exemples_Foo_int{bar: 1}
+	b := bar_Foo_int{bar: 1}
 }
-func aint(t int) int {
+
+type bar_Foo_int struct {
+	bar int
+}
+
+func exemples_a_int(t int) int {
 	return t
 }
-func astring(t string) string {
+func exemples_a_string(t string) string {
 	return t
 }
 
-type Fooint struct {
+type exemples_Foo_int struct {
 	bar int
 }
 `,

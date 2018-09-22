@@ -1,0 +1,19 @@
+!std
+
+RemoveIdx<T>(arr []T, idx int): []T ->
+	if len(arr) - 1 == i => arr[:i]
+	else if i == 0       => arr[1:]
+	else                 => append(arr[0:i], arr[i+1:]...)
+
+clone<T>(t T): T ->
+	var res T
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	if err := enc.Encode(t); err != nil
+		fmt.Println("ERROR ENCODE", err)
+
+	dec := gob.NewDecoder(&buf)
+	if err := dec.Decode(&res); err != nil
+		fmt.Println("ERROR DECODE", err)
+
+	res

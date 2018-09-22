@@ -2,6 +2,7 @@
 
 import
 	fmt
+	path
 	bytes
 	strings
 	"encoding/gob"
@@ -29,9 +30,11 @@ struct TemplateGenerator
 			if err := dec.Decode(&other); err != nil
 				fmt.Println("ERROR DECODE", err)
 
-			newStruct := RunTemplateApply(other, template.Types, usedFor).(*ast.StructType)
+			newStruct := RunTemplateReplace(other, template.Types, usedFor).(*ast.StructType)
 
-			newStruct.Name += strings.Join(usedFor, "")
+			prefix := path.Base(template.Pack) + "_"
+
+			newStruct.Name = prefix + newStruct.Name + "_" + strings.Join(usedFor, "_")
 
 			topLevel := &ast.TopLevel
 				Declaration: &ast.Declaration
@@ -60,9 +63,11 @@ struct TemplateGenerator
 			if err := dec.Decode(&other); err != nil
 				fmt.Println("ERROR DECODE", err)
 
-			newFn := RunTemplateApply(other, template.Types, usedFor).(*ast.FunctionDecl)
+			newFn := RunTemplateReplace(other, template.Types, usedFor).(*ast.FunctionDecl)
 
-			newFn.Name += strings.Join(usedFor, "")
+			prefix := path.Base(template.Pack) + "_"
+
+			newFn.Name = prefix + newFn.Name + "_" + strings.Join(usedFor, "_")
 
 			topLevel := &ast.TopLevel{FunctionDecl: newFn}
 
@@ -70,14 +75,13 @@ struct TemplateGenerator
 
 			template.AddGeneratedFor(usedFor, source.Package.Eval())
 
-	*GenerateGenerics(templates *Templates) ->
+	*GenerateTemplates(templates *Templates) ->
 		if @Root == nil
 			return
 
 		source := @Root.(*ast.SourceFile)
-		RunGobRegister(source)
 
-		for _, template in templates.templates
+		for _, template in templates.Templates
 			topArr := source.TopLevels
 			for i, top in topArr
 				if top.FunctionDecl == template.Node || (top.Declaration != nil && top.Declaration.TypeDecl != nil && top.Declaration.TypeDecl.StructType != nil && top.Declaration.TypeDecl.StructType == template.Node)
@@ -94,4 +98,4 @@ RunTemplateGenerator(tree common.INode, templates *Templates) ->
 	templateGenerator := TemplateGenerator
 		Root: tree
 
-	templateGenerator.GenerateGenerics(templates)
+	templateGenerator.GenerateTemplates(templates)

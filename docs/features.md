@@ -14,7 +14,7 @@
 - Antlr4 parser
 - Multithreaded compilation
 - CLI tool to parse and debug your files
-- Generics (ALPHA)
+- Templates (C++ style, at compile time. ALPHA)
 - Interpreter (ALPHA)
 
 # Overview
@@ -65,14 +65,14 @@ autoIfReturn: int ->
   if true => 1
   else    => 0
 
-// Generic definition (ALPHA)
+// Template definition (ALPHA)
 genericFunction<T>(arg T): T -> arg
 
 main ->
   test := Foo{}
   test.inc(42)
 
-  // Generic call for int
+  // Template call for int
   genericFunction<int>(42)
 
   // Conditional assignation
@@ -622,7 +622,7 @@ type Bar interface {
   Method(Type) ReturnType
 }
 ```
-## Generic
+## Template
 
 #### Og
 

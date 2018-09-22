@@ -13,6 +13,8 @@ import (
 
 type File struct {
 	Path        string
+	Imports     map[string]string
+	FullPath    string
 	OutPath     string
 	Name        string
 	Ast         INode
@@ -48,15 +50,19 @@ func (this *File) Error(line, column int, msg, msg2 string) *Error {
 }
 func NewFile(filePath, outPath string) *File {
 	name := path.Base(filePath)
+	fullPath := filePath
+	dir, _ := os.Getwd()
+	fullPath = path.Join(dir, filePath)
 	source, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil
 	}
 	return &File{
-		Path:    filePath,
-		OutPath: outPath,
-		Name:    name,
-		Source:  source,
-		Output:  "",
+		Path:     filePath,
+		FullPath: fullPath,
+		OutPath:  outPath,
+		Name:     name,
+		Source:   source,
+		Output:   "",
 	}
 }

@@ -2,8 +2,8 @@
 
 import
   os
-  strings
   errors
+  strings
   "github.com/champii/og/parser"
   "github.com/champii/og/lib/ast"
   "github.com/champii/og/lib/common"
@@ -75,6 +75,7 @@ struct OgParser
       walker.Print(tree, @Config.SimpleAst)
 
     file.Ast = tree
+    file.Imports = tree.GetImports()
 
     nil
 

@@ -7,9 +7,14 @@ struct Desugar
 	Templates *Templates
 
 	Run(files []*common.File) ->
+		RunGobRegister()
+
 		for _, file in files
 			file.Ast = RunReturnable(file.Ast)
-			RunTemplateParse(file.Ast, @Templates)
+			RunTemplateLoader(file.Ast, @Templates)
+			RunTemplateParse(file, @Templates)
+
+		@Templates.Store()
 
 		for _, file in files
 			RunTemplateUsage(file, @Templates)

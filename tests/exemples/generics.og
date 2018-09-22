@@ -1,5 +1,8 @@
 !og
 
+import
+  "github.com/champii/og/tests/exemples/bar"
+
 a<T>(t T): T-> t
 
 struct Foo<T>
@@ -9,4 +12,7 @@ main ->
   fmt.Println(a<int>(1))
   fmt.Println(a<string>(1))
   a := Foo<int>
+    bar: 1
+
+  b := bar.Foo<int>
     bar: 1

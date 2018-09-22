@@ -2,6 +2,7 @@
 
 import
 	os
+	path
 	strings
 	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/common"
@@ -10,6 +11,7 @@ struct TemplateUsage
 	AstWalker
 	File      *common.File
 	Root      common.INode
+	Package   string
 	Templates *Templates
 
 	*computeTypes(callee common.INode, templateSpec *ast.TemplateSpec): string ->
@@ -20,17 +22,25 @@ struct TemplateUsage
 		for _, t in templateSpec.Result.Types
 			types = append(types, t.Eval())
 
-		template := @Templates.Get(calleeName)
+		splited := strings.Split(calleeName, ".")
+		pack := @Package
+		if len(splited) > 1
+			pack = @File.Imports[splited[0]]
+			calleeName = splited[1]
+
+		template := @Templates.Get(calleeName, pack)
 
 		if template == nil
-			err := @File.Error(callee.Line(), callee.Col(), "Unknown template name", calleeName)
+			err := @File.Error(callee.Line(), callee.Col(), "Unknown template name", callee.Eval())
 			common.Print.Error(err)
 			os.Exit(1)
 			return calleeName
 
 		template.AddUsedFor(types)
 
-		calleeName + strings.Join(types, "")
+		prefix := path.Base(template.Pack) + "_"
+
+		prefix + calleeName + "_" + strings.Join(types, "_")
 
 	*Arguments(n common.INode): common.INode ->
 		args := n.(*ast.Arguments)
@@ -55,6 +65,7 @@ RunTemplateUsage(file *common.File, templates *Templates) ->
 		Root: file.Ast
 		File: file
 		Templates: templates
+		Package:   path.Dir(file.FullPath)
 
 	templateUsage.type_ = &templateUsage
 

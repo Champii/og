@@ -1,12 +1,19 @@
 !walker
 
 import
+	os
+	fmt
+	path
+	bytes
 	strings
 	reflect
+	"io/ioutil"
+	"encoding/gob"
 	"github.com/champii/og/lib/common"
 
 struct Template
 	Name         string
+	Pack         string
 	Types        []string
 	UsedFor      [][]string
 	GeneratedFor map[string][]string // Join(UsedFor[i], ",") -> []PackageName
@@ -41,32 +48,91 @@ struct Template
 
 		@UsedFor = append(@UsedFor, types)
 
-NewTemplate(name string, types []string, node common.INode): *Template ->
+NewTemplate(name, pack string, types []string, node common.INode): *Template ->
 	&Template
 		Name: name
+		Pack: pack
 		Types: types
 		UsedFor: [][]string{}
 		Node: node
 		GeneratedFor: make(map[string][]string)
 
 struct Templates
-	names     []string
-	templates []*Template
+	Names     []string
+	Packages  []string
+	Templates []*Template
 
-	*Add(name string, template *Template) ->
-		@names = append(@names, name)
-		@templates = append(@templates, template)
+	*Add(name, pack string, template *Template) ->
+		@Names = append(@Names, name)
+		@Packages = append(@Packages, pack)
+		@Templates = append(@Templates, template)
 
-	Get(name string): *Template ->
-		for i, n in @names
-			if n == name
-				return @templates[i]
+	Get(name, pack string): *Template ->
+		for i, n in @Names
+			if n == name && @Packages[i] == pack
+				return @Templates[i]
 
 		return nil
 
 	ResetUsedFor ->
-		for _, template in @templates
+		for _, template in @Templates
 			template.UsedFor = [][]string{}
+
+	*Decode(content []byte) ->
+		arr := []*TemplateSerie{}
+
+		buf := bytes.NewBuffer(content)
+
+		dec := gob.NewDecoder(buf)
+
+		if err := dec.Decode(&arr); err != nil
+			panic("ERROR DECODE" + err.Error())
+
+		for _, tmpl in arr
+			@Add(tmpl.Name, tmpl.Template.Pack, tmpl.Template)
+
+	Encode(arr []*Template): []byte ->
+		res := []*TemplateSerie{}
+
+		for _, template in arr
+			res = append(res, &TemplateSerie{template.Name, template})
+
+		var buf bytes.Buffer
+
+		enc := gob.NewEncoder(&buf)
+
+		if err := enc.Encode(&res); err != nil
+			panic("ERROR ENCODE" + err.Error())
+
+		buf.Bytes()
+
+	byPackage: map[string][]*Template ->
+		res := make(map[string][]*Template)
+
+		for _, template in @Templates
+			res[template.Pack] = append(res[template.Pack], template)
+
+		res
+
+	Store ->
+		for pack, arr in @byPackage()
+			templateDir := path.Join(pack, ".og")
+
+			_, err := os.Stat(templateDir)
+
+			if err != nil
+				err = os.Mkdir(templateDir, 0755)
+				if err != nil
+					fmt.Println("Cannot create template directory: " + templateDir)
+					return
+
+			blob := @Encode(arr)
+
+			ioutil.WriteFile(path.Join(templateDir, "template"), blob, 0644)
 
 NewTemplates: *Templates ->
 	&Templates{}
+
+struct TemplateSerie
+	Name     string
+	Template *Template

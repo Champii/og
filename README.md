@@ -16,6 +16,8 @@ Testers and Contributors are most welcome
 
 # Quick overview
 
+This language aim to save developer time as much as possible by implementing syntactic sugar like templates or auto return. It might borrow some concepts from functionnal languages like function composition or currying.
+
 This is a quick and dirty syntactic coloration made by hand in optic to highlight main features of the language, please don't judge me  (Or better, please contribute to make a better one :] )
 
 ![Overview](https://github.com/Champii/og/raw/master/docs/_media/overview_color.png)

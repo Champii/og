@@ -4,7 +4,7 @@ import
 	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/common"
 
-struct TemplateApply
+struct TemplateReplace
 	AstWalker
 	typeSrc []string
 	typeDest []string
@@ -19,11 +19,11 @@ struct TemplateApply
 				t.Type = nil
 		n
 
-RunTemplateApply(tree common.INode, typeSrc []string, typeDest []string): common.INode ->
-	templateApply := TemplateApply
+RunTemplateReplace(tree common.INode, typeSrc []string, typeDest []string): common.INode ->
+	templateReplace := TemplateReplace
 		typeSrc:  typeSrc
 		typeDest:  typeDest
 
-	templateApply.type_ = &templateApply
+	templateReplace.type_ = &templateReplace
 
-	templateApply.Walk(tree)
+	templateReplace.Walk(tree)

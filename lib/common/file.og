@@ -11,13 +11,15 @@ import
   "path/filepath"
 
 struct File
-  Path    string
-  OutPath string
-  Name    string
-  Ast     INode
-  Output  string
+  Path     string
+  Imports  map[string]string // alias -> fullpath
+  FullPath string
+  OutPath  string
+  Name     string
+  Ast      INode
+  Output   string
   LineMapping []int
-  Source  []byte
+  Source   []byte
   Write ->
     os.MkdirAll(filepath.Dir(@OutPath), os.ModePerm);
     ioutil.WriteFile(@OutPath, []byte(@Output), os.ModePerm)
@@ -43,12 +45,17 @@ struct File
     @Output = string(final)
 
     return nil
+
   Error(line, column int, msg, msg2 string): *Error ->
     source := strings.Split(string(@Source), "\n")
     NewError(@Path, source, line, column, msg, msg2)
 
 NewFile(filePath, outPath string): *File ->
   name := path.Base(filePath)
+
+  fullPath := filePath
+  dir, _ := os.Getwd()
+  fullPath = path.Join(dir, filePath)
 
   source, err := ioutil.ReadFile(filePath)
 
@@ -57,6 +64,7 @@ NewFile(filePath, outPath string): *File ->
 
   &File
     Path:    filePath
+    FullPath: fullPath
     OutPath: outPath
     Name:    name
     Source:  source

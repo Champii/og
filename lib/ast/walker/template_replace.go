@@ -5,13 +5,13 @@ import (
 	"github.com/champii/og/lib/common"
 )
 
-type TemplateApply struct {
+type TemplateReplace struct {
 	AstWalker
 	typeSrc  []string
 	typeDest []string
 }
 
-func (this *TemplateApply) Type(n common.INode) common.INode {
+func (this *TemplateReplace) Type(n common.INode) common.INode {
 	t := n.(*ast.Type)
 	tName := t.Eval()
 	for i, ty := range this.typeSrc {
@@ -23,11 +23,11 @@ func (this *TemplateApply) Type(n common.INode) common.INode {
 	}
 	return n
 }
-func RunTemplateApply(tree common.INode, typeSrc []string, typeDest []string) common.INode {
-	templateApply := TemplateApply{
+func RunTemplateReplace(tree common.INode, typeSrc []string, typeDest []string) common.INode {
+	templateReplace := TemplateReplace{
 		typeSrc:  typeSrc,
 		typeDest: typeDest,
 	}
-	templateApply.type_ = &templateApply
-	return templateApply.Walk(tree)
+	templateReplace.type_ = &templateReplace
+	return templateReplace.Walk(tree)
 }

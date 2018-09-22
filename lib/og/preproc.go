@@ -18,6 +18,7 @@ func (this OgPreproc) indentCount(str string) int {
 }
 func (this *OgPreproc) Run(file *common.File) {
 	lineCount := 0
+	file.Source = []byte(strings.Replace(string(file.Source), "\t", "  ", -1))
 	lines := strings.Split(string(file.Source), "\n")
 	res := []string{}
 	lastIndent := 0

@@ -5,6 +5,10 @@
   - Errors show now the good original lines and columns
   - Show an error when a template in unknown
   - Colorful ast and lines/columns are shown
+  - Replace every tabs with 2 spaces in the source. You should use spaces.
+  - Templates can now be used across packages
+  - Templates generate a hidden file in the given package to avoid reparsing the whole. This allows for the creation of a Templated Standard Library
+
 
 ## v0.7.1
   - Fix `-p` that showed the non-formated output 

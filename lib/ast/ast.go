@@ -2,6 +2,8 @@ package ast
 
 import (
 	"github.com/champii/og/lib/common"
+	"os"
+	"path"
 	"strings"
 )
 
@@ -22,6 +24,23 @@ func (this SourceFile) Eval() string {
 	}
 	for _, t := range this.TopLevels {
 		res += t.Eval() + "\n"
+	}
+	return res
+}
+func (this SourceFile) GetImports() map[string]string {
+	res := make(map[string]string)
+	if this.Import == nil {
+		return res
+	}
+	for _, imp := range this.Import.Items {
+		if imp.Path[0] != '"' {
+			continue
+		}
+		alias := imp.Alias
+		if imp.Alias == "" {
+			alias = path.Base(imp.Path[1 : len(imp.Path)-2])
+		}
+		res[alias] = path.Join(os.Getenv("GOPATH"), "src", imp.Path[1:len(imp.Path)-2])
 	}
 	return res
 }

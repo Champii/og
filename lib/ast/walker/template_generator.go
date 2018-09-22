@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/common"
+	"path"
 	"strings"
 )
 
@@ -31,8 +32,9 @@ func (this *TemplateGenerator) GenerateStruct(template *Template) {
 		if err := dec.Decode(&other); err != nil {
 			fmt.Println("ERROR DECODE", err)
 		}
-		newStruct := RunTemplateApply(other, template.Types, usedFor).(*ast.StructType)
-		newStruct.Name += strings.Join(usedFor, "")
+		newStruct := RunTemplateReplace(other, template.Types, usedFor).(*ast.StructType)
+		prefix := path.Base(template.Pack) + "_"
+		newStruct.Name = prefix + newStruct.Name + "_" + strings.Join(usedFor, "_")
 		topLevel := &ast.TopLevel{Declaration: &ast.Declaration{TypeDecl: &ast.TypeDecl{StructType: newStruct},
 		},
 		}
@@ -58,20 +60,20 @@ func (this *TemplateGenerator) GenerateTopFns(template *Template) {
 		if err := dec.Decode(&other); err != nil {
 			fmt.Println("ERROR DECODE", err)
 		}
-		newFn := RunTemplateApply(other, template.Types, usedFor).(*ast.FunctionDecl)
-		newFn.Name += strings.Join(usedFor, "")
+		newFn := RunTemplateReplace(other, template.Types, usedFor).(*ast.FunctionDecl)
+		prefix := path.Base(template.Pack) + "_"
+		newFn.Name = prefix + newFn.Name + "_" + strings.Join(usedFor, "_")
 		topLevel := &ast.TopLevel{FunctionDecl: newFn}
 		source.TopLevels = append(source.TopLevels, topLevel)
 		template.AddGeneratedFor(usedFor, source.Package.Eval())
 	}
 }
-func (this *TemplateGenerator) GenerateGenerics(templates *Templates) {
+func (this *TemplateGenerator) GenerateTemplates(templates *Templates) {
 	if this.Root == nil {
 		return
 	}
 	source := this.Root.(*ast.SourceFile)
-	RunGobRegister(source)
-	for _, template := range templates.templates {
+	for _, template := range templates.Templates {
 		topArr := source.TopLevels
 		for i, top := range topArr {
 			if top.FunctionDecl == template.Node || (top.Declaration != nil && top.Declaration.TypeDecl != nil && top.Declaration.TypeDecl.StructType != nil && top.Declaration.TypeDecl.StructType == template.Node) {
@@ -95,5 +97,5 @@ func (this *TemplateGenerator) GenerateGenerics(templates *Templates) {
 }
 func RunTemplateGenerator(tree common.INode, templates *Templates) {
 	templateGenerator := TemplateGenerator{Root: tree}
-	templateGenerator.GenerateGenerics(templates)
+	templateGenerator.GenerateTemplates(templates)
 }

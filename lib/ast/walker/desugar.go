@@ -9,10 +9,13 @@ type Desugar struct {
 }
 
 func (this *Desugar) Run(files []*common.File) {
+	RunGobRegister()
 	for _, file := range files {
 		file.Ast = RunReturnable(file.Ast)
-		RunTemplateParse(file.Ast, this.Templates)
+		RunTemplateLoader(file.Ast, this.Templates)
+		RunTemplateParse(file, this.Templates)
 	}
+	this.Templates.Store()
 	for _, file := range files {
 		RunTemplateUsage(file, this.Templates)
 		RunTemplateGenerator(file.Ast, this.Templates)
