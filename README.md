@@ -9,10 +9,7 @@ We are looking for a better name !
 
 # Disclamer
 
-<h3> This software is in its early stage.<br/>
-New features come fast, at the cost of breaking things often.<br />
-Testers and Contributors are most welcome
-</h3>
+<h3> This software is in its early stage.</h3>
 
 # Quick overview
 
@@ -29,7 +26,6 @@ This is a quick and dirty syntactic coloration made by hand in optic to highligh
   <img height="220" src="https://github.com/Champii/og/raw/master/docs/_media/og_preview.gif" />
 </p>
 
-
 # Build
 
 Here is the procedure to regenerate the parser from the grammar if you want to make changes to it.  
@@ -38,7 +34,7 @@ You will need `Java`, the Antlr4 library is in `./parser/antlr4-4.7.1-SNAPSHOT-c
 
 ```bash
 # Get Og
-go get -u github.com/champii/og
+go get -u github.com/champii/og 
 cd $GOPATH/src/github.com/champii/og
 
 # This will regenerate the grammar,

@@ -624,12 +624,20 @@ type Bar interface {
 ```
 ## Template
 
+Templates can be defined across packages, their definition is kept in a hidden file in order to avoir reparsing the whole package when needed
+
 #### Og
 
 ```og
+struct Foo<T>
+  bar T
+
 genericFunction<T>(arg T): T -> arg
 
 main ->
+  a := Foo<int>
+    bar: 1
+
   genericFunction<int>(a)
   genericFunction<string>(a)
 ```
@@ -637,17 +645,24 @@ main ->
 #### Go
 
 ```go
-func genericFunctionint(arg int) int {
+type example_Foo_int struct {
+  bar int
+}
+
+func example_genericFunction_int(arg int) int {
   return arg
 }
 
-func genericFunctionstring(arg string) string {
+func example_genericFunction_string(arg string) string {
   return arg
 }
 
 func main() {
-  genericFunctionint(a)
-  genericFunctionstring(a)
+  a := example_Foo_int{
+    bar: 1,
+  }
+  example_genericFunction_int(a)
+  example_genericFunction_string(a)
 } 
 ```
 

@@ -71,7 +71,7 @@ Prism.languages.og = {
 
 Prism.languages.insertBefore('og', 'keyword', {
 	'className': {
-		pattern: /(struct|interface)(.*)/,
+		pattern: /(struct|class|interface)(.*)/,
 		lookbehind: true,
 	},
 	'packageName': {
