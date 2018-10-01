@@ -1190,7 +1190,6 @@ func (this OperandName) Eval() string {
 type CompositeLit struct {
 	*common.Node
 	LiteralType  *LiteralType
-	TemplateSpec *TemplateSpec
 	LiteralValue *LiteralValue
 }
 
@@ -1229,7 +1228,8 @@ func (this LiteralType) Eval() string {
 
 type LiteralValue struct {
 	*common.Node
-	Elements []*KeyedElement
+	Elements     []*KeyedElement
+	TemplateSpec *TemplateSpec
 }
 
 func (this LiteralValue) Eval() string {

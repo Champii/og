@@ -17,3 +17,4 @@ main ->
   mapper := fn (a int): int -> a + 1
 
   res := std.Map<int>(test, mapper)
+

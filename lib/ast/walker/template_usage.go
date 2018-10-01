@@ -47,11 +47,11 @@ func (this *TemplateUsage) Arguments(n common.INode) common.INode {
 	}
 	return n
 }
-func (this *TemplateUsage) CompositeLit(n common.INode) common.INode {
-	composite := n.(*ast.CompositeLit)
-	if composite.TemplateSpec != nil {
-		callee := composite.LiteralType
-		callee.Type = this.computeTypes(callee, composite.TemplateSpec)
+func (this *TemplateUsage) LiteralValue(n common.INode) common.INode {
+	value := n.(*ast.LiteralValue)
+	if value.TemplateSpec != nil {
+		callee := value.GetParent().(*ast.CompositeLit).LiteralType
+		callee.Type = this.computeTypes(callee, value.TemplateSpec)
 	}
 	return n
 }

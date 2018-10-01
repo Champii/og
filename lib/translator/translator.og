@@ -966,8 +966,8 @@ struct OgVisitor
       LiteralType: @VisitLiteralType(ctx.LiteralType().(*parser.LiteralTypeContext), delegate).(*LiteralType)
       LiteralValue: @VisitLiteralValue(ctx.LiteralValue().(*parser.LiteralValueContext), delegate).(*LiteralValue)
 
-    if ctx.TemplateSpec() != nil
-      node.TemplateSpec = @VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
+    // if ctx.TemplateSpec() != nil
+    //   node.TemplateSpec = @VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
 
     node
 
@@ -998,6 +998,9 @@ struct OgVisitor
   VisitLiteralValue(ctx *parser.LiteralValueContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &LiteralValue
       Node: common.NewNode(ctx, @File, &LiteralValue{})
+
+    if ctx.TemplateSpec() != nil
+      node.TemplateSpec = @VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
 
     if ctx.ElementList() != nil
       node.Elements = @VisitElementList(ctx.ElementList().(*parser.ElementListContext), delegate).([]*KeyedElement)

@@ -684,7 +684,8 @@ qualifiedIdent
 //Element       = Expression | LiteralValue .
 
 compositeLit
-    : literalType templateSpec? literalValue
+    // : literalType templateSpec? literalValue
+    : literalType literalValue
     ;
 
 literalType
@@ -697,7 +698,7 @@ literalType
     ;
 
 literalValue
-    : '{' ( elementList ','? )? '}'
+    : templateSpec? '{' ( elementList ','? )? '}'
     ;
 
 elementList

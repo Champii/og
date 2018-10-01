@@ -875,9 +875,6 @@ func (this *OgVisitor) VisitCompositeLit(ctx *parser.CompositeLitContext, delega
 		LiteralType:  this.VisitLiteralType(ctx.LiteralType().(*parser.LiteralTypeContext), delegate).(*LiteralType),
 		LiteralValue: this.VisitLiteralValue(ctx.LiteralValue().(*parser.LiteralValueContext), delegate).(*LiteralValue),
 	}
-	if ctx.TemplateSpec() != nil {
-		node.TemplateSpec = this.VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
-	}
 	return node
 }
 func (this *OgVisitor) VisitLiteralType(ctx *parser.LiteralTypeContext, delegate antlr.ParseTreeVisitor) interface{} {
@@ -904,6 +901,9 @@ func (this *OgVisitor) VisitLiteralType(ctx *parser.LiteralTypeContext, delegate
 }
 func (this *OgVisitor) VisitLiteralValue(ctx *parser.LiteralValueContext, delegate antlr.ParseTreeVisitor) interface{} {
 	node := &LiteralValue{Node: common.NewNode(ctx, this.File, &LiteralValue{})}
+	if ctx.TemplateSpec() != nil {
+		node.TemplateSpec = this.VisitTemplateSpec(ctx.TemplateSpec().(*parser.TemplateSpecContext), delegate).(*TemplateSpec)
+	}
 	if ctx.ElementList() != nil {
 		node.Elements = this.VisitElementList(ctx.ElementList().(*parser.ElementListContext), delegate).([]*KeyedElement)
 	}

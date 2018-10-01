@@ -51,12 +51,12 @@ struct TemplateUsage
 
 		n
 
-	*CompositeLit(n common.INode): common.INode ->
-		composite := n.(*ast.CompositeLit)
+	*LiteralValue(n common.INode): common.INode ->
+		value := n.(*ast.LiteralValue)
 
-		if composite.TemplateSpec != nil
-			callee := composite.LiteralType
-			callee.Type = @computeTypes(callee, composite.TemplateSpec)
+		if value.TemplateSpec != nil
+			callee := value.GetParent().(*ast.CompositeLit).LiteralType
+			callee.Type = @computeTypes(callee, value.TemplateSpec)
 
 		n
 

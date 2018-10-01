@@ -769,7 +769,6 @@ struct OperandName
 struct CompositeLit
 	*common.Node
 	LiteralType  *LiteralType
-	TemplateSpec *TemplateSpec
 	LiteralValue *LiteralValue
 	Eval: string -> @LiteralType.Eval() + @LiteralValue.Eval()
 
@@ -792,6 +791,7 @@ struct LiteralType
 struct LiteralValue
 	*common.Node
 	Elements []*KeyedElement
+	TemplateSpec *TemplateSpec
 	Eval: string ->
 		res := "{"
 		if len(@Elements) > 1
