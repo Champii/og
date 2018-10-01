@@ -2,8 +2,8 @@
 
 import
   os
+  fmt
   errors
-  strings
   "github.com/champii/og/parser"
   "github.com/champii/og/lib/ast"
   "github.com/champii/og/lib/common"
@@ -14,8 +14,7 @@ import
 struct ErrorHandler
   *antlr.DefaultErrorStrategy
 
-  Recover(p antlr.Parser, r antlr.RecognitionException) ->
-    os.Exit(1)
+  Recover(p antlr.Parser, r antlr.RecognitionException) -> ;
 
 NewErrorHandler: *ErrorHandler ->
   &ErrorHandler
@@ -23,23 +22,30 @@ NewErrorHandler: *ErrorHandler ->
 
 struct ErrorListener
   *antlr.DefaultErrorListener
-  filePath string
-  source []string
+  file *common.File
+  IsFaulty bool
+  NbErrors int
 
   *SyntaxError(rec antlr.Recognizer, offendingSymbol interface, line, column int, msg string, e antlr.RecognitionException) ->
-    err := common.NewError(@filePath, @source, line, column, "Unexpected", offendingSymbol.(antlr.Token).GetText())
-    common.Print.Error(err)
+    @IsFaulty = true
 
-NewErrorListener(filePath, source string): *ErrorListener ->
+    common.Print.Error(@file.Error(line, column, "Unexpected", offendingSymbol.(antlr.Token).GetText()))
+
+    @NbErrors++
+    if @NbErrors == 5
+      fmt.Println("Too many errors, exiting")
+      os.Exit(1)
+
+NewErrorListener(file *common.File): *ErrorListener ->
   &ErrorListener
     DefaultErrorListener: antlr.NewDefaultErrorListener()
-    filePath: filePath
-    source: strings.Split(source, "\n")
+    file: file
 
 struct OgParser
   Config *common.OgConfig
+  ErrListener *ErrorListener
 
-  parserInit(file *common.File): *parser.OgParser ->
+  *parserInit(file *common.File): *parser.OgParser ->
     input := antlr.NewInputStream(string(file.Output))
     lexer := parser.NewOgLexer(input)
 
@@ -50,20 +56,25 @@ struct OgParser
     p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
 
     p.RemoveErrorListeners()
-    p.SetErrorHandler(NewErrorHandler())
-    p.AddErrorListener(NewErrorListener(file.Path, string(file.Source)))
+    // p.SetErrorHandler(NewErrorHandler())
+    @ErrListener = NewErrorListener(file)
+    p.AddErrorListener(@ErrListener)
     p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
     // p.SetErrorHandler(antlr.NewBailErrorStrategy())
+    p.SetErrorHandler(antlr.NewDefaultErrorStrategy())
 
     p
 
-  Parse(file *common.File): error ->
+  *Parse(file *common.File): error ->
     p := @parserInit(file)
 
     res := p.SourceFile()
 
     if res == nil
       return errors.New("Cannot parse file: " + file.Path)
+
+    if @ErrListener.IsFaulty
+      return errors.New("")
 
     t := new(translator.OgVisitor)
 

@@ -46,7 +46,11 @@ func (this *File) Format() error {
 }
 func (this *File) Error(line, column int, msg, msg2 string) *Error {
 	source := strings.Split(string(this.Source), "\n")
-	return NewError(this.Path, source, line, column, msg, msg2)
+	if line >= len(this.LineMapping) {
+		line = len(this.LineMapping) - 1
+	}
+	_line := this.LineMapping[line]
+	return NewError(this.Path, source, _line, column, msg, msg2)
 }
 func NewFile(filePath, outPath string) *File {
 	name := path.Base(filePath)

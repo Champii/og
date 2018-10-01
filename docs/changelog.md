@@ -1,6 +1,8 @@
 # Changelog
 
 ## DEV: Current version
+  - Fix line printing when error
+  -  
 
 ## v0.7.2
   - Add `-s` option to show a simplified AST with only terminal nodes

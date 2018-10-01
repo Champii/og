@@ -48,7 +48,13 @@ struct File
 
   Error(line, column int, msg, msg2 string): *Error ->
     source := strings.Split(string(@Source), "\n")
-    NewError(@Path, source, line, column, msg, msg2)
+
+    if line >= len(@LineMapping)
+      line = len(@LineMapping) - 1
+
+    _line := @LineMapping[line]
+
+    NewError(@Path, source, _line, column, msg, msg2)
 
 NewFile(filePath, outPath string): *File ->
   name := path.Base(filePath)

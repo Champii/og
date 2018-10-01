@@ -66,6 +66,7 @@ func (this *OgPreproc) Run(file *common.File) {
 		file.LineMapping = append(file.LineMapping, lineCount)
 		lastIndent -= indentSize
 	}
+	file.LineMapping = append(file.LineMapping, lineCount+1)
 	file.Output = strings.Join(res, "\n") + "\n"
 }
 func NewOgPreproc() *OgPreproc {

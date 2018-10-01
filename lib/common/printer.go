@@ -47,7 +47,7 @@ func (this Printer) Compiled(nbFiles int) {
 	}
 	tm.MoveCursorUp(1)
 	tm.Print("                                          \r")
-	tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Compiled ", tm.GREEN), tm.Color(strconv.Itoa(nbFiles), tm.YELLOW), tm.Color(" files.", tm.GREEN))
+	tm.Print(blue("~> "), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Compiled ", tm.GREEN), tm.Color(strconv.Itoa(nbFiles), tm.YELLOW), tm.Color(" files.", tm.GREEN))
 	tm.Flush()
 }
 func (this Printer) Running() {
@@ -56,7 +56,7 @@ func (this Printer) Running() {
 	}
 	tm.MoveCursorUp(1)
 	tm.Print("                                          \r")
-	tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Running... \n", tm.GREEN))
+	tm.Print(blue("~> "), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Running... \n", tm.GREEN))
 	tm.Flush()
 }
 func (this Printer) NothingToDo() {
@@ -64,7 +64,7 @@ func (this Printer) NothingToDo() {
 		return
 	}
 	tm.Print("                                          \r")
-	tm.Print(tm.Color("~> ", tm.RED), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Nothing to do.", tm.GREEN))
+	tm.Print(blue("~> "), tm.Color("Oglang: ", tm.MAGENTA), tm.Color("Nothing to do.", tm.GREEN))
 	tm.Flush()
 }
 func (this *Printer) CompileList(files []string, workerIds []int, nbWorkers, finished, total int) {
@@ -100,7 +100,10 @@ func (this *Printer) Error(err *Error) {
 	tm.MoveCursorUp(9)
 	tm.Flush()
 	fileInfo := fmt.Sprintf("%s (%s:%s)", green(err.Path), yellow(err.Line), yellow(err.Column))
-	fmt.Printf("\n%s: %s '%s'\n", fileInfo, red(err.Msg), magenta(err.Msg2))
+	fmt.Printf("%s: %s '%s'\n", fileInfo, red(err.Msg), magenta(err.Msg2))
+	if err.Line-1 >= len(err.Source) || err.Column >= len(err.Source[err.Line-1]) {
+		return
+	}
 	badLine := err.Source[err.Line-1]
 	badLine = cyan(badLine[:err.Column]) + magenta(err.Msg2) + cyan(badLine[err.Column+len(err.Msg2):])
 	fmt.Println(badLine)

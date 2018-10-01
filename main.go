@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/champii/og/lib/common"
 	"github.com/champii/og/lib/og"
@@ -15,6 +16,7 @@ func main() {
 
 		if err := ogLang.Run(); err != nil {
 			fmt.Println(err)
+			os.Exit(1)
 		}
 	})
 }

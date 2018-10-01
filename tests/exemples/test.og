@@ -1,8 +1,19 @@
 !og
 
-struct Foo<T>
-  bar T
+import
+  "github.com/champii/og/lib/std"
+
+Map<T>(arr []T, f fn (T): T): []T ->
+  res := []T{}
+
+  for i, a in arr
+    res[i] = f(a)
+
+  res
 
 main ->
-  wesh := tata.Foo2<int>
-    bar: 1
+  test := []int{1, 2, 3}
+
+  mapper := fn (a int): int -> a + 1
+
+  res := std.Map<int>(test, mapper)

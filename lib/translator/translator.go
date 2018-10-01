@@ -918,9 +918,9 @@ func (this *OgVisitor) VisitElementList(ctx *parser.ElementListContext, delegate
 	return res
 }
 func (this *OgVisitor) VisitKeyedElement(ctx *parser.KeyedElementContext, delegate antlr.ParseTreeVisitor) interface{} {
-	node := &KeyedElement{
-		Node:    common.NewNode(ctx, this.File, &KeyedElement{}),
-		Element: this.VisitElement(ctx.Element().(*parser.ElementContext), delegate).(*Element),
+	node := &KeyedElement{Node: common.NewNode(ctx, this.File, &KeyedElement{})}
+	if ctx.Element() != nil {
+		node.Element = this.VisitElement(ctx.Element().(*parser.ElementContext), delegate).(*Element)
 	}
 	if ctx.Key() != nil {
 		node.Key = this.VisitKey(ctx.Key().(*parser.KeyContext), delegate).(*Key)

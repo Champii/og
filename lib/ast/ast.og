@@ -807,7 +807,8 @@ struct KeyedElement
 	Eval: string ->
 		res := ""
 		if @Key != nil => res += @Key.Eval() + ":"
-		res + @Element.Eval()
+		if @Element != nil => res += @Element.Eval()
+		res
 
 struct Key
 	*common.Node

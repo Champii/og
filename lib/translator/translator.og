@@ -1017,7 +1017,9 @@ struct OgVisitor
   VisitKeyedElement(ctx *parser.KeyedElementContext, delegate antlr.ParseTreeVisitor): interface ->
     node := &KeyedElement
       Node: common.NewNode(ctx, @File, &KeyedElement{})
-      Element: @VisitElement(ctx.Element().(*parser.ElementContext), delegate).(*Element)
+
+    if ctx.Element() != nil
+      node.Element = @VisitElement(ctx.Element().(*parser.ElementContext), delegate).(*Element)
 
     if ctx.Key() != nil
       node.Key = @VisitKey(ctx.Key().(*parser.KeyContext), delegate).(*Key)

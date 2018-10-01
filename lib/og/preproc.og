@@ -28,7 +28,6 @@ struct OgPreproc
       lineCount++
       if len(lines[i]) == 0
         continue
-
       file.LineMapping = append(file.LineMapping, lineCount)
 
       indent := @indentCount(lines[i])
@@ -75,6 +74,8 @@ struct OgPreproc
       res = append(res, "}")
       file.LineMapping = append(file.LineMapping, lineCount)
       lastIndent -= indentSize
+
+    file.LineMapping = append(file.LineMapping, lineCount+1)
 
     file.Output = strings.Join(res, "\n") + "\n"
 

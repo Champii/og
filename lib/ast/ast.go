@@ -1254,7 +1254,10 @@ func (this KeyedElement) Eval() string {
 	if this.Key != nil {
 		res += this.Key.Eval() + ":"
 	}
-	return res + this.Element.Eval()
+	if this.Element != nil {
+		res += this.Element.Eval()
+	}
+	return res
 }
 
 type Key struct {

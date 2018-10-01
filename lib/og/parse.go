@@ -2,6 +2,7 @@ package og
 
 import (
 	"errors"
+	"fmt"
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/ast/walker"
@@ -9,7 +10,6 @@ import (
 	"github.com/champii/og/lib/translator"
 	"github.com/champii/og/parser"
 	"os"
-	"strings"
 )
 
 type ErrorHandler struct {
@@ -17,7 +17,7 @@ type ErrorHandler struct {
 }
 
 func (this ErrorHandler) Recover(p antlr.Parser, r antlr.RecognitionException) {
-	os.Exit(1)
+
 }
 func NewErrorHandler() *ErrorHandler {
 	return &ErrorHandler{DefaultErrorStrategy: antlr.NewDefaultErrorStrategy()}
@@ -25,24 +25,30 @@ func NewErrorHandler() *ErrorHandler {
 
 type ErrorListener struct {
 	*antlr.DefaultErrorListener
-	filePath string
-	source   []string
+	file     *common.File
+	IsFaulty bool
+	NbErrors int
 }
 
 func (this *ErrorListener) SyntaxError(rec antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, e antlr.RecognitionException) {
-	err := common.NewError(this.filePath, this.source, line, column, "Unexpected", offendingSymbol.(antlr.Token).GetText())
-	common.Print.Error(err)
+	this.IsFaulty = true
+	common.Print.Error(this.file.Error(line, column, "Unexpected", offendingSymbol.(antlr.Token).GetText()))
+	this.NbErrors++
+	if this.NbErrors == 5 {
+		fmt.Println("Too many errors, exiting")
+		os.Exit(1)
+	}
 }
-func NewErrorListener(filePath, source string) *ErrorListener {
+func NewErrorListener(file *common.File) *ErrorListener {
 	return &ErrorListener{
 		DefaultErrorListener: antlr.NewDefaultErrorListener(),
-		filePath:             filePath,
-		source:               strings.Split(source, "\n"),
+		file:                 file,
 	}
 }
 
 type OgParser struct {
-	Config *common.OgConfig
+	Config      *common.OgConfig
+	ErrListener *ErrorListener
 }
 
 func (this *OgParser) parserInit(file *common.File) *parser.OgParser {
@@ -52,9 +58,10 @@ func (this *OgParser) parserInit(file *common.File) *parser.OgParser {
 	p := parser.NewOgParser(stream)
 	p.GetInterpreter().SetPredictionMode(antlr.PredictionModeSLL)
 	p.RemoveErrorListeners()
-	p.SetErrorHandler(NewErrorHandler())
-	p.AddErrorListener(NewErrorListener(file.Path, string(file.Source)))
+	this.ErrListener = NewErrorListener(file)
+	p.AddErrorListener(this.ErrListener)
 	p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+	p.SetErrorHandler(antlr.NewDefaultErrorStrategy())
 	return p
 }
 func (this *OgParser) Parse(file *common.File) error {
@@ -62,6 +69,9 @@ func (this *OgParser) Parse(file *common.File) error {
 	res := p.SourceFile()
 	if res == nil {
 		return errors.New("Cannot parse file: " + file.Path)
+	}
+	if this.ErrListener.IsFaulty {
+		return errors.New("")
 	}
 	t := new(translator.OgVisitor)
 	t.File = file
