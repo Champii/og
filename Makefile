@@ -74,7 +74,7 @@ new:
 
 test:
 	@$(call section_title,Testing)
-	@go test og/tests
+	@go test ./tests
 
 doc:
 	@docsify serve ./docs

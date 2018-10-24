@@ -10,9 +10,9 @@ struct Foo<T>
 
 main ->
   fmt.Println(a<int>(1))
-  fmt.Println(a<string>(1))
+  fmt.Println(a<string>("a"))
   a := Foo<int>
     bar: 1
 
-  b := bar.Foo<int>
-    bar: 1
+#  b := bar.Foo<int>
+#    bar: 1
