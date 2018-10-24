@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"og/lib/og"
-
 	"testing"
 
 	"github.com/champii/og/lib/common"
+	"github.com/champii/og/lib/og"
 )
 
 func TestMain(t *testing.T) {
@@ -488,15 +487,9 @@ import (
 
 func main() {
 	fmt.Println(exemples_a_int(1))
-	fmt.Println(exemples_a_string(1))
+	fmt.Println(exemples_a_string("a"))
 	a := exemples_Foo_int{bar: 1}
-	b := bar_Foo_int{bar: 1}
 }
-
-type bar_Foo_int struct {
-	bar int
-}
-
 func exemples_a_int(t int) int {
 	return t
 }
