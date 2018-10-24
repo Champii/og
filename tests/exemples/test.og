@@ -1,8 +1,8 @@
 !og
 
-struct Foo<T>
-  bar T
+#struct Foo<T>
+#  bar T
 
-main ->
-  wesh := tata.Foo2<int>
-    bar: 1
+#main ->
+#  wesh := tata.Foo2<int>
+#    bar: 1
