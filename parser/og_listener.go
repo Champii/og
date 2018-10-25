@@ -2,7 +2,7 @@
 
 package parser // Og
 
-import "github.com/antlr/antlr4/runtime/Go/antlr"
+import "github.com/champii/antlr4/runtime/Go/antlr"
 
 // OgListener is a complete listener for a parse tree produced by OgParser.
 type OgListener interface {

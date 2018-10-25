@@ -3,7 +3,7 @@ package og
 import (
 	"errors"
 	"fmt"
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/champii/antlr4/runtime/Go/antlr"
 	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/ast/walker"
 	"github.com/champii/og/lib/common"

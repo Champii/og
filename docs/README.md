@@ -29,7 +29,7 @@ See the [Build](/build.md) section for more details
 
 Go to the [./lib](https://github.com/champii/og/tree/master/lib) folder on github for both Oglang and compiled Golang sources.  
 
-Built with [Antlr4](https://github.com/antlr/antlr4) from their Golang grammar.
+Built with [Antlr4](https://github.com/champii/antlr4) from their Golang grammar.
 
 ### Goal
 ---
