@@ -9,7 +9,7 @@ import
   "github.com/champii/og/lib/common"
   "github.com/champii/og/lib/ast/walker"
   "github.com/champii/og/lib/translator"
-  "github.com/antlr/antlr4/runtime/Go/antlr"
+  "github.com/champii/antlr4/runtime/Go/antlr"
 
 struct ErrorHandler
   *antlr.DefaultErrorStrategy

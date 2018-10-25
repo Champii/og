@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/champii/antlr4/runtime/Go/antlr"
 )
 
 // Suppress unused import errors

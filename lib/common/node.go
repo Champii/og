@@ -1,7 +1,7 @@
 package common
 
 import (
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/champii/antlr4/runtime/Go/antlr"
 )
 
 type INode interface {

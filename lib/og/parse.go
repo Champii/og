@@ -2,14 +2,15 @@ package og
 
 import (
 	"errors"
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"os"
+	"strings"
+
+	"github.com/champii/antlr4/runtime/Go/antlr"
 	"github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/ast/walker"
 	"github.com/champii/og/lib/common"
 	"github.com/champii/og/lib/translator"
 	"github.com/champii/og/parser"
-	"os"
-	"strings"
 )
 
 type ErrorHandler struct {

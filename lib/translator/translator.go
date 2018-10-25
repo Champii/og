@@ -1,11 +1,12 @@
 package translator
 
 import (
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"strings"
+
+	"github.com/champii/antlr4/runtime/Go/antlr"
 	. "github.com/champii/og/lib/ast"
 	"github.com/champii/og/lib/common"
 	"github.com/champii/og/parser"
-	"strings"
 )
 
 type OgVisitor struct {
